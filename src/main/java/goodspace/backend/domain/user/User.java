@@ -12,8 +12,9 @@ public class User {
     @GeneratedValue
     private int id;
     private String name;
-    private String profile_image_url;
-    private int date_of_birth;
+    private String profileImageUrl;
+    private int dateOfBirth;
+    private String email;
 
     @OneToMany(mappedBy = "order")
     private final List<Order> orders = new ArrayList<>();

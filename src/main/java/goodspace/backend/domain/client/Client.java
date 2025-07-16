@@ -14,7 +14,7 @@ public class Client {
     private int id;
     private String name;
     private String profileImageUrl;
-    private byte[] backgrount_image;
+    private byte[] backgrountImage;
     private String introduction;
 
     @OneToMany(mappedBy = "client")
