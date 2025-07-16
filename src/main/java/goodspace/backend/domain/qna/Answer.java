@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class Answer {
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
     private String content;
 
     private LocalDateTime createdAt;

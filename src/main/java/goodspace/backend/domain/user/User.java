@@ -10,10 +10,10 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
     private String name;
     private String profileImageUrl;
-    private int dateOfBirth;
+    private Integer dateOfBirth;
     private String email;
 
     @OneToMany(mappedBy = "order")

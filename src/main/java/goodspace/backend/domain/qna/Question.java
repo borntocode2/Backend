@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Question {
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
     private String title;
     private String content;
 

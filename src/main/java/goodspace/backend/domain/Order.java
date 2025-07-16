@@ -11,7 +11,7 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue
-    private int id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
