@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 public class ItemImage {
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
     private String imageUrl;
 
     @ManyToOne

@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 public class QuestionFile {
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
 
     private byte[] data;
     private String extension;

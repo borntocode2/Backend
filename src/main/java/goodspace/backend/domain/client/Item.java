@@ -9,9 +9,9 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Item {
     @Id
-    private int id;
+    private Long id;
     private String name;
-    private int price;
+    private Integer price;
     private String detail;
     private String shortDescription;
     private String sizeDescription;

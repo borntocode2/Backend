@@ -11,7 +11,7 @@ import java.util.List;
 public class Client {
     @Id
     @GeneratedValue
-    private int id;
+    private Long id;
     private String name;
     private String profileImageUrl;
     private byte[] backgrountImage;
