@@ -17,6 +17,6 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "order")
     private List<Item> items = new ArrayList<>();
 }
