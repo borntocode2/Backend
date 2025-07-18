@@ -1,11 +1,12 @@
 package goodspace.backend.domain.qna;
 
+import goodspace.backend.domain.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-public class Question {
+public class Question extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -17,8 +18,6 @@ public class Question {
 
     @Enumerated(EnumType.STRING)
     private QuestionStatus questionStatus;
-
-    private LocalDateTime createdAt;
 
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
     private Answer answer;

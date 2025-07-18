@@ -23,6 +23,15 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        // HTTP+JSON 클라이언트 BOM (2.8.0)
+        mavenBom "com.google.api-client:google-api-client-bom:2.8.0"
+        // OAuth 클라이언트 BOM (1.39.0)
+        mavenBom "com.google.oauth-client:google-oauth-client-bom:1.39.0"
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -34,6 +43,10 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // Lombok for test
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
     // SpringDoc OpenAPI (Swagger UI)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
@@ -42,6 +55,17 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
     implementation 'com.google.code.gson:gson:2.11.0'
+
+    // Gmail API
+    implementation 'com.google.api-client:google-api-client'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty'
+    implementation 'com.google.apis:google-api-services-gmail:v1-rev20250630-2.0.0'
+
+    // GreenMail
+    testImplementation 'com.icegreen:greenmail-junit5:2.1.3'
+
+    // JavaMail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {

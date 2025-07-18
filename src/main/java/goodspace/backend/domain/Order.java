@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Order {
+public class Order extends BaseEntity {
     @Id
     @GeneratedValue
     private long id;
