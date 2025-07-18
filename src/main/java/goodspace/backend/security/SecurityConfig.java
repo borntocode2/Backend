@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/authorization/**").permitAll()
+                        .requestMatchers("/email/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll() // swagger
                         .requestMatchers("/v3/api-docs/**").permitAll() // SpringDoc
                         .anyRequest().authenticated()

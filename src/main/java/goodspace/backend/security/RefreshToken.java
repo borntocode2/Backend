@@ -1,10 +1,7 @@
 package goodspace.backend.security;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,12 +16,11 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     @Setter
-    private String tokenValue;
+    private String tokenValue = "";
 
-    @Builder
-    private RefreshToken(String tokenValue) {
+    public RefreshToken(String tokenValue) {
         this.tokenValue = tokenValue;
     }
-
 }

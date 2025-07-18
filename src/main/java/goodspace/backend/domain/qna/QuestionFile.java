@@ -1,9 +1,10 @@
 package goodspace.backend.domain.qna;
 
+import goodspace.backend.domain.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity
-public class QuestionFile {
+public class QuestionFile extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
