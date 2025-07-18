@@ -1,7 +1,6 @@
 package goodspace.backend.domain.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -10,7 +9,16 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "oauth_user_uq_identifier_oauth_type",
+                        columnNames = {"identifier", "oauth_type"}
+                )
+        }
+)
 public class OAuthUser extends User {
+    @Column(nullable = false)
     private String identifier;
     @Enumerated
     private OAuthType oauthType;
