@@ -32,8 +32,10 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/authorization/**").permitAll()
+                        .requestMatchers("/email/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll() // swagger
                         .requestMatchers("/v3/api-docs/**").permitAll() // SpringDoc
+                        .requestMatchers("/postalcode", "/css/**", "/js/**", "/images/**", "/stylesheets/**","/api/**").permitAll() // 우편번호 html허용
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))

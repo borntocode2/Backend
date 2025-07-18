@@ -1,6 +1,5 @@
 package goodspace.backend.security;
 
-import goodspace.backend.domain.user.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -27,13 +26,16 @@ public class TokenProvider {
     private final long validityTime;
     private final Key key;
 
-    public TokenProvider(@Value("${keys.jwt.secret}") String jwtSecret, @Value("${keys.jwt.access-token-validity-in-milliseconds}") long validityTime) {
+    public TokenProvider(
+            @Value("${keys.jwt.secret}") String jwtSecret,
+            @Value("${keys.jwt.access-token-validity-in-milliseconds}") long validityTime
+    ) {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.validityTime = validityTime;
     }
 
-    public String createToken(User user, TokenType tokenType) {
+    public String createToken(long id, TokenType tokenType) {
         // 토큰의 타입에 맞게 만료 시간을 지정함(리프레쉬 토큰의 지속시간을 24배 길게 설정함)
         Date accessTokenExpiredTime;
         switch (tokenType) {
@@ -49,7 +51,7 @@ public class TokenProvider {
         }
 
         return Jwts.builder()
-                .setSubject(user.getId().toString())
+                .setSubject(Long.toString(id))
                 .claim(TOKEN_TYPE_CLAIM, tokenType)
                 .setExpiration(accessTokenExpiredTime)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -109,6 +111,21 @@ public class TokenProvider {
             return e.getClaims();
         } catch (SignatureException e) {
             throw new IllegalArgumentException("토큰 복호화 실패: 부적절한 토큰입니다.");
+        }
+    }
+
+    public long getIdFromToken(String token) {
+        Claims claims = parseClaims(token);
+
+        String subject = claims.getSubject();
+        if (!StringUtils.hasText(subject)) {
+            throw new IllegalArgumentException("토큰에 사용자 ID 정보가 없습니다.");
+        }
+
+        try {
+            return Long.parseLong(subject);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("토큰의 subject 값을 Long으로 변환할 수 없습니다.", e);
         }
     }
 

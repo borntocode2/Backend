@@ -1,9 +1,10 @@
 package goodspace.backend.domain.client;
 
+import goodspace.backend.domain.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity
-public class ItemImage {
+public class ItemImage extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
