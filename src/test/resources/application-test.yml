@@ -1,0 +1,34 @@
+spring:
+  # DB
+  datasource:
+    url: jdbc:mysql://localhost:3306/good_space_test
+    username: good_space_test
+    password: good_space_test
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+
+  # mail
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: goodspace82@gmail.com
+    password: awqrdwjbxcarikdy
+
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+      mail.smtp.ssl.trust: smtp.gmail.com
+
+keys:
+  jwt:
+    secret: f6556c1a9b995cd5fb2c77583181b9b388b3d7aefff36da881153412ab7b4467313f0e76f05dfc42633141a6a03a1738ebe832069e4db8a77b1dc7dc5b2c599a
+    access-token-validity-in-milliseconds: 3600000
