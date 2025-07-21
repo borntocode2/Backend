@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>결제 인증 결과</title>
+</head>
+<body>
+<h1>결제 인증 결과</h1>
+<ul>
+  <li><strong>인증 결과 코드:</strong> <span th:text="${paymentVerifyResultDto.authResultCode}"></span></li>
+  <li><strong>인증 결과 메시지:</strong> <span th:text="${paymentVerifyResultDto.authResultMsg}"></span></li>
+  <li><strong>거래 ID (tid):</strong> <span th:text="${paymentVerifyResultDto.tid}"></span></li>
+  <li><strong>클라이언트 ID:</strong> <span th:text="${paymentVerifyResultDto.clientId}"></span></li>
+  <li><strong>주문 ID:</strong> <span th:text="${paymentVerifyResultDto.orderId}"></span></li>
+  <li><strong>결제 금액:</strong> <span th:text="${paymentVerifyResultDto.amount}"></span></li>
+  <li><strong>몰 예약 정보:</strong> <span th:text="${paymentVerifyResultDto.mallReserved}"></span></li>
+  <li><strong>인증 토큰:</strong> <span th:text="${paymentVerifyResultDto.authToken}"></span></li>
+  <li><strong>서명값(signature):</strong> <span th:text="${paymentVerifyResultDto.signature}"></span></li>
+</ul>
+</body>
+</html>

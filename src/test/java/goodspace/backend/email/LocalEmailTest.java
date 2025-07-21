@@ -52,6 +52,7 @@ class LocalEmailTest {
 
         mailSender.send(message);
 
+        // 3) GreenMail 에 수신된 메시지 검증
         MimeMessage[] received = greenMail.getReceivedMessages();
         assertThat(received).hasSize(1);
 
