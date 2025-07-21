@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>결제 결과</title>
+</head>
+<body>
+<h1>결제 인증 결과</h1>
+
+<p><strong>결과 코드:</strong> <span th:text="${confirm.resultCode}"></span></p>
+<p><strong>결과 메시지:</strong> <span th:text="${confirm.resultMsg}"></span></p>
+<p><strong>결제 상태:</strong> <span th:text="${confirm.status}"></span></p>
+<p><strong>결제 금액:</strong> <span th:text="${confirm.amount}"></span> 원</p>
+<p><strong>상품명:</strong> <span th:text="${confirm.goodsName}"></span></p>
+<p><strong>승인번호:</strong> <span th:text="${confirm.approveNo}"></span></p>
+<p><strong>결제 시간:</strong> <span th:text="${confirm.paidAt}"></span></p>
+<p><strong>영수증 링크:</strong> <a th:href="${confirm.receiptUrl}" target="_blank">바로가기</a></p>
+
+<h2>카드 정보</h2>
+<p><strong>카드사:</strong> <span th:text="${confirm.card.cardName}"></span></p>
+<p><strong>카드번호:</strong> <span th:text="${confirm.card.cardNum}"></span></p>
+<p><strong>할부개월:</strong> <span th:text="${confirm.card.cardQuota}"></span></p>
+<p><strong>무이자 여부:</strong> <span th:text="${confirm.card.interestFree} ? '무이자' : '유이자'"></span></p>
+
+</body>
+</html>
