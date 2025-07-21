@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**").permitAll() // swagger
                         .requestMatchers("/v3/api-docs/**").permitAll() // SpringDoc
                         .requestMatchers("/postalcode", "/css/**", "/js/**", "/images/**", "/stylesheets/**","/api/**").permitAll() // 우편번호 html허용
+                        .requestMatchers("/client/**").permitAll() // 클라이언트 상품 페이지 관련
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))
