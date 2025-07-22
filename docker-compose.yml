@@ -1,0 +1,77 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h db -u root -p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+
+      SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      SPRING_JPA_OPEN_IN_VIEW: "false"
+
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
+
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: "587"
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_SMTP_STARTTLS_ENABLE}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: ${MAIL_SMTP_STARTTLS_REQUIRED}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: smtp.gmail.com
+
+      KEYS_JWT_SECRET: ${JWT_SECRET}
+      KEYS_JWT_ACCESS_TOKEN_VALIDITY_IN_MILLISECONDS: ${ACCESS_TOKEN_VALIDITY_IN_MILLISECONDS}
+
+      KEYS_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      KEYS_GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      KEYS_GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+
+      KEYS_KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
+      KEYS_KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      KEYS_KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+
+      KEYS_FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID}
+      KEYS_FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET}
+      KEYS_FACEBOOK_REDIRECT_URI: ${FACEBOOK_REDIRECT_URI}
+
+      KEYS_NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      KEYS_NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      KEYS_NAVER_REDIRECT_URI: ${NAVER_REDIRECT_URI}
+
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
