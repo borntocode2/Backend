@@ -5,8 +5,10 @@ import goodspace.backend.authorization.dto.naver.NaverAccessTokenDto;
 import goodspace.backend.authorization.dto.naver.NaverUserInfoDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
 import goodspace.backend.authorization.service.OAuthService;
+import goodspace.backend.domain.user.OAuthUser;
 import goodspace.backend.domain.user.User;
 import goodspace.backend.repository.UserRepository;
+import goodspace.backend.security.Role;
 import goodspace.backend.security.TokenProvider;
 import goodspace.backend.security.TokenType;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.function.Supplier;
 
 import static goodspace.backend.domain.user.OAuthType.NAVER;
 
@@ -75,10 +80,10 @@ public class NaverOAuthService implements OAuthService {
         NaverUserInfoDto naverUserInfo = getNaverUserInfo(naverAccessToken);
 
         User user = userRepository.findByIdentifierAndOAuthType(naverUserInfo.getId(), NAVER)
-                .orElseGet(() -> userRepository.save(naverUserInfo.toEntity()));
+                .orElseGet(saveNewUser(naverUserInfo));
 
-        String accessTokenValue = tokenProvider.createToken(user.getId(), TokenType.ACCESS);
-        String refreshTokenValue = tokenProvider.createToken(user.getId(), TokenType.REFRESH);
+        String accessTokenValue = tokenProvider.createToken(user.getId(), TokenType.ACCESS, user.getRoles());
+        String refreshTokenValue = tokenProvider.createToken(user.getId(), TokenType.REFRESH, user.getRoles());
         user.updateRefreshToken(refreshTokenValue);
 
         return new TokenResponseDto(accessTokenValue, refreshTokenValue);
@@ -150,5 +155,14 @@ public class NaverOAuthService implements OAuthService {
 
     private boolean isRequestFailed(ResponseEntity<String> response) {
         return !response.getStatusCode().is2xxSuccessful();
+    }
+
+    private Supplier<OAuthUser> saveNewUser(NaverUserInfoDto naverUserInfo) {
+        return () -> {
+            OAuthUser newUser = userRepository.save(naverUserInfo.toEntity());
+            newUser.addRole(Role.USER);
+
+            return newUser;
+        };
     }
 }

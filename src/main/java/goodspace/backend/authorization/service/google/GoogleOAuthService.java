@@ -5,8 +5,10 @@ import goodspace.backend.authorization.dto.google.GoogleAccessTokenDto;
 import goodspace.backend.authorization.dto.google.GoogleUserInfoDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
 import goodspace.backend.authorization.service.OAuthService;
+import goodspace.backend.domain.user.OAuthUser;
 import goodspace.backend.domain.user.User;
 import goodspace.backend.repository.UserRepository;
+import goodspace.backend.security.Role;
 import goodspace.backend.security.TokenProvider;
 import goodspace.backend.security.TokenType;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +20,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.function.Supplier;
 
-import static goodspace.backend.domain.user.OAuthType.*;
+import static goodspace.backend.domain.user.OAuthType.GOOGLE;
 
 @Service
 @Slf4j
@@ -74,10 +77,10 @@ public class GoogleOAuthService implements OAuthService {
         GoogleUserInfoDto googleUserInfo = getGoogleUserInfo(googleAccessToken);
 
         User user = userRepository.findByIdentifierAndOAuthType(googleUserInfo.getId(), GOOGLE)
-                .orElseGet(() -> userRepository.save(googleUserInfo.toEntity()));
+                .orElseGet(saveNewUser(googleUserInfo));
 
-        String accessTokenValue = tokenProvider.createToken(user.getId(), TokenType.ACCESS);
-        String refreshTokenValue = tokenProvider.createToken(user.getId(), TokenType.REFRESH);
+        String accessTokenValue = tokenProvider.createToken(user.getId(), TokenType.ACCESS, user.getRoles());
+        String refreshTokenValue = tokenProvider.createToken(user.getId(), TokenType.REFRESH, user.getRoles());
 
         user.updateRefreshToken(refreshTokenValue);
 
@@ -162,5 +165,14 @@ public class GoogleOAuthService implements OAuthService {
 
     private boolean isRequestFailed(ResponseEntity<String> responseEntity) {
         return !responseEntity.getStatusCode().is2xxSuccessful();
+    }
+
+    private Supplier<OAuthUser> saveNewUser(GoogleUserInfoDto googleUserInfoD) {
+        return () -> {
+            OAuthUser newUser = userRepository.save(googleUserInfoD.toEntity());
+            newUser.addRole(Role.USER);
+
+            return newUser;
+        };
     }
 }

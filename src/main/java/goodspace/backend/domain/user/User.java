@@ -4,8 +4,10 @@ import goodspace.backend.domain.BaseEntity;
 import goodspace.backend.domain.Order;
 import goodspace.backend.security.RefreshToken;
 import goodspace.backend.dto.UserMyPageDto;
+import goodspace.backend.security.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -30,7 +32,12 @@ public abstract class User extends BaseEntity {
     private String email;
     private String phoneNumber;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private final List<UserRole> roles = new ArrayList<>();
+
     @OneToMany(mappedBy = "user")
+    @Builder.Default
     private final List<Order> orders = new ArrayList<>();
 
     @Embedded
@@ -46,6 +53,21 @@ public abstract class User extends BaseEntity {
         }
 
         this.refreshToken.setTokenValue(refreshTokenValue);
+    }
+
+    public void addRole(Role role) {
+        UserRole userRole = UserRole.builder()
+                .role(role)
+                .user(this)
+                .build();
+
+        roles.add(userRole);
+    }
+
+    public List<Role> getRoles() {
+        return roles.stream()
+                .map(UserRole::getRole)
+                .toList();
     }
 
     public String getRefreshToken() {

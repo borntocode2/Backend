@@ -13,8 +13,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class TokenProvider {
@@ -22,6 +24,7 @@ public class TokenProvider {
     private static final String TOKEN_TYPE_CLAIM = "PlanFit/TokenType";
     private static final String BEARER = "Bearer ";
     private static final String AUTHORIZATION = "Authorization";
+    private static final String ROLES = "roles";
 
     private final long validityTime;
     private final Key key;
@@ -35,7 +38,7 @@ public class TokenProvider {
         this.validityTime = validityTime;
     }
 
-    public String createToken(long id, TokenType tokenType) {
+    public String createToken(long id, TokenType tokenType, List<Role> roles) {
         // 토큰의 타입에 맞게 만료 시간을 지정함(리프레쉬 토큰의 지속시간을 24배 길게 설정함)
         Date accessTokenExpiredTime;
         switch (tokenType) {
@@ -52,17 +55,24 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .setSubject(Long.toString(id))
-                .claim(TOKEN_TYPE_CLAIM, tokenType)
+                .claim(TOKEN_TYPE_CLAIM, tokenType.name())
+                .claim(ROLES, convertRolesToString(roles))
+                .setIssuedAt(new Date())
                 .setExpiration(accessTokenExpiredTime)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
 
-    public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(claims.getSubject(), "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        String rolesString = claims.get(ROLES, String.class);
+        List<SimpleGrantedAuthority> authorities = Arrays.stream(rolesString.split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
         authentication.setDetails(claims);
 
         return authentication;
@@ -137,5 +147,11 @@ public class TokenProvider {
         String tokenTypeClaim = (String) claims.get(TOKEN_TYPE_CLAIM);
 
         return tokenType == TokenType.valueOf(tokenTypeClaim);
+    }
+
+    private String convertRolesToString(List<Role> roles) {
+        return roles.stream()
+                .map(Role::toString)
+                .collect(Collectors.joining(","));
     }
 }

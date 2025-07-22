@@ -159,7 +159,7 @@ class GoodSpaceAuthorizationServiceTest {
         GoodSpaceUser user = fixture.getInstance();
         userRepository.save(user);
 
-        String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH);
+        String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH, user.getRoles());
         user.updateRefreshToken(refreshToken);
 
         return (GoodSpaceUser) userRepository.findById(user.getId())

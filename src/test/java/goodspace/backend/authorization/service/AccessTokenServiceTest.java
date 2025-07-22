@@ -5,6 +5,7 @@ import goodspace.backend.authorization.dto.response.AccessTokenResponseDto;
 import goodspace.backend.domain.user.GoodSpaceUser;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
 import goodspace.backend.repository.UserRepository;
+import goodspace.backend.security.Role;
 import goodspace.backend.security.TokenProvider;
 import goodspace.backend.security.TokenType;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,8 +26,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class AccessTokenServiceTest {
-    private final SecureRandom random = new SecureRandom();
-
     private final AccessTokenService accessTokenService;
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
@@ -59,7 +58,7 @@ class AccessTokenServiceTest {
         @Test
         @DisplayName("저장된 리프레쉬 토큰과 일치하지 않으면 예외를 던진다")
         void ifIllegalRefreshTokenThenThrowException() throws InterruptedException {
-            String differentRefreshToken = getDifferentRefreshToken(existUser.getId());
+            String differentRefreshToken = getDifferentRefreshToken(existUser.getId(), existUser.getRoles());
 
             assertThatThrownBy(() -> accessTokenService.reissue(new AccessTokenReissueRequestDto(differentRefreshToken)))
                     .isInstanceOf(IllegalArgumentException.class);
@@ -70,16 +69,16 @@ class AccessTokenServiceTest {
         GoodSpaceUser user = fixture.getInstance();
         userRepository.save(user);
 
-        String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH);
+        String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH, user.getRoles());
         user.updateRefreshToken(refreshToken);
 
         return (GoodSpaceUser) userRepository.findById(user.getId())
                 .orElseThrow();
     }
 
-    private String getDifferentRefreshToken(long userId) throws InterruptedException {
+    private String getDifferentRefreshToken(long userId, List<Role> roles) throws InterruptedException {
         Thread.sleep(1000);
 
-        return tokenProvider.createToken(userId, TokenType.REFRESH);
+        return tokenProvider.createToken(userId, TokenType.REFRESH, roles);
     }
 }

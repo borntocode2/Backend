@@ -4,6 +4,7 @@ import goodspace.backend.email.dto.CodeSendRequestDto;
 import goodspace.backend.email.dto.VerifyRequestDto;
 import goodspace.backend.email.service.EmailVerificationService;
 import goodspace.backend.email.service.EmailVerificationServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/email")
 @RequiredArgsConstructor
+@Tag(
+        name = "이메일 API",
+        description = "이메일 발송 및 인증 관련 기능"
+)
 public class EmailController {
     private final EmailVerificationService emailVerificationService;
 
