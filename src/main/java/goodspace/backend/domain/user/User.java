@@ -18,6 +18,8 @@ import java.util.List;
 @SuperBuilder
 @Getter
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn
 public abstract class User extends BaseEntity {
     @Id
     @GeneratedValue
