@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @Setter
-public class PaymentVerifyResultDto {
+public class PaymentVerifyRequestDto {
     private String authResultCode;
     private String authResultMsg;
     private String tid;

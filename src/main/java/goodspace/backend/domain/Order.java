@@ -7,16 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.DialectOverride;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @SuperBuilder
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Getter
 public class Order extends BaseEntity {
     @Id
@@ -64,5 +61,9 @@ public class Order extends BaseEntity {
         else if (status.equals("취소")){
             this.orderStatus = OrderStatus.CANCELED;
         }
+    }
+
+    public void setPaymentApproveResult(PaymentApproveResult approveResult) {
+        this.approveResult = approveResult;
     }
 }
