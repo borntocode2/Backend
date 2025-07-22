@@ -3,7 +3,6 @@ package goodspace.backend.payment.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import goodspace.backend.payment.dto.PaymentApproveResultDto;
 import goodspace.backend.payment.dto.PaymentVerifyResultDto;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -19,6 +18,15 @@ import java.util.Map;
 
 @Controller
 public class NicePayController {
+    @GetMapping("/payment")
+    public String showPaymentPage() {
+        try {
+            return "nicepay";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     @RequestMapping("/payment/verify")
     public String verifyPayment(@ModelAttribute PaymentVerifyResultDto paymentVerifyResultDto) throws JsonProcessingException {
@@ -57,7 +65,9 @@ public class NicePayController {
             System.out.println(responseNode.toPrettyString());
 
             if (resultCode.equalsIgnoreCase("0000")){
-
+                //TODO
+                //해당 결제 응답을 유저와 매핑하여 저장할 서비스 - 레포지토리 로직 필요
+                // tid와 amout저장 후에 추후 환불로직에도 쓰여야 함.
             }
             else{
 
@@ -69,10 +79,11 @@ public class NicePayController {
             System.out.println("서버 에러: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
 
-
-        //TODO
-        //해당 결제 응답을 유저와 매핑하여 저장할 서비스 - 레포지토리 로직 필요
-
         return "paymentVerifyResult";
     }
+
+    @RequestMapping(value="/cancel")
+    public String cancelDemo(){
+        //TODO - 프론트엔드 측, 결제 도중 취소 버튼을 눌렀을 시, 보여줄 화면
+        return "";}
 }
