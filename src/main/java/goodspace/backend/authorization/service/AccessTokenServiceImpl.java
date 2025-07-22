@@ -5,12 +5,14 @@ import goodspace.backend.authorization.dto.response.AccessTokenResponseDto;
 import goodspace.backend.domain.user.User;
 import goodspace.backend.repository.UserRepository;
 import goodspace.backend.security.TokenProvider;
+import goodspace.backend.security.Role;
 import goodspace.backend.security.TokenType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 @Service
@@ -39,7 +41,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         }
 
         return AccessTokenResponseDto.builder()
-                .accessToken(tokenProvider.createToken(userId, TokenType.ACCESS))
+                .accessToken(tokenProvider.createToken(userId, TokenType.ACCESS, List.of(Role.USER)))
                 .build();
     }
 }

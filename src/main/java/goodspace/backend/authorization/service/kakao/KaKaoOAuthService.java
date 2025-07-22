@@ -6,8 +6,10 @@ import goodspace.backend.authorization.dto.kakao.KakaoUserInfoDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
 import goodspace.backend.authorization.service.OAuthService;
 import goodspace.backend.domain.user.OAuthType;
+import goodspace.backend.domain.user.OAuthUser;
 import goodspace.backend.domain.user.User;
 import goodspace.backend.repository.UserRepository;
+import goodspace.backend.security.Role;
 import goodspace.backend.security.TokenProvider;
 import goodspace.backend.security.TokenType;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 @Slf4j
@@ -81,10 +86,10 @@ public class KaKaoOAuthService implements OAuthService {
         }
 
         User user = userRepository.findByIdentifierAndOAuthType(kakaoUserInfo.getId(), OAuthType.KAKAO)
-                .orElseGet(() -> userRepository.save(kakaoUserInfo.toEntity()));
+                .orElseGet(saveNewUser(kakaoUserInfo));
 
-        String accessTokenValue = tokenProvider.createToken(user.getId(), TokenType.ACCESS);
-        String refreshTokenValue = tokenProvider.createToken(user.getId(), TokenType.REFRESH);
+        String accessTokenValue = tokenProvider.createToken(user.getId(), TokenType.ACCESS, user.getRoles());
+        String refreshTokenValue = tokenProvider.createToken(user.getId(), TokenType.REFRESH, user.getRoles());
         user.updateRefreshToken(refreshTokenValue);
 
         return new TokenResponseDto(accessTokenValue, refreshTokenValue);
@@ -172,5 +177,14 @@ public class KaKaoOAuthService implements OAuthService {
         String json = responseEntity.getBody();
         Gson gson = new Gson();
         return gson.fromJson(json, KakaoUserInfoDto.class);
+    }
+
+    private Supplier<OAuthUser> saveNewUser(KakaoUserInfoDto kakaoUserInfo) {
+        return () -> {
+            OAuthUser newUser = userRepository.save(kakaoUserInfo.toEntity());
+            newUser.addRole(Role.USER);
+
+            return newUser;
+        };
     }
 }

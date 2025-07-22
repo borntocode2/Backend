@@ -8,12 +8,14 @@ import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;
 import goodspace.backend.repository.UserRepository;
 import goodspace.backend.security.TokenProvider;
+import goodspace.backend.security.Role;
 import goodspace.backend.security.TokenType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 @Service
@@ -34,10 +36,11 @@ public class GoodSpaceAuthorizationServiceImpl implements GoodSpaceAuthorization
         checkEmailVerification(requestDto.email());
 
         GoodSpaceUser user = requestDto.toEntity();
+        user.addRole(Role.USER);
         userRepository.save(user);
 
-        String accessToken = tokenProvider.createToken(user.getId(), TokenType.ACCESS);
-        String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH);
+        String accessToken = tokenProvider.createToken(user.getId(), TokenType.ACCESS, user.getRoles());
+        String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH, user.getRoles());
         user.updateRefreshToken(refreshToken);
 
         return TokenResponseDto.builder()
@@ -52,8 +55,8 @@ public class GoodSpaceAuthorizationServiceImpl implements GoodSpaceAuthorization
         GoodSpaceUser user = userRepository.findByEmailAndPassword(requestDto.email(), requestDto.password())
                 .orElseThrow(USER_NOT_FOUND);
 
-        String accessToken = tokenProvider.createToken(user.getId(), TokenType.ACCESS);
-        String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH);
+        String accessToken = tokenProvider.createToken(user.getId(), TokenType.ACCESS, user.getRoles());
+        String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH, user.getRoles());
         user.updateRefreshToken(refreshToken);
 
         return TokenResponseDto.builder()
