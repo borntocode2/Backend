@@ -65,7 +65,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         String email = requestDto.email();
         String code = requestDto.code();
 
-        EmailVerification emailVerification = emailVerificationRepository.findById(email)
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
                 .orElseThrow(EMAIL_NOT_FOUND);
 
         if (emailVerification.isExpired(LocalDateTime.now())) {

@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +29,7 @@ public class GoodSpaceAuthorizationController {
             summary = "회원가입",
             description = "전달받은 정보를 통해 새로운 회원을 생성합니다"
     )
-    public ResponseEntity<TokenResponseDto> signUp(SignUpRequestDto requestDto) {
+    public ResponseEntity<TokenResponseDto> signUp(@RequestBody SignUpRequestDto requestDto) {
         TokenResponseDto responseDto = goodSpaceAuthorizationService.signUp(requestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
@@ -39,7 +40,7 @@ public class GoodSpaceAuthorizationController {
             summary = "로그인",
             description = "이메일과 비밀번호를 통해 사용자를 인증하고 JWT 토큰을 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> signIn(SignInRequestDto requestDto) {
+    public ResponseEntity<TokenResponseDto> signIn(@RequestBody SignInRequestDto requestDto) {
         TokenResponseDto responseDto = goodSpaceAuthorizationService.signIn(requestDto);
 
         return ResponseEntity.ok(responseDto);
