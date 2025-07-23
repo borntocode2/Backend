@@ -20,6 +20,8 @@ public class Item extends BaseEntity {
     private String name;
     private Integer price;
     private String shortDescription;
+    private Long quantity;
+
     private String landingPageDescription;
 
     @ManyToOne

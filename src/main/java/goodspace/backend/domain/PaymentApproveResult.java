@@ -1,9 +1,11 @@
-package goodspace.backend.payment.dto;
+package goodspace.backend.domain;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
-public class PaymentApproveResultDto {
+@Embeddable
+public class PaymentApproveResult {
     private String resultCode;
     private String resultMsg;
     private String tid;
@@ -32,9 +34,11 @@ public class PaymentApproveResultDto {
     private boolean issuedCashReceipt;
     private String coupon;
 
+    @Embedded
     private CardInfo card; // nested class로 카드 정보 처리
 
     @Data
+    @Embeddable
     public static class CardInfo {
         private String cardCode;
         private String cardName;
