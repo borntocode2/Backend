@@ -20,8 +20,6 @@ public class Item extends BaseEntity {
     private String name;
     private Integer price;
     private String shortDescription;
-    private Long quantity;
-
     private String landingPageDescription;
 
     @ManyToOne
@@ -44,9 +42,6 @@ public class Item extends BaseEntity {
                 .toList();
     }
 
-    /**
-     * Item - ItemImage 연관관계 편의 메서드
-     */
     public void addItemImages(List<ItemImage> itemImages) {
         for (ItemImage itemImage : itemImages) {
             this.itemImages.add(itemImage);

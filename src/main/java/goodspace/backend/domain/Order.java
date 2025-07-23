@@ -33,13 +33,6 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order")
-    private List<Item> items = new ArrayList<>();
-
-    public void addItem(Item item) {
-        items.add(item);
-        item.setOrder(this);
-    }
 
     public void updateOrderStatus(String status){
         if(status.equals("결제 확인")){
