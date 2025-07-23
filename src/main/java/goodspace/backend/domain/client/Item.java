@@ -2,35 +2,54 @@ package goodspace.backend.domain.client;
 
 import goodspace.backend.domain.BaseEntity;
 import goodspace.backend.domain.Order;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.Builder;
-import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.checkerframework.checker.units.qual.N;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Item extends BaseEntity {
     @Id
     private Long id;
     private String name;
-    private Long price;
+    private Integer price;
     private String shortDescription;
-    private String randingPageDescription;
     private Long quantity;
 
+    private String landingPageDescription;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
+    @Setter
     private Client client;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @OneToMany(mappedBy = "item")
+    @Builder.Default
+    private final List<ItemImage> itemImages = new ArrayList<>();
 
+    public List<String> getImageUrls() {
+        return itemImages.stream()
+                .map(ItemImage::getImageUrl)
+                .toList();
+    }
 
+    /**
+     * Item - ItemImage 연관관계 편의 메서드
+     */
+    public void addItemImages(List<ItemImage> itemImages) {
+        for (ItemImage itemImage : itemImages) {
+            this.itemImages.add(itemImage);
+            itemImage.setItem(this);
+        }
+    }
 }

@@ -20,8 +20,6 @@ public class Order extends BaseEntity {
     @GeneratedValue
     private long id;
 
-    private String orderId;
-
     @Embedded
     private PaymentApproveResult approveResult;
 

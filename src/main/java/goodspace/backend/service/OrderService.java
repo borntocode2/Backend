@@ -24,7 +24,6 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 User를 매핑하는 Service과정에서 User를 찾는 것을 실패했습니다."));
 
         Order order = Order.builder()
-                .orderId(orderRequest.getOrderId())
                 .user(user)
                 .build();
 
@@ -38,7 +37,7 @@ public class OrderService {
     }
 
     public OrderResponseDto findOrderByOrderId(String orderId) {
-        Order order = orderRepository.findByOrderId(orderId)
+        Order order = orderRepository.findByApproveResult_OrderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
 
         List<ItemList> itemDtos = order.getItems().stream()
@@ -52,7 +51,6 @@ public class OrderService {
                 .itemLists(itemDtos)
                 .amount(calculateAmount(order.getItems()))
                 .orderStatus(order.getOrderStatus())
-                .orderId(order.getOrderId())
                 .orderDate(order.getCreatedAt().toString())
                 .build();
     }
@@ -71,7 +69,6 @@ public class OrderService {
                 .itemLists(itemDtos)
                 .amount(calculateAmount(order.getItems()))
                 .orderStatus(order.getOrderStatus())
-                .orderId(order.getOrderId())
                 .orderDate(order.getCreatedAt().toString())
                 .build();
     }

@@ -6,10 +6,6 @@ import lombok.Data;
 @Data
 @Embeddable
 public class PaymentApproveResult {
-    @Id
-    @GeneratedValue
-    private long id;
-
     private String resultCode;
     private String resultMsg;
     private String tid;
