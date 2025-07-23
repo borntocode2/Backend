@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import goodspace.backend.domain.PaymentApproveResult;
 import goodspace.backend.payment.dto.PaymentVerifyRequestDto;
 import goodspace.backend.payment.service.NicePayService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -19,8 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class NicePayController {
-    private NicePayService nicePayService;
+    private final NicePayService nicePayService;
 
     @GetMapping("/payment")
     public String showPaymentPage() {
@@ -33,7 +36,9 @@ public class NicePayController {
     }
 
     @RequestMapping("/payment/verify")
-    public String verifyPayment(@ModelAttribute PaymentVerifyRequestDto paymentVerifyResultDto) throws JsonProcessingException {
+    public String verifyPayment(@ModelAttribute PaymentVerifyRequestDto paymentVerifyResultDto, Model model) throws JsonProcessingException {
+
+        model.addAttribute("paymentVerifyResultDto", paymentVerifyResultDto);
 
         String tid = paymentVerifyResultDto.getTid(); // 추출된 tid
 
@@ -74,7 +79,6 @@ public class NicePayController {
                 // tid와 amout저장 후에 추후 환불로직에도 쓰여야 함.
                 PaymentApproveResult result = mapper.treeToValue(responseNode, PaymentApproveResult.class);
                 nicePayService.MappingOrderWithPaymentApproveResult(result);
-
 
             }
             else{

@@ -31,6 +31,7 @@ public class Item extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
+    @Setter
     private Order order;
 
     @OneToMany(mappedBy = "item")

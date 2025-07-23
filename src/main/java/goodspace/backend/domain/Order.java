@@ -15,6 +15,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @Getter
+@Table(name = "`order`")
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue
@@ -22,6 +23,8 @@ public class Order extends BaseEntity {
 
     @Embedded
     private PaymentApproveResult approveResult;
+
+    private String orderOutId;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
@@ -35,6 +38,7 @@ public class Order extends BaseEntity {
 
     public void addItem(Item item) {
         items.add(item);
+        item.setOrder(this);
     }
 
     public void updateOrderStatus(String status){
@@ -62,6 +66,9 @@ public class Order extends BaseEntity {
     }
 
     public void setPaymentApproveResult(PaymentApproveResult approveResult) {
-        this.approveResult = approveResult;
+        if (this.orderOutId == approveResult.getOrderId())
+        {
+            this.approveResult = approveResult;
+        }
     }
 }

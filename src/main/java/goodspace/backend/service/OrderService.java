@@ -9,15 +9,17 @@ import goodspace.backend.dto.OrderResponseDto;
 import goodspace.backend.repository.ItemRepository;
 import goodspace.backend.repository.OrderRepository;
 import goodspace.backend.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
-    private UserRepository userRepository;
-    private OrderRepository orderRepository;
-    private ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final ItemRepository itemRepository;
 
     public void saveOrder(OrderRequestDto orderRequest) {
         User user = userRepository.findById(orderRequest.getUserId())
@@ -25,16 +27,18 @@ public class OrderService {
 
         Order order = Order.builder()
                 .user(user)
+                .orderOutId(orderRequest.getOrderOutId())
                 .build();
 
-        for (ItemList list : orderRequest.getItemLists()){
-            for(int i = 0; i < list.getQuantity(); i++){
-                order.addItem(itemRepository.findById(list.getItemId())
-                        .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 Item을 매핑하는 Service과정에서 Item을 찾는 것을 실패했습니다.")));
-            }
-        }
+//        for (ItemList list : orderRequest.getItemLists()){
+//            for(int i = 0; i < list.getQuantity(); i++){
+//                order.addItem(itemRepository.findById(list.getItemId())
+//                        .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 Item을 매핑하는 Service과정에서 Item을 찾는 것을 실패했습니다.")));
+//            }
+//        }
         orderRepository.save(order);
     }
+    // a 3,  b 4
 
     public OrderResponseDto findOrderByOrderId(String orderId) {
         Order order = orderRepository.findByApproveResult_OrderId(orderId)
