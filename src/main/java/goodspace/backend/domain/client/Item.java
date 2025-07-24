@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Item extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Integer price;

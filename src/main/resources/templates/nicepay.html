@@ -9,15 +9,11 @@
 
 
 <script>
-    // var json = Serveri.orderController(); // JSON
-    // var orderId = json.getOrderId();
-    // var amount = json.getAmount();
-    var orderId = "";
     function serverAuth() {
         AUTHNICE.requestPay({
             clientId: 'S2_fb903ce81792411ab6c459ec3a2a82c6',
             method: 'card',
-            orderId: 'ORDER111111123456', //test시 매번 다른 orderId작성
+            orderId: 'ORDER1111111123456', //test시 매번 다른 orderId작성
             amount: 1004,
             goodsName: '나이스페이-상품',
             returnUrl: 'http://localhost:8080/payment/verify', //API를 호출할 Endpoint 입력

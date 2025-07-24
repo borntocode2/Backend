@@ -23,6 +23,7 @@ public class Client extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
+
     private String name;
     private String profileImageUrl;
     private String backgroundImageUrl;

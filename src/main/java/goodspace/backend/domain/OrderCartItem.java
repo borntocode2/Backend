@@ -1,8 +1,6 @@
 package goodspace.backend.domain;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import goodspace.backend.domain.client.Item;
-import goodspace.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class CartItem extends BaseEntity {
+public class OrderCartItem {
     @Id
     @GeneratedValue
     private Long id;
@@ -27,8 +25,8 @@ public class CartItem extends BaseEntity {
     private Item item;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @PrePersist
     @PreUpdate
@@ -36,5 +34,9 @@ public class CartItem extends BaseEntity {
         if (item != null){
             this.amount = item.getPrice() * this.quantity;
         }
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }

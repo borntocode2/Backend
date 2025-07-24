@@ -9,5 +9,5 @@ import java.util.List;
 public class OrderRequestDto extends BaseEntity {
     private String orderOutId;
     private long userId;
-    private List<ItemList> itemLists;
+    private List<OrderCartItemDto> orderCartItemDtos;
 }

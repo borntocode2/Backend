@@ -1,7 +1,7 @@
 package goodspace.backend.domain.user;
 
 import goodspace.backend.domain.BaseEntity;
-import goodspace.backend.domain.CartItem;
+import goodspace.backend.domain.UserCartItem;
 import goodspace.backend.domain.Order;
 import goodspace.backend.security.RefreshToken;
 import goodspace.backend.dto.UserMyPageDto;
@@ -42,7 +42,7 @@ public abstract class User extends BaseEntity {
     private final List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItems = new ArrayList<>();
+    private List<UserCartItem> userCartItems = new ArrayList<>();
 
 
     @Embedded

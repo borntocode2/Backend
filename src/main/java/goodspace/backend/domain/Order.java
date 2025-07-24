@@ -1,11 +1,9 @@
 package goodspace.backend.domain;
 
-import goodspace.backend.domain.client.Item;
 import goodspace.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -29,10 +27,22 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
 
+
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderCartItem> orderCartItems = new ArrayList<>();
+
+
+    public void setOrderCartItems(List<OrderCartItem> cartItems) {
+        this.orderCartItems = cartItems;
+        for (OrderCartItem cartItem : cartItems) {
+            cartItem.setOrder(this); // 양방향 관계 유지
+        }
+    }
 
     public void updateOrderStatus(String status){
         if(status.equals("결제 확인")){
