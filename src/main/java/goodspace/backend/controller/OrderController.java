@@ -1,18 +1,19 @@
 package goodspace.backend.controller;
 
-import goodspace.backend.domain.Order;
 import goodspace.backend.dto.OrderRequestDto;
-import goodspace.backend.dto.OrderResponseDto;
-import goodspace.backend.payment.service.NicePayService;
 import goodspace.backend.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/orderTest")
 public class OrderController {
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @PostMapping
     public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto orderRequest) {
@@ -20,3 +21,4 @@ public class OrderController {
         return ResponseEntity.ok("Order created");
     }
 }
+

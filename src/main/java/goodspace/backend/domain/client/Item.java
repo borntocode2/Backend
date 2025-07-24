@@ -16,12 +16,11 @@ import java.util.List;
 @NoArgsConstructor
 public class Item extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Integer price;
     private String shortDescription;
-    private Long quantity;
-
     private String landingPageDescription;
 
     @ManyToOne
@@ -31,6 +30,7 @@ public class Item extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
+    @Setter
     private Order order;
 
     @OneToMany(mappedBy = "item")
@@ -43,9 +43,6 @@ public class Item extends BaseEntity {
                 .toList();
     }
 
-    /**
-     * Item - ItemImage 연관관계 편의 메서드
-     */
     public void addItemImages(List<ItemImage> itemImages) {
         for (ItemImage itemImage : itemImages) {
             this.itemImages.add(itemImage);

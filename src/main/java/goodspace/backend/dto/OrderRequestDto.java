@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 public class OrderRequestDto extends BaseEntity {
-    private String orderId;
+    private String orderOutId;
     private long userId;
-    private List<ItemList> itemLists;
+    private List<OrderCartItemDto> orderCartItemDtos;
 }
