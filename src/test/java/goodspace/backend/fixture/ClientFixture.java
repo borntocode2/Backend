@@ -17,6 +17,13 @@ public enum ClientFixture {
             "http://creator-park-bg",
             "Hello, I'm Creator Park!",
             ClientType.CREATOR
+    ),
+    YOUTUBER(
+            "YOUTUBER LEE",
+            "http://youtuber-lee-profile",
+            "http://youtuber-lee-bg",
+            "Hello, I'm Youtuber Lee!",
+            ClientType.CREATOR
     );
 
     private final String name;

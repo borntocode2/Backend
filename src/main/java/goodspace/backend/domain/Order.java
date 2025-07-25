@@ -29,15 +29,12 @@ public class Order extends BaseEntity {
     @Builder.Default
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
 
-
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderCartItem> orderCartItems = new ArrayList<>();
-
 
     public void setOrderCartItems(List<OrderCartItem> cartItems) {
         this.orderCartItems = cartItems;

@@ -33,7 +33,7 @@ public class Item extends BaseEntity {
     @Setter
     private Order order;
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private final List<ItemImage> itemImages = new ArrayList<>();
 
@@ -43,10 +43,34 @@ public class Item extends BaseEntity {
                 .toList();
     }
 
+    public void update(
+            String name,
+            Integer price,
+            String shortDescription,
+            String landingPageDescription
+    ) {
+        this.name = name;
+        this.price = price;
+        this.shortDescription = shortDescription;
+        this.landingPageDescription = landingPageDescription;
+    }
+
+    /**
+     * Item - ItemImage 연관관계 편의 메서드
+     */
     public void addItemImages(List<ItemImage> itemImages) {
         for (ItemImage itemImage : itemImages) {
             this.itemImages.add(itemImage);
             itemImage.setItem(this);
         }
+    }
+
+    public void removeItemImage(ItemImage itemImage) {
+        itemImages.remove(itemImage);
+        itemImage.setItem(null);
+    }
+
+    public void removeEveryImages() {
+        itemImages.clear();
     }
 }
