@@ -2,8 +2,8 @@ package goodspace.backend.client.service;
 
 import goodspace.backend.client.dto.ClientBriefInfoResponseDto;
 import goodspace.backend.client.dto.ClientDetailsResponseDto;
-import goodspace.backend.domain.client.Client;
-import goodspace.backend.repository.ClientRepository;
+import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.repository.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

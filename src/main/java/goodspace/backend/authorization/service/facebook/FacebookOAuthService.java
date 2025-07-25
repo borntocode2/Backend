@@ -5,12 +5,12 @@ import goodspace.backend.authorization.dto.facebook.FacebookAccessTokenDto;
 import goodspace.backend.authorization.dto.facebook.FacebookUserInfoDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
 import goodspace.backend.authorization.service.OAuthService;
-import goodspace.backend.domain.user.OAuthUser;
-import goodspace.backend.domain.user.User;
-import goodspace.backend.repository.UserRepository;
-import goodspace.backend.security.TokenProvider;
-import goodspace.backend.security.Role;
-import goodspace.backend.security.TokenType;
+import goodspace.backend.user.domain.OAuthUser;
+import goodspace.backend.user.domain.User;
+import goodspace.backend.user.repository.UserRepository;
+import goodspace.backend.global.security.TokenProvider;
+import goodspace.backend.global.security.Role;
+import goodspace.backend.global.security.TokenType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -18,11 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static goodspace.backend.domain.user.OAuthType.FACEBOOK;
+import static goodspace.backend.user.domain.OAuthType.FACEBOOK;
 
 @Service
 @Slf4j

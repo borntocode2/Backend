@@ -1,6 +1,6 @@
 package goodspace.backend.client.dto;
 
-import goodspace.backend.domain.client.Client;
+import goodspace.backend.client.domain.Client;
 import lombok.Builder;
 
 import java.util.List;

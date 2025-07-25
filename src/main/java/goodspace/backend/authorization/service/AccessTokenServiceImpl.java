@@ -2,11 +2,11 @@ package goodspace.backend.authorization.service;
 
 import goodspace.backend.authorization.dto.request.AccessTokenReissueRequestDto;
 import goodspace.backend.authorization.dto.response.AccessTokenResponseDto;
-import goodspace.backend.domain.user.User;
-import goodspace.backend.repository.UserRepository;
-import goodspace.backend.security.TokenProvider;
-import goodspace.backend.security.Role;
-import goodspace.backend.security.TokenType;
+import goodspace.backend.user.domain.User;
+import goodspace.backend.user.repository.UserRepository;
+import goodspace.backend.global.security.TokenProvider;
+import goodspace.backend.global.security.Role;
+import goodspace.backend.global.security.TokenType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

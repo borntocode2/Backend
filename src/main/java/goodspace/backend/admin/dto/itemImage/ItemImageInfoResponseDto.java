@@ -1,6 +1,6 @@
 package goodspace.backend.admin.dto.itemImage;
 
-import goodspace.backend.domain.client.ItemImage;
+import goodspace.backend.global.domain.ItemImage;
 import lombok.Builder;
 
 @Builder

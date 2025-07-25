@@ -1,11 +1,11 @@
 package goodspace.backend.authorization.dto.kakao;
 
 import com.google.gson.annotations.SerializedName;
-import goodspace.backend.domain.user.OAuthUser;
+import goodspace.backend.user.domain.OAuthUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static goodspace.backend.domain.user.OAuthType.KAKAO;
+import static goodspace.backend.user.domain.OAuthType.KAKAO;
 
 /**
  * 참고 문서: <a href="https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info">...</a>

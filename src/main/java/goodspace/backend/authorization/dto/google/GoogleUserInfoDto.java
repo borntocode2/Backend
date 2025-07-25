@@ -1,11 +1,11 @@
 package goodspace.backend.authorization.dto.google;
 
 import com.google.gson.annotations.SerializedName;
-import goodspace.backend.domain.user.OAuthUser;
+import goodspace.backend.user.domain.OAuthUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static goodspace.backend.domain.user.OAuthType.GOOGLE;
+import static goodspace.backend.user.domain.OAuthType.GOOGLE;
 
 @Getter
 @AllArgsConstructor

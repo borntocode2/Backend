@@ -2,12 +2,12 @@ package goodspace.backend.authorization.service;
 
 import goodspace.backend.authorization.dto.request.AccessTokenReissueRequestDto;
 import goodspace.backend.authorization.dto.response.AccessTokenResponseDto;
-import goodspace.backend.domain.user.GoodSpaceUser;
+import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
-import goodspace.backend.repository.UserRepository;
-import goodspace.backend.security.Role;
-import goodspace.backend.security.TokenProvider;
-import goodspace.backend.security.TokenType;
+import goodspace.backend.user.repository.UserRepository;
+import goodspace.backend.global.security.Role;
+import goodspace.backend.global.security.TokenProvider;
+import goodspace.backend.global.security.TokenType;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

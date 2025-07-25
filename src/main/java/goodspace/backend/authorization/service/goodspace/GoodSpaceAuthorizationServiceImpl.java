@@ -3,19 +3,18 @@ package goodspace.backend.authorization.service.goodspace;
 import goodspace.backend.authorization.dto.request.SignInRequestDto;
 import goodspace.backend.authorization.dto.request.SignUpRequestDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
-import goodspace.backend.domain.user.GoodSpaceUser;
+import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;
-import goodspace.backend.repository.UserRepository;
-import goodspace.backend.security.TokenProvider;
-import goodspace.backend.security.Role;
-import goodspace.backend.security.TokenType;
+import goodspace.backend.user.repository.UserRepository;
+import goodspace.backend.global.security.TokenProvider;
+import goodspace.backend.global.security.Role;
+import goodspace.backend.global.security.TokenType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 @Service

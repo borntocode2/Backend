@@ -1,6 +1,6 @@
 package goodspace.backend.email.entity;
 
-import goodspace.backend.domain.BaseEntity;
+import goodspace.backend.global.domain.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

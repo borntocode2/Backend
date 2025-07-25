@@ -5,11 +5,11 @@ import goodspace.backend.admin.dto.client.ClientRegisterRequestDto;
 import goodspace.backend.admin.dto.client.ClientUpdateRequestDto;
 import goodspace.backend.admin.image.ImageManager;
 import goodspace.backend.admin.image.ImageManagerImpl;
-import goodspace.backend.domain.client.Client;
-import goodspace.backend.domain.client.ClientType;
+import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.ClientType;
 import goodspace.backend.fixture.ClientFixture;
 import goodspace.backend.fixture.ImageFixture;
-import goodspace.backend.repository.ClientRepository;
+import goodspace.backend.client.repository.ClientRepository;
 import goodspace.backend.testUtil.ImageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.function.Supplier;
 

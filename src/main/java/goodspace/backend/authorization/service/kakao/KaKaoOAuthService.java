@@ -5,13 +5,13 @@ import goodspace.backend.authorization.dto.kakao.KakaoAccessTokenDto;
 import goodspace.backend.authorization.dto.kakao.KakaoUserInfoDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
 import goodspace.backend.authorization.service.OAuthService;
-import goodspace.backend.domain.user.OAuthType;
-import goodspace.backend.domain.user.OAuthUser;
-import goodspace.backend.domain.user.User;
-import goodspace.backend.repository.UserRepository;
-import goodspace.backend.security.Role;
-import goodspace.backend.security.TokenProvider;
-import goodspace.backend.security.TokenType;
+import goodspace.backend.user.domain.OAuthType;
+import goodspace.backend.user.domain.OAuthUser;
+import goodspace.backend.user.domain.User;
+import goodspace.backend.user.repository.UserRepository;
+import goodspace.backend.global.security.Role;
+import goodspace.backend.global.security.TokenProvider;
+import goodspace.backend.global.security.TokenType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -24,7 +24,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 @Service
