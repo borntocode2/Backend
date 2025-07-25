@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.security.Key;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -153,5 +154,9 @@ public class TokenProvider {
         return roles.stream()
                 .map(Role::toString)
                 .collect(Collectors.joining(","));
+    }
+
+    public static Long getUserIdFromPrincipal(Principal principal) {
+        return Long.parseLong(principal.getName());
     }
 }

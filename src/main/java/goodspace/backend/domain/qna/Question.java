@@ -1,6 +1,7 @@
 package goodspace.backend.domain.qna;
 
 import goodspace.backend.domain.BaseEntity;
+import goodspace.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,9 +32,16 @@ public class Question extends BaseEntity {
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
     private Answer answer;
 
-    @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
-    private QuestionFile questionFile;
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    private List<QuestionFile> questionFiles = new ArrayList<>();
 
+
+    @ManyToOne
+    private User user;
+
+    public void setQuestionFiles(List<QuestionFile> questionFiles) {
+        this.questionFiles = questionFiles;
+    }
     public void setAnswer(Answer answer) {
         this.answer = answer;
     }

@@ -25,7 +25,7 @@ public class QuestionFile extends BaseEntity {
     private String mimeType;
     private String name;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "question_id")
     private Question question;
 }
