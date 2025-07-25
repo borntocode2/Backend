@@ -3,6 +3,7 @@ package goodspace.backend.domain.user;
 import goodspace.backend.domain.BaseEntity;
 import goodspace.backend.domain.UserCartItem;
 import goodspace.backend.domain.Order;
+import goodspace.backend.domain.qna.Question;
 import goodspace.backend.security.RefreshToken;
 import goodspace.backend.dto.UserMyPageDto;
 import goodspace.backend.security.Role;
@@ -44,6 +45,8 @@ public abstract class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCartItem> userCartItems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Question> question = new ArrayList<>();
 
     @Embedded
     private Delivery delivery;

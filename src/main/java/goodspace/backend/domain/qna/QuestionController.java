@@ -26,4 +26,8 @@ public class QuestionController {
     public ResponseEntity<byte[]> getFile(@PathVariable Long id) {
         return questionService.downloadFile(id);
     }
-}
+
+    @GetMapping("/api/qna/{id}")
+    public ResponseEntity<Question> getQuestion(@PathVariable Long id) {
+        return ResponseEntity.ok(questionService.getQuestion(id));
+    }

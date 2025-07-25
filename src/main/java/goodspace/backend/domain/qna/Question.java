@@ -1,6 +1,7 @@
 package goodspace.backend.domain.qna;
 
 import goodspace.backend.domain.BaseEntity;
+import goodspace.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,9 @@ public class Question extends BaseEntity {
 
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
     private QuestionFile questionFile;
+
+    @ManyToOne
+    private User user;
 
     public void setAnswer(Answer answer) {
         this.answer = answer;

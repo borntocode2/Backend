@@ -47,6 +47,10 @@ public class QuestionService {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
                 .body(file.getData());
     }
+
+    public QuestionResponseDto getQuestion(Long id) {
+
+    }
     // TODO : setQuestionType
 }
 
