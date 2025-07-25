@@ -20,6 +20,7 @@ out/
 # Spring Boot Properties
 application.properties
 application.yml
+application-*.yml
 
 # OS Files
 .DS_Store
