@@ -22,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
+@Table(name = "`user`")
 public abstract class User extends BaseEntity {
     @Id
     @GeneratedValue

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,8 +20,15 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final TokenProvider tokenProvider;
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        // 정적 리소스는 보안 검사 제외
+        return (web) -> web.ignoring()
+                .requestMatchers("/images/**")
+                .requestMatchers("/css/**", "/js/**");
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll() // SpringDoc
                         .requestMatchers("/postalcode", "/css/**", "/js/**", "/images/**", "/stylesheets/**","/api/**").permitAll() // 우편번호 html허용
                         .requestMatchers("/client/**").permitAll() // 클라이언트 상품 페이지 관련
-                        .requestMatchers("/payment/**", "/css/**", "/js/**", "/images/**", "/stylesheets/**","/api/**").permitAll() //
+                        .requestMatchers("/payment/**", "/stylesheets/**","/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))

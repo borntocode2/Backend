@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Item extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Integer price;
@@ -33,7 +34,7 @@ public class Item extends BaseEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private final List<ItemImage> itemImages = new ArrayList<>();
 
@@ -41,6 +42,18 @@ public class Item extends BaseEntity {
         return itemImages.stream()
                 .map(ItemImage::getImageUrl)
                 .toList();
+    }
+
+    public void update(
+            String name,
+            Integer price,
+            String shortDescription,
+            String landingPageDescription
+    ) {
+        this.name = name;
+        this.price = price;
+        this.shortDescription = shortDescription;
+        this.landingPageDescription = landingPageDescription;
     }
 
     /**
@@ -51,5 +64,14 @@ public class Item extends BaseEntity {
             this.itemImages.add(itemImage);
             itemImage.setItem(this);
         }
+    }
+
+    public void removeItemImage(ItemImage itemImage) {
+        itemImages.remove(itemImage);
+        itemImage.setItem(null);
+    }
+
+    public void removeEveryImages() {
+        itemImages.clear();
     }
 }

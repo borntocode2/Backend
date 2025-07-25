@@ -3,6 +3,7 @@ package goodspace.backend.domain;
 import goodspace.backend.domain.client.Item;
 import goodspace.backend.domain.user.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @Getter
+@Table(name = "`order`")
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue
@@ -31,6 +33,7 @@ public class Order extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "order")
+    @Builder.Default
     private List<Item> items = new ArrayList<>();
 
     public void addItem(Item item) {

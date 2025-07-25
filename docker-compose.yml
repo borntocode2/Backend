@@ -37,6 +37,8 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: create
       SPRING_JPA_OPEN_IN_VIEW: "false"
 
+      SPRING_MVC_SERVLET_PATH: /api
+
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
 
       SPRING_MAIL_HOST: smtp.gmail.com
@@ -66,6 +68,9 @@ services:
       KEYS_NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
       KEYS_NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
       KEYS_NAVER_REDIRECT_URI: ${NAVER_REDIRECT_URI}
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
 
     ports:
       - "8080:8080"
