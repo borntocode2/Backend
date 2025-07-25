@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @SuperBuilder
@@ -68,7 +69,7 @@ public class Order extends BaseEntity {
     }
 
     public void setPaymentApproveResult(PaymentApproveResult approveResult) {
-        if (this.orderOutId == approveResult.getOrderId())
+        if (Objects.equals(this.orderOutId, approveResult.getOrderId()))
         {
             this.approveResult = approveResult;
         }

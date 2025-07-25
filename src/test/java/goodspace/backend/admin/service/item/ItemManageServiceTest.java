@@ -5,6 +5,7 @@ import goodspace.backend.admin.dto.item.ItemInfoResponseDto;
 import goodspace.backend.admin.dto.item.ItemRegisterRequestDto;
 import goodspace.backend.admin.dto.item.ItemUpdateRequestDto;
 import goodspace.backend.admin.image.ImageManager;
+import goodspace.backend.admin.image.ImageManagerImpl;
 import goodspace.backend.domain.client.Client;
 import goodspace.backend.domain.client.Item;
 import goodspace.backend.domain.client.ItemImage;
@@ -20,10 +21,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +50,10 @@ class ItemManageServiceTest {
     static final String NEW_SHORT_DESCRIPTION = "newShortDescription";
     static final String NEW_LANDING_PAGE_DESCRIPTION = "newLandingPageDescription";
 
-    final ImageManager imageManager;
+    @TempDir
+    Path basePath;
+    ImageManager imageManager;
+
     final ItemManageService itemManageService;
     final ClientRepository clientRepository;
     final ItemRepository itemRepository;
@@ -62,6 +68,8 @@ class ItemManageServiceTest {
 
     @BeforeEach
     void resetEntities() {
+        imageManager = new ImageManagerImpl(basePath.toString());
+
         client = clientRepository.save(ClientFixture.CREATOR.getInstance());
         itemA = itemRepository.save(ItemFixture.A.getInstance());
         itemB = itemRepository.save(ItemFixture.B.getInstance());
