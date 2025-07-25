@@ -1,12 +1,10 @@
 package goodspace.backend.domain;
 
-import goodspace.backend.domain.client.Item;
 import goodspace.backend.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -25,6 +23,8 @@ public class Order extends BaseEntity {
     @Embedded
     private PaymentApproveResult approveResult;
 
+    private String orderOutId;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
 
@@ -32,12 +32,14 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order")
-    @Builder.Default
-    private List<Item> items = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderCartItem> orderCartItems = new ArrayList<>();
 
-    public void addItem(Item item) {
-        items.add(item);
+    public void setOrderCartItems(List<OrderCartItem> cartItems) {
+        this.orderCartItems = cartItems;
+        for (OrderCartItem cartItem : cartItems) {
+            cartItem.setOrder(this); // 양방향 관계 유지
+        }
     }
 
     public void updateOrderStatus(String status){
@@ -65,6 +67,9 @@ public class Order extends BaseEntity {
     }
 
     public void setPaymentApproveResult(PaymentApproveResult approveResult) {
-        this.approveResult = approveResult;
+        if (this.orderOutId == approveResult.getOrderId())
+        {
+            this.approveResult = approveResult;
+        }
     }
 }

@@ -8,7 +8,8 @@ import java.util.List;
 
 @SuperBuilder
 public class OrderResponseDto extends BaseEntity {
-    private List<ItemList> itemLists;
+    private Long userId;
+    private List<OrderCartItemDto> orderCartItemDtos;
     private Long amount;
     private OrderStatus orderStatus;
     private String orderId;

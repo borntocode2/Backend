@@ -2,10 +2,17 @@ package goodspace.backend.domain.qna;
 
 import goodspace.backend.domain.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@SuperBuilder
+@NoArgsConstructor
 public class Question extends BaseEntity {
     @Id
     @GeneratedValue
@@ -24,4 +31,12 @@ public class Question extends BaseEntity {
 
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
     private QuestionFile questionFile;
+
+    public void setAnswer(Answer answer) {
+        this.answer = answer;
+    }
+
+    public void setQuestionStatus(QuestionStatus questionStatus) {
+        this.questionStatus = questionStatus;
+    }
 }

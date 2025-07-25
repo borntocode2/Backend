@@ -21,8 +21,6 @@ public class Item extends BaseEntity {
     private String name;
     private Integer price;
     private String shortDescription;
-    private Long quantity;
-
     private String landingPageDescription;
 
     @ManyToOne
@@ -32,6 +30,7 @@ public class Item extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
+    @Setter
     private Order order;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
