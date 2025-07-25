@@ -5,12 +5,12 @@ import goodspace.backend.authorization.dto.google.GoogleAccessTokenDto;
 import goodspace.backend.authorization.dto.google.GoogleUserInfoDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
 import goodspace.backend.authorization.service.OAuthService;
-import goodspace.backend.domain.user.OAuthUser;
-import goodspace.backend.domain.user.User;
-import goodspace.backend.repository.UserRepository;
-import goodspace.backend.security.Role;
-import goodspace.backend.security.TokenProvider;
-import goodspace.backend.security.TokenType;
+import goodspace.backend.user.domain.OAuthUser;
+import goodspace.backend.user.domain.User;
+import goodspace.backend.user.repository.UserRepository;
+import goodspace.backend.global.security.Role;
+import goodspace.backend.global.security.TokenProvider;
+import goodspace.backend.global.security.TokenType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -22,7 +22,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static goodspace.backend.domain.user.OAuthType.GOOGLE;
+import static goodspace.backend.user.domain.OAuthType.GOOGLE;
 
 @Service
 @Slf4j

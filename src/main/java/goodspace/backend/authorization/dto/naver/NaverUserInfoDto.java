@@ -1,10 +1,10 @@
 package goodspace.backend.authorization.dto.naver;
 
-import goodspace.backend.domain.user.OAuthUser;
+import goodspace.backend.user.domain.OAuthUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static goodspace.backend.domain.user.OAuthType.NAVER;
+import static goodspace.backend.user.domain.OAuthType.NAVER;
 
 /**
  * 참고 문서: <a href="https://developers.naver.com/docs/login/profile/profile.md">...</a>

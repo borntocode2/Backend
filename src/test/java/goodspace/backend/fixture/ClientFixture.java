@@ -1,7 +1,7 @@
 package goodspace.backend.fixture;
 
-import goodspace.backend.domain.client.Client;
-import goodspace.backend.domain.client.ClientType;
+import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.ClientType;
 
 public enum ClientFixture {
     INFLUENCER(

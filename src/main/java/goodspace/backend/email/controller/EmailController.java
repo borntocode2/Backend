@@ -3,7 +3,6 @@ package goodspace.backend.email.controller;
 import goodspace.backend.email.dto.CodeSendRequestDto;
 import goodspace.backend.email.dto.VerifyRequestDto;
 import goodspace.backend.email.service.EmailVerificationService;
-import goodspace.backend.email.service.EmailVerificationServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;

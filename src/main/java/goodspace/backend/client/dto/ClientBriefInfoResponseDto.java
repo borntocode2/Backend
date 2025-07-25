@@ -1,7 +1,7 @@
 package goodspace.backend.client.dto;
 
-import goodspace.backend.domain.client.Client;
-import goodspace.backend.domain.client.ClientType;
+import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.ClientType;
 import lombok.Builder;
 
 @Builder

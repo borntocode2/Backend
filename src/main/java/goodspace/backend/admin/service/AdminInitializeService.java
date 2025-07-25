@@ -1,8 +1,8 @@
 package goodspace.backend.admin.service;
 
-import goodspace.backend.domain.user.GoodSpaceUser;
-import goodspace.backend.repository.UserRepository;
-import goodspace.backend.security.Role;
+import goodspace.backend.user.domain.GoodSpaceUser;
+import goodspace.backend.user.repository.UserRepository;
+import goodspace.backend.global.security.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;

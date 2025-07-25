@@ -1,10 +1,10 @@
 package goodspace.backend.authorization.dto.facebook;
 
 import com.google.gson.annotations.SerializedName;
-import goodspace.backend.domain.user.OAuthUser;
+import goodspace.backend.user.domain.OAuthUser;
 import lombok.Getter;
 
-import static goodspace.backend.domain.user.OAuthType.FACEBOOK;
+import static goodspace.backend.user.domain.OAuthType.FACEBOOK;
 
 @Getter
 public class FacebookUserInfoDto {

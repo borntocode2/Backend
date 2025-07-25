@@ -1,6 +1,6 @@
 package goodspace.backend.admin.dto.item;
 
-import goodspace.backend.domain.client.Item;
+import goodspace.backend.global.domain.Item;
 import lombok.Builder;
 
 import java.util.List;

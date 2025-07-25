@@ -1,6 +1,6 @@
 package goodspace.backend.fixture;
 
-import goodspace.backend.domain.client.Item;
+import goodspace.backend.global.domain.Item;
 
 public enum ItemFixture {
     A(

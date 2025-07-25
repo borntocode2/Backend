@@ -1,9 +1,5 @@
 package goodspace.backend.admin.controller;
 
-import goodspace.backend.admin.dto.item.ItemDeleteRequestDto;
-import goodspace.backend.admin.dto.item.ItemInfoResponseDto;
-import goodspace.backend.admin.dto.item.ItemRegisterRequestDto;
-import goodspace.backend.admin.dto.item.ItemUpdateRequestDto;
 import goodspace.backend.admin.dto.itemImage.ItemImageDeleteRequestDto;
 import goodspace.backend.admin.dto.itemImage.ItemImageInfoResponseDto;
 import goodspace.backend.admin.dto.itemImage.ItemImageRegisterRequestDto;

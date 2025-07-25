@@ -6,7 +6,7 @@ import goodspace.backend.email.dto.CodeSendRequestDto;
 import goodspace.backend.email.dto.VerifyRequestDto;
 import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;
-import goodspace.backend.repository.UserRepository;
+import goodspace.backend.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 @Service

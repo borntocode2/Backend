@@ -1,7 +1,7 @@
 package goodspace.backend.fixture;
 
-import goodspace.backend.domain.user.GoodSpaceUser;
-import goodspace.backend.security.Role;
+import goodspace.backend.user.domain.GoodSpaceUser;
+import goodspace.backend.global.security.Role;
 
 public enum GoodSpaceUserFixture {
     DEFAULT(

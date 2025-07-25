@@ -1,6 +1,6 @@
 package goodspace.backend.authorization.dto.request;
 
-import goodspace.backend.domain.user.GoodSpaceUser;
+import goodspace.backend.user.domain.GoodSpaceUser;
 
 public record SignUpRequestDto(
         String email,
