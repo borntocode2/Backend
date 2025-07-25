@@ -2,6 +2,7 @@ package goodspace.backend.domain;
 
 import goodspace.backend.domain.user.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -25,6 +26,7 @@ public class Order extends BaseEntity {
     private String orderOutId;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
 
 
