@@ -8,5 +8,5 @@ import java.util.List;
 public interface ClientService {
     ClientDetailsResponseDto getDetails(long clientId);
 
-    List<ClientBriefInfoResponseDto> getClients();
+    List<ClientBriefInfoResponseDto> getPublicClients();
 }

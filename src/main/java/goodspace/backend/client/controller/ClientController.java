@@ -30,7 +30,7 @@ public class ClientController {
             description = "모든 클라이언트에 대한 간략한 정보를 반환합니다"
     )
     public ResponseEntity<List<ClientBriefInfoResponseDto>> findClients() {
-        List<ClientBriefInfoResponseDto> responseDto = clientService.getClients();
+        List<ClientBriefInfoResponseDto> responseDto = clientService.getPublicClients();
 
         return ResponseEntity.ok(responseDto);
     }

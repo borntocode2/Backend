@@ -8,6 +8,7 @@ import goodspace.backend.global.domain.Item;
 import goodspace.backend.fixture.ClientFixture;
 import goodspace.backend.fixture.ItemFixture;
 import goodspace.backend.client.repository.ClientRepository;
+import goodspace.backend.global.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -31,24 +33,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ClientServiceTest {
     private final ClientService clientService;
     private final ClientRepository clientRepository;
+    private final ItemRepository itemRepository;
 
     private Client clientA;
     private Client clientB;
-    private Set<Client> clients;
-    
+    private Client hasItemClient;
+    private Client privateClient;
+    private Set<Client> publicClients;
+    private Set<Item> publicItems;
+
     @BeforeEach
     void resetEntities() {
-        Client client1 = ClientFixture.INFLUENCER.getInstance();
-        Item item1 = ItemFixture.A.getInstance();
-        client1.addItem(item1);
+        clientA = clientRepository.save(ClientFixture.INFLUENCER.getInstance());
+        clientB = clientRepository.save(ClientFixture.CREATOR.getInstance());
+        hasItemClient = clientRepository.save(ClientFixture.SINGER.getInstance());
+        privateClient = clientRepository.save(ClientFixture.PRIVATE_CLIENT.getInstance());
 
-        Client client2 = ClientFixture.CREATOR.getInstance();
-        Item item2 = ItemFixture.B.getInstance();
-        client1.addItem(item2);
+        Item itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
+        Item itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstance());
+        Item notReadyItem = itemRepository.save(ItemFixture.PRIVATE_A.getInstance());
 
-        this.clientA = clientRepository.save(client1);
-        this.clientB = clientRepository.save(client2);
-        this.clients = Set.of(clientA, clientB);
+        hasItemClient.addItem(itemA);
+        hasItemClient.addItem(itemB);
+        hasItemClient.addItem(notReadyItem);
+
+        publicClients = Set.of(clientA, clientB, hasItemClient);
+        publicItems = Set.of(itemA, itemB);
     }
 
     @Nested
@@ -56,22 +66,37 @@ class ClientServiceTest {
         @Test
         @DisplayName("클라이언트의 상세 정보를 반환한다")
         void returnDetailsOfClient() {
-            ClientDetailsResponseDto details = clientService.getDetails(clientA.getId());
+            ClientDetailsResponseDto clientDetails = clientService.getDetails(clientA.getId());
 
-            assertThat(isEqual(clientA, details)).isTrue();
+            assertThat(isEqualWithoutItem(clientA, clientDetails)).isTrue();
+        }
+
+        @Test
+        @DisplayName("클라이언트의 공개된 상품들을 반환한다")
+        void returnItemsOfClient() {
+            ClientDetailsResponseDto clientDetails = clientService.getDetails(hasItemClient.getId());
+
+            assertThat(isEqual(publicItems, clientDetails.items())).isTrue();
+        }
+
+        @Test
+        @DisplayName("공개되지 않은 클라이언트라면 예외를 던진다")
+        void ifNotReadyClientThenThrowException() {
+            assertThatThrownBy(() -> clientService.getDetails(privateClient.getId()))
+                    .isInstanceOf(IllegalStateException.class);
         }
     }
 
     @Nested
     class getClients {
         @Test
-        @DisplayName("클라이언트의 목록을 반환한다")
+        @DisplayName("공개된 클라이언트의 목록을 반환한다")
         void returnClients() {
-            List<ClientBriefInfoResponseDto> clientDtos = clientService.getClients();
+            List<ClientBriefInfoResponseDto> clientDtos = clientService.getPublicClients();
 
-            assertThat(clientDtos.size() == clients.size()).isTrue();
+            assertThat(clientDtos.size() == publicClients.size()).isTrue();
 
-            for (Client client : clients) {
+            for (Client client : publicClients) {
                 ClientBriefInfoResponseDto clientDto = clientDtos.stream()
                         .filter(dto -> dto.id().equals(client.getId()))
                         .findAny()
@@ -82,15 +107,14 @@ class ClientServiceTest {
         }
     }
 
-    private boolean isEqual(Client client, ClientDetailsResponseDto dto) {
+    private boolean isEqualWithoutItem(Client client, ClientDetailsResponseDto dto) {
         return client.getName().equals(dto.name()) &&
                 client.getProfileImageUrl().equals(dto.profileImageUrl()) &&
                 client.getBackgroundImageUrl().equals(dto.backgroundImageUrl()) &&
-                client.getIntroduction().equals(dto.introduction()) &&
-                isEqual(client.getItems(), dto.items());
+                client.getIntroduction().equals(dto.introduction());
     }
 
-    private boolean isEqual(List<Item> items, List<ItemBriefInfoResponseDto> dtos) {
+    private boolean isEqual(Set<Item> items, List<ItemBriefInfoResponseDto> dtos) {
         Set<String> itemNameSet = toSet(items, Item::getName);
         Set<String> dtoNameSet = toSet(dtos, ItemBriefInfoResponseDto::name);
 
@@ -106,6 +130,17 @@ class ClientServiceTest {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
 
+        System.out.println("itemNameSet = " + itemNameSet);
+        System.out.println("dtoNameSet = " + dtoNameSet);
+        System.out.println("itemDescriptionSet = " + itemDescriptionSet);
+        System.out.println("dtoDescriptionSet = " + dtoDescriptionSet);
+        System.out.println("itemUrlSet = " + itemUrlSet);
+        System.out.println("dtoUrlSet = " + dtoUrlSet);
+
+        System.out.println("itemNameSet.equals(dtoNameSet) = " + itemNameSet.equals(dtoNameSet));
+        System.out.println("itemDescriptionSet.equals(dtoDescriptionSet) = " + itemDescriptionSet.equals(dtoDescriptionSet));
+        System.out.println("itemUrlSet.equals(dtoUrlSet) = " + itemUrlSet.equals(dtoUrlSet));
+
         return itemNameSet.equals(dtoNameSet) &&
                 itemDescriptionSet.equals(dtoDescriptionSet) &&
                 itemUrlSet.equals(dtoUrlSet);
@@ -118,8 +153,8 @@ class ClientServiceTest {
                 client.getClientType() == dto.clientType();
     }
 
-    private <E, T> Set<T> toSet(List<E> list, Function<E, T> function) {
-        return list.stream()
+    private <E, T> Set<T> toSet(Collection<E> collection, Function<E, T> function) {
+        return collection.stream()
                 .map(function)
                 .collect(Collectors.toSet());
     }

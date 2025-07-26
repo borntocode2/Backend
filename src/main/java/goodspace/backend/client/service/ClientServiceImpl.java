@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
     private static final Supplier<EntityNotFoundException> CLIENT_NOT_FOUND = () -> new EntityNotFoundException("클라이언트를 찾지 못했습니다.");
+    private static final Supplier<IllegalStateException> PRIVATE_CLIENT = () -> new IllegalStateException("공개되지 않은 클라이언트입니다.");
 
     private final ClientRepository clientRepository;
 
@@ -23,14 +24,19 @@ public class ClientServiceImpl implements ClientService {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(CLIENT_NOT_FOUND);
 
-        return ClientDetailsResponseDto.from(client);
+        if (!client.isPublic()) {
+            throw PRIVATE_CLIENT.get();
+        }
+
+        return ClientDetailsResponseDto.of(client, true);
     }
 
     @Override
-    public List<ClientBriefInfoResponseDto> getClients() {
+    public List<ClientBriefInfoResponseDto> getPublicClients() {
         List<Client> clients = clientRepository.findAll();
 
         return clients.stream()
+                .filter(Client::isPublic)
                 .map(ClientBriefInfoResponseDto::from)
                 .toList();
     }

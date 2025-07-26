@@ -1,5 +1,6 @@
 package goodspace.backend.admin.dto.item;
 
+import goodspace.backend.client.domain.RegisterStatus;
 import lombok.Builder;
 
 @Builder
@@ -9,6 +10,7 @@ public record ItemUpdateRequestDto(
         String name,
         Integer price,
         String shortDescription,
-        String landingPageDescription
+        String landingPageDescription,
+        RegisterStatus status
 ) {
 }

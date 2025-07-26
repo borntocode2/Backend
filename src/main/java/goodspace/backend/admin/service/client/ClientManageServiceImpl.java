@@ -5,6 +5,7 @@ import goodspace.backend.admin.dto.client.ClientRegisterRequestDto;
 import goodspace.backend.admin.dto.client.ClientUpdateRequestDto;
 import goodspace.backend.admin.image.ImageManager;
 import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.RegisterStatus;
 import goodspace.backend.global.domain.Item;
 import goodspace.backend.client.repository.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -52,6 +53,7 @@ public class ClientManageServiceImpl implements ClientManageService {
                 .name(clientDto.name())
                 .introduction(clientDto.introduction())
                 .clientType(clientDto.clientType())
+                .status(RegisterStatus.PRIVATE)
                 .build());
 
         client.setProfileImageUrl(imageManager.createImageUrl(client.getId().toString(), PROFILE, clientDto.encodedProfileImage()));
@@ -76,7 +78,8 @@ public class ClientManageServiceImpl implements ClientManageService {
         client.update(
                 requestDto.name(),
                 requestDto.introduction(),
-                requestDto.clientType()
+                requestDto.clientType(),
+                requestDto.status()
         );
 
         return ClientInfoResponseDto.from(client);

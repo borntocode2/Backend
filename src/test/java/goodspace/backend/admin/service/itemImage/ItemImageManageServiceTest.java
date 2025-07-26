@@ -67,7 +67,7 @@ class ItemImageManageServiceTest {
         itemImageManageService = new ItemImageManageServiceImpl(imageManager, itemRepository, itemImageRepository);
 
         client = clientRepository.save(ClientFixture.CREATOR.getInstance());
-        item = itemRepository.save(ItemFixture.D.getInstance());
+        item = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
         itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
         itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
 

@@ -235,7 +235,8 @@ class ClientManageServiceTest {
                 client.getProfileImageUrl().equals(dto.profileImageUrl()) &&
                 client.getBackgroundImageUrl().equals(dto.backgroundImageUrl()) &&
                 client.getIntroduction().equals(dto.introduction()) &&
-                client.getClientType() == dto.clientType();
+                client.getClientType() == dto.clientType() &&
+                client.getStatus() == dto.status();
     }
 
     private boolean isEqualWithoutImage(ClientInfoResponseDto clientDto, ClientRegisterRequestDto requestDto) {
@@ -248,6 +249,7 @@ class ClientManageServiceTest {
         return client.getId().equals(dto.id()) &&
                 client.getName().equals(dto.name()) &&
                 client.getIntroduction().equals(dto.introduction()) &&
-                client.getClientType() == dto.clientType();
+                client.getClientType() == dto.clientType() &&
+                client.getStatus() == dto.status();
     }
 }

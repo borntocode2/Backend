@@ -1,6 +1,7 @@
 package goodspace.backend.global.domain;
 
 import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.RegisterStatus;
 import goodspace.backend.order.domain.Order;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,10 @@ public class Item extends BaseEntity {
     private String shortDescription;
     private String landingPageDescription;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RegisterStatus status;
+
     @ManyToOne
     @JoinColumn(name = "client_id")
     @Setter
@@ -43,16 +48,22 @@ public class Item extends BaseEntity {
                 .toList();
     }
 
+    public boolean isPublic() {
+        return status == RegisterStatus.PUBLIC;
+    }
+
     public void update(
             String name,
             Integer price,
             String shortDescription,
-            String landingPageDescription
+            String landingPageDescription,
+            RegisterStatus status
     ) {
         this.name = name;
         this.price = price;
         this.shortDescription = shortDescription;
         this.landingPageDescription = landingPageDescription;
+        this.status = status;
     }
 
     /**

@@ -6,6 +6,7 @@ import goodspace.backend.admin.dto.item.ItemRegisterRequestDto;
 import goodspace.backend.admin.dto.item.ItemUpdateRequestDto;
 import goodspace.backend.admin.image.ImageManager;
 import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.RegisterStatus;
 import goodspace.backend.global.domain.Item;
 import goodspace.backend.client.repository.ClientRepository;
 import goodspace.backend.global.repository.ItemRepository;
@@ -45,7 +46,7 @@ public class ItemManageServiceImpl implements ItemManageService {
         Client client = clientRepository.findById(requestDto.clientId())
                 .orElseThrow(CLIENT_NOT_FOUND);
 
-        Item item = createItem(requestDto);
+        Item item = createItem(requestDto, RegisterStatus.PRIVATE);
         client.addItem(item);
 
         return ItemInfoResponseDto.from(itemRepository.save(item));
@@ -62,7 +63,8 @@ public class ItemManageServiceImpl implements ItemManageService {
                 requestDto.name(),
                 requestDto.price(),
                 requestDto.shortDescription(),
-                requestDto.landingPageDescription()
+                requestDto.landingPageDescription(),
+                requestDto.status()
         );
 
         return ItemInfoResponseDto.from(item);
@@ -83,12 +85,13 @@ public class ItemManageServiceImpl implements ItemManageService {
         client.removeItem(item);
     }
 
-    private Item createItem(ItemRegisterRequestDto itemDto) {
+    private Item createItem(ItemRegisterRequestDto itemDto, RegisterStatus status) {
         return Item.builder()
                 .name(itemDto.name())
                 .price(itemDto.price())
                 .shortDescription(itemDto.shortDescription())
                 .landingPageDescription(itemDto.landingPageDescription())
+                .status(status)
                 .build();
     }
 
