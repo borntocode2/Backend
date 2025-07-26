@@ -1,6 +1,7 @@
 package goodspace.backend.admin.dto.client;
 
 import goodspace.backend.client.domain.ClientType;
+import goodspace.backend.client.domain.RegisterStatus;
 import lombok.Builder;
 
 @Builder
@@ -12,6 +13,7 @@ public record ClientUpdateRequestDto(
         String encodedBackgroundImage,
         boolean backgroundUpdated,
         String introduction,
-        ClientType clientType
+        ClientType clientType,
+        RegisterStatus status
 ) {
 }

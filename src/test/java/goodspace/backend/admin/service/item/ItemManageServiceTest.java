@@ -71,8 +71,8 @@ class ItemManageServiceTest {
         imageManager = new ImageManagerImpl(basePath.toString());
 
         client = clientRepository.save(ClientFixture.CREATOR.getInstance());
-        itemA = itemRepository.save(ItemFixture.A.getInstance());
-        itemB = itemRepository.save(ItemFixture.B.getInstance());
+        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
+        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstance());
 
         itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
         itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
@@ -181,6 +181,7 @@ class ItemManageServiceTest {
                 item.getPrice().equals(dto.price()) &&
                 item.getShortDescription().equals(dto.shortDescription()) &&
                 item.getLandingPageDescription().equals(dto.landingPageDescription()) &&
+                item.getStatus() == dto.status() &&
                 itemUrlSet.equals(dtoUrlSet);
     }
 
@@ -197,7 +198,8 @@ class ItemManageServiceTest {
                 item.getName().equals(dto.name()) &&
                 item.getPrice().equals(dto.price()) &&
                 item.getShortDescription().equals(dto.shortDescription()) &&
-                item.getLandingPageDescription().equals(dto.landingPageDescription());
+                item.getLandingPageDescription().equals(dto.landingPageDescription()) &&
+                item.getStatus() == dto.status();
     }
 
     private boolean isClientHasItem(Client client, long itemId) {

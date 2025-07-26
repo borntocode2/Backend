@@ -34,3 +34,6 @@ credentials.json
 
 # environment
 .env
+
+# client image
+images/**

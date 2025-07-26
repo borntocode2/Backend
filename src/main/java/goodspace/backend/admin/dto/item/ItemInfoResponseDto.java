@@ -1,5 +1,6 @@
 package goodspace.backend.admin.dto.item;
 
+import goodspace.backend.client.domain.RegisterStatus;
 import goodspace.backend.global.domain.Item;
 import lombok.Builder;
 
@@ -12,6 +13,7 @@ public record ItemInfoResponseDto(
         Integer price,
         String shortDescription,
         String landingPageDescription,
+        RegisterStatus status,
         List<String> imageUrls
 ) {
     public static ItemInfoResponseDto from(Item item) {
@@ -21,6 +23,7 @@ public record ItemInfoResponseDto(
                 .price(item.getPrice())
                 .shortDescription(item.getShortDescription())
                 .landingPageDescription(item.getLandingPageDescription())
+                .status(item.getStatus())
                 .imageUrls(item.getImageUrls())
                 .build();
     }
