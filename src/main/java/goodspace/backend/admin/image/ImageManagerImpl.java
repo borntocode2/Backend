@@ -41,7 +41,9 @@ public class ImageManagerImpl implements ImageManager {
 
             return buildUrl(prefixUrl, finalFileName);
         } catch (IOException ex) {
-            throw new RuntimeException("이미지 저장에 실패했습니다.", ex);
+            String debugInfo = buildDebugInfo(prefixUrl, fileName, encodedImage);
+
+            throw new RuntimeException(debugInfo, ex);
         }
     }
 
@@ -81,7 +83,7 @@ public class ImageManagerImpl implements ImageManager {
 
     private String buildUrl(String prefixUrl, String fileNameExt) {
         String cleanedPrefixUrl = trimSlash(prefixUrl);
-        
+
         return "/" + baseUrl
                 + (cleanedPrefixUrl.isEmpty() ? "" : "/" + cleanedPrefixUrl)
                 + "/" + fileNameExt;
@@ -92,7 +94,7 @@ public class ImageManagerImpl implements ImageManager {
         if (parts.length < 2) {
             return new String[]{"", parts[0]};
         }
-        
+
         return parts;
     }
 
@@ -187,5 +189,29 @@ public class ImageManagerImpl implements ImageManager {
             String prefixUrl,
             String fileName
     ) {
+
+    }
+    private String buildDebugInfo(String prefixUrl, String fileName, String encodedImage) {
+        StringBuilder debugInfo = new StringBuilder();
+        debugInfo.append("이미지 저장에 실패했습니다.\n")
+                .append("prefixUrl: ").append(prefixUrl).append("\n")
+                .append("fileName: ").append(fileName).append("\n");
+
+        try {
+            String[] parts = splitEncoded(encodedImage);
+            String meta = parts[0];
+            String data = parts[1];
+            String ext = extractExtension(meta);
+            String finalFileName = fileName + "." + ext;
+            Path filePath = getDirectory(prefixUrl).resolve(finalFileName);
+
+            debugInfo.append("확장자: ").append(ext).append("\n")
+                    .append("파일 경로: ").append(filePath).append("\n")
+                    .append("Base64 길이: ").append(data.length()).append(" chars");
+        } catch (Exception innerEx) {
+            debugInfo.append("디버그 정보 생성 중 오류 발생: ").append(innerEx.getMessage());
+        }
+
+        return debugInfo.toString();
     }
 }
