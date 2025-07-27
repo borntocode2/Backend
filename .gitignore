@@ -37,3 +37,6 @@ credentials.json
 
 # client image
 images/**
+
+# deploy
+deploy.sh

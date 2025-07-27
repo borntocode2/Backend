@@ -14,6 +14,7 @@ public record ItemInfoResponseDto(
         String shortDescription,
         String landingPageDescription,
         RegisterStatus status,
+        String titleImageUrl,
         List<String> imageUrls
 ) {
     public static ItemInfoResponseDto from(Item item) {
@@ -24,6 +25,7 @@ public record ItemInfoResponseDto(
                 .shortDescription(item.getShortDescription())
                 .landingPageDescription(item.getLandingPageDescription())
                 .status(item.getStatus())
+                .titleImageUrl(item.getTitleImageUrl())
                 .imageUrls(item.getImageUrls())
                 .build();
     }
