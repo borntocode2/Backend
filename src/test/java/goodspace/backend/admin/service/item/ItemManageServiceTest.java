@@ -62,8 +62,6 @@ class ItemManageServiceTest {
     Client client;
     Item itemA;
     Item itemB;
-    ItemImage itemImageA;
-    ItemImage itemImageB;
     List<Item> existItems;
 
     @BeforeEach
@@ -74,8 +72,8 @@ class ItemManageServiceTest {
         itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
         itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstance());
 
-        itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
-        itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
+        ItemImage itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
+        ItemImage itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
 
         itemImageA.setImageUrl(imageManager.createImageUrl(itemA.getId(), itemImageA.getId(), ImageFixture.GDG.encodedImage));
         itemImageB.setImageUrl(imageManager.createImageUrl(itemB.getId(), itemImageB.getId(), ImageFixture.KOTLIN.encodedImage));
@@ -182,6 +180,7 @@ class ItemManageServiceTest {
                 item.getShortDescription().equals(dto.shortDescription()) &&
                 item.getLandingPageDescription().equals(dto.landingPageDescription()) &&
                 item.getStatus() == dto.status() &&
+                ((item.getTitleImage() == null && dto.titleImageUrl() == null) || (item.getTitleImageUrl().equals(dto.titleImageUrl()))) &&
                 itemUrlSet.equals(dtoUrlSet);
     }
 

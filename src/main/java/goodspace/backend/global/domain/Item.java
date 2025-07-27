@@ -52,6 +52,10 @@ public class Item extends BaseEntity {
     }
 
     public String getTitleImageUrl() {
+        if (titleImage == null) {
+            return null;
+        }
+
         return titleImage.getImageUrl();
     }
 
