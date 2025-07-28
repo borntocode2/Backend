@@ -45,8 +45,15 @@ public class Item extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ItemImage titleImage;
 
+    public List<ItemImage> getItemImages() {
+        return itemImages.stream()
+                .filter(itemImage -> itemImage != titleImage)
+                .toList();
+    }
+
     public List<String> getImageUrls() {
         return itemImages.stream()
+                .filter(itemImage -> itemImage != titleImage)
                 .map(ItemImage::getImageUrl)
                 .toList();
     }
@@ -87,14 +94,18 @@ public class Item extends BaseEntity {
         }
     }
 
-    public void setTitleImage(ItemImage itemImage) {
-        this.titleImage = itemImage;
+    public void addItemImage(ItemImage itemImage) {
+        itemImages.add(itemImage);
         itemImage.setItem(this);
     }
 
+    public void setTitleImage(ItemImage itemImage) {
+        this.titleImage = itemImage;
+        addItemImage(titleImage);
+    }
+
     public void removeTitleImage() {
-        titleImage.setItem(null);
-        titleImage = null;
+        removeItemImage(titleImage);
     }
 
     public void removeItemImage(ItemImage itemImage) {
