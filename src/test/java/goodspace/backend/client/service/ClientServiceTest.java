@@ -2,19 +2,20 @@ package goodspace.backend.client.service;
 
 import goodspace.backend.admin.image.ImageManager;
 import goodspace.backend.admin.image.ImageManagerImpl;
+import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.RegisterStatus;
 import goodspace.backend.client.dto.ClientBriefInfoResponseDto;
 import goodspace.backend.client.dto.ClientDetailsResponseDto;
+import goodspace.backend.client.dto.ClientItemInfoResponseDto;
 import goodspace.backend.client.dto.ItemBriefInfoResponseDto;
-import goodspace.backend.client.domain.Client;
-import goodspace.backend.fixture.ImageFixture;
-import goodspace.backend.global.domain.Item;
-import goodspace.backend.fixture.ClientFixture;
-import goodspace.backend.fixture.ItemFixture;
 import goodspace.backend.client.repository.ClientRepository;
+import goodspace.backend.fixture.ClientFixture;
+import goodspace.backend.fixture.ImageFixture;
+import goodspace.backend.fixture.ItemFixture;
+import goodspace.backend.global.domain.Item;
 import goodspace.backend.global.domain.ItemImage;
 import goodspace.backend.global.repository.ItemRepository;
 import goodspace.backend.testUtil.ImageUtil;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -56,8 +58,12 @@ class ClientServiceTest {
 
     Client clientA;
     Client clientB;
+
     Client hasItemClient;
-    Client privateClient;
+    Item itemA;
+    Item itemB;
+    Item privateItem;
+
     Set<Client> publicClients;
     Set<Item> publicItems;
 
@@ -68,11 +74,10 @@ class ClientServiceTest {
         clientA = clientRepository.save(ClientFixture.INFLUENCER.getInstance());
         clientB = clientRepository.save(ClientFixture.CREATOR.getInstance());
         hasItemClient = clientRepository.save(ClientFixture.SINGER.getInstance());
-        privateClient = clientRepository.save(ClientFixture.PRIVATE_CLIENT.getInstance());
 
-        Item itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
-        Item itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstance());
-        Item privateItem = itemRepository.save(ItemFixture.PRIVATE_A.getInstance());
+        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
+        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstance());
+        privateItem = itemRepository.save(ItemFixture.PRIVATE_A.getInstance());
 
         ItemImage titleImageA = ItemImage.from(imageManager.createImageUrl(itemA.getId(), DEFAULT_TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
         ItemImage titleImageB = ItemImage.from(imageManager.createImageUrl(itemB.getId(), DEFAULT_TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
@@ -115,7 +120,9 @@ class ClientServiceTest {
         @Test
         @DisplayName("공개되지 않은 클라이언트라면 예외를 던진다")
         void ifNotReadyClientThenThrowException() {
-            assertThatThrownBy(() -> clientService.getDetails(privateClient.getId()))
+            changeStatus(clientA, RegisterStatus.PRIVATE);
+
+            assertThatThrownBy(() -> clientService.getDetails(clientA.getId()))
                     .isInstanceOf(IllegalStateException.class);
         }
     }
@@ -137,6 +144,41 @@ class ClientServiceTest {
 
                 assertThat(isEqual(client, clientDto)).isTrue();
             }
+        }
+    }
+
+    @Nested
+    class getClientAndItem {
+        @Test
+        @DisplayName("ID와 일치하는 클라이언트 정보를 반환한다")
+        void returnClientInfoById() {
+            ClientItemInfoResponseDto responseDto = clientService.getClientAndItem(hasItemClient.getId(), itemA.getId());
+
+            assertThat(isEqual(hasItemClient, responseDto.client())).isTrue();
+        }
+
+        @Test
+        @DisplayName("ID와 일치하는 상품 정보를 반환한다")
+        void returnItemInfoById() {
+            ClientItemInfoResponseDto responseDto = clientService.getClientAndItem(hasItemClient.getId(), itemA.getId());
+
+            assertThat(isEqual(itemA, responseDto.item())).isTrue();
+        }
+
+        @Test
+        @DisplayName("비공개 클라이언트라면 예외를 던진다")
+        void ifPrivateClientThenThrowException() {
+            changeStatus(hasItemClient, RegisterStatus.PRIVATE);
+
+            assertThatThrownBy(() -> clientService.getClientAndItem(hasItemClient.getId(), itemA.getId()))
+                    .isInstanceOf(IllegalStateException.class);
+        }
+
+        @Test
+        @DisplayName("비공개 상품이라면 예외를 던진다")
+        void ifPrivateItemThenThrowException() {
+            assertThatThrownBy(() -> clientService.getClientAndItem(hasItemClient.getId(), privateItem.getId()))
+                    .isInstanceOf(IllegalStateException.class);
         }
     }
 
@@ -183,9 +225,36 @@ class ClientServiceTest {
                 client.getClientType() == dto.clientType();
     }
 
+    private boolean isEqual(Client client, ClientItemInfoResponseDto.ClientDto dto) {
+        return client.getId().equals(dto.id()) &&
+                client.getName().equals(dto.name()) &&
+                client.getProfileImageUrl().equals(dto.profileImageUrl());
+    }
+
+    private boolean isEqual(Item item, ClientItemInfoResponseDto.ItemDto dto) {
+        HashSet<String> itemImageUrlSet = new HashSet<>(item.getEveryImageUrl());
+        HashSet<String> dtoImageUrlSet = new HashSet<>(dto.imageUrls());
+
+        return item.getId().equals(dto.id()) &&
+                item.getName().equals(dto.name()) &&
+                item.getPrice().equals(dto.price()) &&
+                item.getShortDescription().equals(dto.shortDescription()) &&
+                item.getLandingPageDescription().equals(dto.landingPageDescription()) &&
+                itemImageUrlSet.equals(dtoImageUrlSet);
+    }
+
     private <E, T> Set<T> toSet(Collection<E> collection, Function<E, T> function) {
         return collection.stream()
                 .map(function)
                 .collect(Collectors.toSet());
+    }
+
+    private void changeStatus(Client client, RegisterStatus status) {
+        client.update(
+                client.getName(),
+                client.getIntroduction(),
+                client.getClientType(),
+                status
+        );
     }
 }
