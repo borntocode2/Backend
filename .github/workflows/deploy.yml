@@ -1,3 +1,4 @@
+# .github/workflows/deploy.yml
 name: Spring Boot CI/CD
 
 on:
@@ -8,9 +9,11 @@ on:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  SPRING_ECR_REPO: ${{ secrets.SPRING_ECR_REPO }}
 
 jobs:
   build_and_push:
+    name: Build, Dockerize & Push to ECR
     runs-on: ubuntu-latest
 
     steps:
@@ -32,17 +35,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Login to Amazon ECR
+      - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and Push Docker Image
         run: |
-          ECR_REG=${{ steps.login-ecr.outputs.registry }}
-          docker build -t $ECR_REG/springboot-app:latest .
-          docker push $ECR_REG/springboot-app:latest
+          REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG=latest
+          docker build -t $REGISTRY/${{ env.SPRING_ECR_REPO }}:$IMAGE_TAG .
+          docker push $REGISTRY/${{ env.SPRING_ECR_REPO }}:$IMAGE_TAG
 
   deploy:
+    name: Deploy to EC2 via SSH
     needs: build_and_push
     runs-on: ubuntu-latest
 
@@ -58,5 +63,6 @@ jobs:
             cd ~/your-app-directory
             export AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
             export AWS_REGION=${{ secrets.AWS_REGION }}
+            export SPRING_ECR_REPO=${{ secrets.SPRING_ECR_REPO }}
             ./update.sh
           EOF
