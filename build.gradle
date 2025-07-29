@@ -55,7 +55,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     // SpringDoc OpenAPI (Swagger UI)
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
     // Gson
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
