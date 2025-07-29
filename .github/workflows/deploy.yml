@@ -62,4 +62,4 @@ jobs:
           envs: AWS_ACCOUNT_ID,AWS_REGION,SPRING_ECR_REPO
           script: |
             cd ~/good-space
-            ./update.sh
+            ./update-backend.sh
