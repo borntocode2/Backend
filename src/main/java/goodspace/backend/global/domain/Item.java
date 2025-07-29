@@ -51,6 +51,12 @@ public class Item extends BaseEntity {
                 .toList();
     }
 
+    public List<String> getEveryImageUrl() {
+        return itemImages.stream()
+                .map(ItemImage::getImageUrl)
+                .toList();
+    }
+
     public List<String> getImageUrls() {
         return itemImages.stream()
                 .filter(itemImage -> itemImage != titleImage)
