@@ -1,4 +1,4 @@
-name: Spring Boot CI/CD
+name: Spring Boot CI/CD (Gradle)
 
 on:
   push:
@@ -12,25 +12,31 @@ env:
 
 jobs:
   build_and_push:
+    name: Build, Dockerize & Push to ECR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '17'
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Log in to Amazon ECR
+
+      - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
       - name: Build and Push Docker Image
         run: |
           REGISTRY=${{ steps.login-ecr.outputs.registry }}
@@ -39,9 +45,9 @@ jobs:
           docker push $REGISTRY/${{ env.SPRING_ECR_REPO }}:$IMAGE_TAG
 
   deploy:
+    name: Deploy to EC2 via SSH
     needs: build_and_push
     runs-on: ubuntu-latest
-
     steps:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
