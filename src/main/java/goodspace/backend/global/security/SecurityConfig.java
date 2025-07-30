@@ -39,12 +39,12 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/authorization/**").permitAll()
-                        .requestMatchers("/api/email/**").permitAll()
-                        .requestMatchers("/api/swagger-ui/**").permitAll() // swagger
-                        .requestMatchers("/api/v3/api-docs/**").permitAll() // SpringDoc
-                        .requestMatchers("/api/orderTest/**", "/api/payment/**","/css/**", "/js/**", "/images/**", "/stylesheets/**","/api/**", "/api/qna").permitAll()
-                        .requestMatchers("/api/client/**").permitAll() // 클라이언트 상품 페이지 관련
+                        .requestMatchers("/authorization/**").permitAll()
+                        .requestMatchers("/email/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll() // swagger
+                        .requestMatchers("/v3/api-docs/**").permitAll() // SpringDoc
+                        .requestMatchers("/orderTest/**", "/payment/**","/css/**", "/js/**", "/images/**", "/stylesheets/**","/api/**", "/api/qna").permitAll()
+                        .requestMatchers("/client/**").permitAll() // 클라이언트 상품 페이지 관련
                         .requestMatchers("/stylesheets/**","/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
