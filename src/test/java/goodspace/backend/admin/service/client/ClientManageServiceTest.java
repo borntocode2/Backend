@@ -20,6 +20,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -34,14 +35,14 @@ class ClientManageServiceTest {
     static final Supplier<EntityNotFoundException> CLIENT_NOT_EXIST = () -> new EntityNotFoundException("클라이언트가 존재하지 않습니다.");
 
     static final String DEFAULT_NAME = "defaultClient";
-    static final String DEFAULT_PROFILE_IMAGE = ImageFixture.KOTLIN.encodedImage;
-    static final String DEFAULT_BACKGROUND_IMAGE = ImageFixture.CHOLOG.encodedImage;
+    static final MultipartFile DEFAULT_PROFILE_IMAGE = ImageFixture.KOTLIN.getImage();
+    static final MultipartFile DEFAULT_BACKGROUND_IMAGE = ImageFixture.CHOLOG.getImage();
     static final String DEFAULT_INTRODUCTION = "hello";
     static final ClientType DEFAULT_CLIENT_TYPE = ClientType.CREATOR;
 
     static final String NEW_NAME = "newClientName";
-    static final String NEW_PROFILE_IMAGE = ImageFixture.GDG.encodedImage;
-    static final String NEW_BACKGROUND_IMAGE = ImageFixture.GOOD_SPACE.encodedImage;
+    static final MultipartFile NEW_PROFILE_IMAGE = ImageFixture.GDG.getImage();
+    static final MultipartFile NEW_BACKGROUND_IMAGE = ImageFixture.GOOD_SPACE.getImage();
     static final String NEW_INTRODUCTION = "newIntroduction";
     static final ClientType NEW_CLIENT_TYPE = ClientType.INFLUENCER;
 
@@ -112,8 +113,8 @@ class ClientManageServiceTest {
             // given
             ClientRegisterRequestDto requestDto = ClientRegisterRequestDto.builder()
                     .name(DEFAULT_NAME)
-                    .encodedProfileImage(DEFAULT_PROFILE_IMAGE)
-                    .encodedBackgroundImage(DEFAULT_BACKGROUND_IMAGE)
+                    .profileImage(DEFAULT_PROFILE_IMAGE)
+                    .backgroundImage(DEFAULT_BACKGROUND_IMAGE)
                     .introduction(DEFAULT_INTRODUCTION)
                     .clientType(DEFAULT_CLIENT_TYPE)
                     .build();
@@ -124,9 +125,9 @@ class ClientManageServiceTest {
             // then
             assertThat(isEqualWithoutImage(registeredClientDto, requestDto)).isTrue();
 
-            boolean isSameProfileImage = imageUtil.isSameImage(registeredClientDto.profileImageUrl(), DEFAULT_PROFILE_IMAGE);
+            boolean isSameProfileImage = imageUtil.isSameImage(registeredClientDto.profileImageUrl(), DEFAULT_PROFILE_IMAGE.getBytes());
             assertThat(isSameProfileImage).isTrue();
-            boolean isSameBackgroundImage = imageUtil.isSameImage(registeredClientDto.backgroundImageUrl(), DEFAULT_BACKGROUND_IMAGE);
+            boolean isSameBackgroundImage = imageUtil.isSameImage(registeredClientDto.backgroundImageUrl(), DEFAULT_BACKGROUND_IMAGE.getBytes());
             assertThat(isSameBackgroundImage).isTrue();
         }
 
@@ -136,8 +137,8 @@ class ClientManageServiceTest {
             // given
             ClientRegisterRequestDto requestDto = ClientRegisterRequestDto.builder()
                     .name(DEFAULT_NAME)
-                    .encodedProfileImage(DEFAULT_PROFILE_IMAGE)
-                    .encodedBackgroundImage(DEFAULT_BACKGROUND_IMAGE)
+                    .profileImage(DEFAULT_PROFILE_IMAGE)
+                    .backgroundImage(DEFAULT_BACKGROUND_IMAGE)
                     .introduction(DEFAULT_INTRODUCTION)
                     .clientType(DEFAULT_CLIENT_TYPE)
                     .build();
@@ -146,10 +147,10 @@ class ClientManageServiceTest {
             ClientInfoResponseDto registeredClientDto = clientManageService.register(requestDto);
 
             // then
-            boolean profileImageNotChanged = imageUtil.isSameImage(registeredClientDto.profileImageUrl(), DEFAULT_PROFILE_IMAGE);
+            boolean profileImageNotChanged = imageUtil.isSameImage(registeredClientDto.profileImageUrl(), DEFAULT_PROFILE_IMAGE.getBytes());
             assertThat(profileImageNotChanged).isTrue();
 
-            boolean backgroundImageNotChanged = imageUtil.isSameImage(registeredClientDto.backgroundImageUrl(), DEFAULT_BACKGROUND_IMAGE);
+            boolean backgroundImageNotChanged = imageUtil.isSameImage(registeredClientDto.backgroundImageUrl(), DEFAULT_BACKGROUND_IMAGE.getBytes());
             assertThat(backgroundImageNotChanged).isTrue();
         }
     }
@@ -163,10 +164,8 @@ class ClientManageServiceTest {
             ClientUpdateRequestDto requestDto = ClientUpdateRequestDto.builder()
                     .id(clientA.getId())
                     .name(NEW_NAME)
-                    .encodedProfileImage(NEW_PROFILE_IMAGE)
-                    .profileUpdated(true)
-                    .encodedBackgroundImage(NEW_BACKGROUND_IMAGE)
-                    .backgroundUpdated(true)
+                    .profileImage(NEW_PROFILE_IMAGE)
+                    .backgroundImage(NEW_BACKGROUND_IMAGE)
                     .introduction(NEW_INTRODUCTION)
                     .clientType(NEW_CLIENT_TYPE)
                     .build();
@@ -177,12 +176,12 @@ class ClientManageServiceTest {
             // then
             assertThat(isEqualWithoutImage(clientA, requestDto)).isTrue();
 
-            assertThat(imageUtil.isSameImage(clientA.getProfileImageUrl(), NEW_PROFILE_IMAGE)).isTrue();
-            assertThat(imageUtil.isSameImage(clientA.getBackgroundImageUrl(), NEW_BACKGROUND_IMAGE)).isTrue();
+            assertThat(imageUtil.isSameImage(clientA.getProfileImageUrl(), NEW_PROFILE_IMAGE.getBytes())).isTrue();
+            assertThat(imageUtil.isSameImage(clientA.getBackgroundImageUrl(), NEW_BACKGROUND_IMAGE.getBytes())).isTrue();
         }
 
         @Test
-        @DisplayName("이미지는 새로 변경하지 않았다면 업데이트하지 않는다")
+        @DisplayName("이미지는 전달하지 않았다면 업데이트하지 않는다")
         void updateImageOnlyChanged() throws IOException {
             // given
             byte[] existProfileImage = imageUtil.getImageFromUrl(clientA.getProfileImageUrl());
@@ -191,8 +190,8 @@ class ClientManageServiceTest {
             ClientUpdateRequestDto requestDto = ClientUpdateRequestDto.builder()
                     .id(clientA.getId())
                     .name(NEW_NAME)
-                    .profileUpdated(false)
-                    .backgroundUpdated(false)
+                    .profileImage(null)
+                    .backgroundImage(null)
                     .introduction(NEW_INTRODUCTION)
                     .clientType(NEW_CLIENT_TYPE)
                     .build();

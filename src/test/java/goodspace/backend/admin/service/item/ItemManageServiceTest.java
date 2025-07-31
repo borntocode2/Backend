@@ -75,8 +75,8 @@ class ItemManageServiceTest {
         ItemImage itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
         ItemImage itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
 
-        itemImageA.setImageUrl(imageManager.createImageUrl(itemA.getId(), itemImageA.getId(), ImageFixture.GDG.encodedImage));
-        itemImageB.setImageUrl(imageManager.createImageUrl(itemB.getId(), itemImageB.getId(), ImageFixture.KOTLIN.encodedImage));
+        itemImageA.setImageUrl(imageManager.createImageUrl(itemA.getId(), itemImageA.getId(), ImageFixture.GDG.getImage()));
+        itemImageB.setImageUrl(imageManager.createImageUrl(itemB.getId(), itemImageB.getId(), ImageFixture.KOTLIN.getImage()));
 
         client.addItems(List.of(itemA, itemB));
         existItems = List.of(itemA, itemB);

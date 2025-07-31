@@ -24,6 +24,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -40,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @Transactional
 class ClientServiceTest {
-    final String DEFAULT_TITLE_IMAGE = ImageFixture.JAVA.encodedImage;
+    final MultipartFile DEFAULT_TITLE_IMAGE = ImageFixture.JAVA.getImage();
     final String DEFAULT_TITLE_IMAGE_FILE_NAME = "title";
 
     @Autowired
@@ -113,7 +114,7 @@ class ClientServiceTest {
             assertThat(isEqual(publicItems, clientDetails.items())).isTrue();
 
             for (ItemBriefInfoResponseDto itemDto : clientDetails.items()) {
-                imageUtil.isSameImage(itemDto.titleImageUrl(), DEFAULT_TITLE_IMAGE);
+                imageUtil.isSameImage(itemDto.titleImageUrl(), DEFAULT_TITLE_IMAGE.getBytes());
             }
         }
 
