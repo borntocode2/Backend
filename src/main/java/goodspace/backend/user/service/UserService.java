@@ -29,9 +29,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
+    @Transactional
     public String updateMyPage(Long id, UserMyPageDto userMyPageDto) {
         User user = userRepository.findById(id)
-                .orElseThrow(USER_NOT_FOUND);
+                .orElseThrow(() -> new RuntimeException("User not found while updating MyPage Information."));
 
         user.setUserFromUserMyPageDto(userMyPageDto);
 
