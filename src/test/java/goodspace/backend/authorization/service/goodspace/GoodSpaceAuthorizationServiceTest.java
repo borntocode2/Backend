@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class GoodSpaceAuthorizationServiceTest {
     private static final int SLEEP_FOR_GET_DIFFERENT_TOKEN = 1000;
-    private static final String DEFAULT_PASSWORD = "defaultPassword!";
+    private static final String DEFAULT_PASSWORD = "HelloWorldJava1!";
 
     private final GoodSpaceAuthorizationService authorizationService;
     private final EmailVerificationRepository emailVerificationRepository;

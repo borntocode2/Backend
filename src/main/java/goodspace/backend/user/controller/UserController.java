@@ -1,7 +1,9 @@
 package goodspace.backend.user.controller;
 
+import goodspace.backend.user.dto.PasswordUpdateRequestDto;
 import goodspace.backend.user.dto.UserMyPageDto;
 import goodspace.backend.user.service.UserService;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +16,7 @@ import static java.lang.Long.parseLong;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @PatchMapping("/updateMyPage")
     public ResponseEntity<String> updateMyPage(Principal principal, @RequestBody UserMyPageDto userMyPageDto){
@@ -22,5 +24,12 @@ public class UserController {
         return ResponseEntity.ok().body(userService.updateMyPage(id, userMyPageDto));
     }
 
-    //TODO : email edit API
+    @PatchMapping("/password")
+    public ResponseEntity<Void> updatePassword(Principal principal, @RequestBody PasswordUpdateRequestDto requestDto) {
+        Long id = parseLong(principal.getName());
+        userService.updatePassword(id, requestDto);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

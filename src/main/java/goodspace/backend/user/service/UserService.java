@@ -5,14 +5,12 @@ import goodspace.backend.user.dto.UserMyPageDto;
 import goodspace.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    @Transactional
     public String updateMyPage(Long id, UserMyPageDto userMyPageDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found while updating MyPage Information."));

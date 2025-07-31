@@ -17,7 +17,7 @@ public class ImageManagerImpl implements ImageManager {
     private final String baseUrl;
 
     public ImageManagerImpl(
-            @Value("${image.base.url}") String baseUrl
+            @Value("${image.base.url:images}") String baseUrl
     ) {
         this.baseUrl = trimSlash(baseUrl);
     }

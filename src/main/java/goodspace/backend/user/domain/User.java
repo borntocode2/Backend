@@ -86,12 +86,10 @@ public abstract class User extends BaseEntity {
         return this.refreshToken.getTokenValue();
     }
 
-    public User setUserFromUserMyPageDto(UserMyPageDto userMyPageDto){
+    public void setUserFromUserMyPageDto(UserMyPageDto userMyPageDto){
         this.phoneNumber = userMyPageDto.getPhoneNumber();
         this.name = userMyPageDto.getName();
         this.dateOfBirth = userMyPageDto.getDateOfBirth();
         this.delivery = delivery.from(userMyPageDto);
-
-        return this;
     }
 }
