@@ -6,7 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UserMyPageDto {
-    private String email;
     private Integer dateOfBirth;
     private String name;
     private String phoneNumber;

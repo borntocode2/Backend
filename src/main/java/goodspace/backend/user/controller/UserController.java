@@ -21,4 +21,6 @@ public class UserController {
         Long id = parseLong(principal.getName());
         return ResponseEntity.ok().body(userService.updateMyPage(id, userMyPageDto));
     }
+
+    //TODO : email edit API
 }

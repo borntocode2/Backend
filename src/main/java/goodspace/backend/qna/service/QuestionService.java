@@ -35,6 +35,7 @@ public class QuestionService {
     private final UserService userService;
     private final UserRepository userRepository;
 
+    @Transactional
     public String createQuestion(Principal principal, QuestionRequestDto dto, List<MultipartFile> files) throws IOException {
         Question question = Question.builder()
                 .title(dto.getTitle())
@@ -102,7 +103,6 @@ public class QuestionService {
                 .map(QuestionFile::getId)  // 각 파일의 ID 추출
                 .collect(Collectors.toList());
 
-        System.out.println("aaaaaaaaaaaaaaaaaaaaa : " + fileId);
         return QuestionResponseDto.builder()
                 .title(question.getTitle())
                 .content(question.getContent())
@@ -113,6 +113,23 @@ public class QuestionService {
                 .fileIds(fileId)
                 .build();
     }
-    // TODO : setQuestionType
+
+    @Transactional
+    public String deleteQuestion(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 질문을 찾을 수 없습니다."));
+
+        // (선택) 연관된 파일이나 답변이 있는지 검증/로그
+        if (!question.getQuestionFiles().isEmpty()) {
+            System.out.println("경고: 삭제하려는 질문에 첨부파일이 존재합니다.");
+        }
+
+        if (question.getAnswer() != null) {
+            System.out.println("경고: 삭제하려는 질문에 답변이 존재합니다.");
+        }
+
+        questionRepository.delete(question);
+        return "질문이 성공적으로 삭제되었습니다.";
+    }
 }
 

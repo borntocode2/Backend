@@ -87,7 +87,6 @@ public abstract class User extends BaseEntity {
     }
 
     public User setUserFromUserMyPageDto(UserMyPageDto userMyPageDto){
-        this.email = userMyPageDto.getEmail();
         this.phoneNumber = userMyPageDto.getPhoneNumber();
         this.name = userMyPageDto.getName();
         this.dateOfBirth = userMyPageDto.getDateOfBirth();

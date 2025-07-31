@@ -36,4 +36,9 @@ public class QuestionController {
     public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.getQuestion(id));
     }
+
+    @DeleteMapping("/question/delete")
+    public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
+        return ResponseEntity.ok(questionService.deleteQuestion(id));
+    }
 }
