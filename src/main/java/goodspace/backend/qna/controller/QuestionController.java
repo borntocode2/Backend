@@ -27,13 +27,18 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.createQuestion(principal, questionDto, files));
     }
 
-    @GetMapping("/file/{id}")
-    public ResponseEntity<byte[]> getFile(@PathVariable Long id) {
-        return questionService.downloadFile(id);
+    @GetMapping("/files")
+    public ResponseEntity<byte[]> getFiles(@PathVariable List<Long> ids) throws IOException {
+        return questionService.downloadFilesAsZip(ids);
     }
 
     @GetMapping("/question/{id}")
     public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.getQuestion(id));
+    }
+
+    @DeleteMapping("/question/delete")
+    public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
+        return ResponseEntity.ok(questionService.deleteQuestion(id));
     }
 }

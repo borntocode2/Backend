@@ -30,7 +30,7 @@ public class Question extends BaseEntity {
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
     private Answer answer;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionFile> questionFiles = new ArrayList<>();
 
 

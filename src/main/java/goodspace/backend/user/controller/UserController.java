@@ -3,6 +3,7 @@ package goodspace.backend.user.controller;
 import goodspace.backend.user.dto.PasswordUpdateRequestDto;
 import goodspace.backend.user.dto.UserMyPageDto;
 import goodspace.backend.user.service.UserService;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,4 +31,5 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
+
 }

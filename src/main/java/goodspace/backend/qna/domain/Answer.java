@@ -2,9 +2,13 @@ package goodspace.backend.qna.domain;
 
 import goodspace.backend.global.domain.BaseEntity;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 
 @Entity
+@SuperBuilder
+@NoArgsConstructor
 public class Answer extends BaseEntity {
     @Id
     @GeneratedValue
