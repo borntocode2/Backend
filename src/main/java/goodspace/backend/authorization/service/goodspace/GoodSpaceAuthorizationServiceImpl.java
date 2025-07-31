@@ -3,6 +3,7 @@ package goodspace.backend.authorization.service.goodspace;
 import goodspace.backend.authorization.dto.request.SignInRequestDto;
 import goodspace.backend.authorization.dto.request.SignUpRequestDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
+import goodspace.backend.authorization.password.PasswordValidator;
 import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;
@@ -23,16 +24,19 @@ public class GoodSpaceAuthorizationServiceImpl implements GoodSpaceAuthorization
     private static final Supplier<EntityNotFoundException> VERIFICATION_NOT_FOUND = () -> new EntityNotFoundException("이메일 인증 정보가 없습니다.");
     private static final Supplier<IllegalStateException> NOT_VERIFIED = () -> new IllegalStateException("이메일이 인증되지 않았습니다.");
     private static final Supplier<EntityNotFoundException> USER_NOT_FOUND = () -> new EntityNotFoundException("회원을 찾을 수 없습니다.");
+    private static final Supplier<IllegalArgumentException> ILLEGAL_PASSWORD = () -> new IllegalArgumentException("부적절한 비밀번호입니다.");
 
     private final UserRepository userRepository;
     private final EmailVerificationRepository emailVerificationRepository;
 
     private final TokenProvider tokenProvider;
+    private final PasswordValidator passwordValidator;
 
     @Override
     @Transactional
     public TokenResponseDto signUp(SignUpRequestDto requestDto) {
         checkEmailVerification(requestDto.email());
+        checkPassword(requestDto.password());
 
         GoodSpaceUser user = requestDto.toEntity();
         user.addRole(Role.USER);
@@ -73,5 +77,11 @@ public class GoodSpaceAuthorizationServiceImpl implements GoodSpaceAuthorization
         }
 
         emailVerificationRepository.delete(emailVerification);
+    }
+
+    private void checkPassword(String password) {
+        if (passwordValidator.isIllegalPassword(password)) {
+            throw ILLEGAL_PASSWORD.get();
+        }
     }
 }
