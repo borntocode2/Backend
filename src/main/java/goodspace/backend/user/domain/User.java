@@ -7,10 +7,7 @@ import goodspace.backend.global.security.RefreshToken;
 import goodspace.backend.user.dto.UserMyPageDto;
 import goodspace.backend.global.security.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -31,6 +28,7 @@ public abstract class User extends BaseEntity {
     private String name;
     private Integer dateOfBirth;
     @Column(unique = true, nullable = false)
+    @Setter
     private String email;
     private String phoneNumber;
 
@@ -90,6 +88,6 @@ public abstract class User extends BaseEntity {
         this.phoneNumber = userMyPageDto.getPhoneNumber();
         this.name = userMyPageDto.getName();
         this.dateOfBirth = userMyPageDto.getDateOfBirth();
-        this.delivery = delivery.from(userMyPageDto);
+        this.delivery = Delivery.from(userMyPageDto);
     }
 }
