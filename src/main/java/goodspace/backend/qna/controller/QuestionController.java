@@ -22,7 +22,7 @@ public class QuestionController {
 
     @Operation(
             summary = "질문 글 작성",
-            description = "formData객체로 정보를 담아 보내주세요. question(json), file파트로 구분되어 있습니다. file에는 이미지를 담아주세요. question - String title, String content, QuestionType type(DELIVERY, ORDER, ITEM)"
+            description = "formData객체로 정보를 담아 보내주세요. question(json), file파트로 구분되어git  있습니다. file에는 이미지를 담아주세요. question - String title, String content, QuestionType type(DELIVERY, ORDER, ITEM)"
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> createQuestion(Principal principal,
