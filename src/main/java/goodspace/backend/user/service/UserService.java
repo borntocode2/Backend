@@ -7,10 +7,7 @@ import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.global.security.TokenType;
 import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.user.domain.User;
-import goodspace.backend.user.dto.EmailUpdateRequestDto;
-import goodspace.backend.user.dto.PasswordUpdateRequestDto;
-import goodspace.backend.user.dto.RefreshTokenResponseDto;
-import goodspace.backend.user.dto.UserMyPageDto;
+import goodspace.backend.user.dto.*;
 import goodspace.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +31,27 @@ public class UserService {
     private final PasswordValidator passwordValidator;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+
+    @Transactional
+    public UserMyPageResponseDto getUserInfo(long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found while getting information"));
+
+        UserMyPageResponseDto userMyPageResponseDto = UserMyPageResponseDto.builder()
+                .dateOfBirth(user.getDateOfBirth())
+                .email(user.getEmail())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .recipient(user.getDelivery().getRecipient())
+                .address(user.getDelivery().getAddress())
+                .contactNumber2(user.getDelivery().getContactNumber2())
+                .contactNumber1(user.getDelivery().getContactNumber1())
+                .detailedAddress(user.getDelivery().getDetailedAddress())
+                .postalCode(user.getDelivery().getPostalCode())
+                .build();
+
+        return userMyPageResponseDto;
+    }
 
     @Transactional
     public String updateMyPage(long id, UserMyPageDto userMyPageDto) {

@@ -1,18 +1,12 @@
 package goodspace.backend.user.controller;
 
-import goodspace.backend.user.dto.EmailUpdateRequestDto;
-import goodspace.backend.user.dto.PasswordUpdateRequestDto;
-import goodspace.backend.user.dto.RefreshTokenResponseDto;
-import goodspace.backend.user.dto.UserMyPageDto;
+import goodspace.backend.user.dto.*;
 import goodspace.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -27,6 +21,17 @@ import static java.lang.Long.parseLong;
 )
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/getInfo")
+    @Operation(
+            summary = "정보 불러오기",
+            description = "회원 정보를 불러옵니다."
+    )
+    public ResponseEntity<UserMyPageResponseDto> getUserInfo(Principal principal) {
+        long id = parseLong(principal.getName());
+        return ResponseEntity.ok().body(userService.getUserInfo(id));
+    }
+
 
     @PatchMapping("/updateMyPage")
     @Operation(
