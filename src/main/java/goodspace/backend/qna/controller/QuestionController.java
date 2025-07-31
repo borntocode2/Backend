@@ -1,9 +1,13 @@
 package goodspace.backend.qna.controller;
 
+import goodspace.backend.global.swagger.CreateQuestionSwaggerSchema;
 import goodspace.backend.qna.dto.QuestionRequestDto;
 import goodspace.backend.qna.dto.QuestionResponseDto;
 import goodspace.backend.qna.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +25,12 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @Operation(
-            summary = "질문 글 작성",
-            description = "formData객체로 정보를 담아 보내주세요. question(json), file파트로 구분되어git  있습니다. file에는 이미지를 담아주세요. question - String title, String content, QuestionType type(DELIVERY, ORDER, ITEM)"
+            summary = "질문 작성",
+            requestBody = @RequestBody(
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = CreateQuestionSwaggerSchema.class)
+                    )
+            )
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> createQuestion(Principal principal,
