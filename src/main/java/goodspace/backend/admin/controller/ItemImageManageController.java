@@ -8,6 +8,7 @@ import goodspace.backend.admin.service.itemImage.ItemImageManageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +34,7 @@ public class ItemImageManageController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "상품 이미지 추가",
             description = "상품에 이미지를 추가합니다."
@@ -52,7 +53,7 @@ public class ItemImageManageController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/title")
+    @PostMapping(path = "/title", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "상품 타이틀 이미지 추가",
             description = "상품에 타이틀 이미지를 추가합니다."
@@ -71,7 +72,7 @@ public class ItemImageManageController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/title")
+    @PutMapping(path = "/title", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "상품 타이틀 이미지 수정",
             description = "상품의 타이틀 이미지를 수정합니다."

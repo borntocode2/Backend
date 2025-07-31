@@ -9,6 +9,7 @@ import goodspace.backend.client.domain.RegisterStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,7 +48,7 @@ public class ClientManageController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "클라이언트 생성",
             description = "새로운 클라이언트를 생성합니다."
@@ -70,7 +71,7 @@ public class ClientManageController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "클라이언트 수정",
             description = "클라이언트의 정보를 수정합니다."
