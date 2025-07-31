@@ -13,4 +13,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class GoodSpaceUser extends User {
     private String password;
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

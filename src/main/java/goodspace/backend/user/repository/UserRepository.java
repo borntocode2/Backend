@@ -13,6 +13,9 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
+    @Query("SELECT u FROM GoodSpaceUser u WHERE u.id = :id")
+    Optional<GoodSpaceUser> findGoodSpaceUserById(long id);
+
     @Query("SELECT u FROM GoodSpaceUser u WHERE u.email = :email AND u.password = :password")
     Optional<GoodSpaceUser> findByEmailAndPassword(String email, String password);
 
