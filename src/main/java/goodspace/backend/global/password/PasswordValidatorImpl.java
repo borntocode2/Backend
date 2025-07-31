@@ -1,4 +1,4 @@
-package goodspace.backend.authorization.password;
+package goodspace.backend.global.password;
 
 import org.springframework.stereotype.Component;
 

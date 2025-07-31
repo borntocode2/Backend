@@ -1,5 +1,6 @@
 package goodspace.backend.authorization.password;
 
+import goodspace.backend.global.password.PasswordValidator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

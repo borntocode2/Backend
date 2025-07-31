@@ -3,7 +3,7 @@ package goodspace.backend.authorization.service.goodspace;
 import goodspace.backend.authorization.dto.request.SignInRequestDto;
 import goodspace.backend.authorization.dto.request.SignUpRequestDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
-import goodspace.backend.authorization.password.PasswordValidator;
+import goodspace.backend.global.password.PasswordValidator;
 import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;

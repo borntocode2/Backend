@@ -1,6 +1,6 @@
 package goodspace.backend.user.service;
 
-import goodspace.backend.authorization.password.PasswordValidator;
+import goodspace.backend.global.password.PasswordValidator;
 import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.user.domain.User;
 import goodspace.backend.user.dto.PasswordUpdateRequestDto;
