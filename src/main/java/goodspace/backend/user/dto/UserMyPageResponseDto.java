@@ -1,8 +1,10 @@
 package goodspace.backend.user.dto;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class UserMyPageResponseDto {
     private Integer dateOfBirth;
     private String email;
