@@ -1,4 +1,4 @@
-package goodspace.backend.authorization.password;
+package goodspace.backend.global.password;
 
 import org.springframework.stereotype.Component;
 
@@ -6,7 +6,7 @@ import java.util.Set;
 
 @Component
 public class PasswordValidatorImpl implements PasswordValidator {
-    private final int MINIMUM_LENGTH = 10;
+    private final int MINIMUM_LENGTH = 8;
     private static final Set<Character> specialChars = Set.of(
             '!', '#', '$', '%', '^', '&', '*',
             '(', ')', '-', '_', '=', '+', '[',

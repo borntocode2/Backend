@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record PasswordUpdateRequestDto(
-        String password
+        String prevPassword,
+        String newPassword
 ) {
 }

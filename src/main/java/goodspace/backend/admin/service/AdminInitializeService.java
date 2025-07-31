@@ -40,7 +40,7 @@ public class AdminInitializeService {
     }
 
     private void saveIfNotExist(GoodSpaceUser user) {
-        userRepository.findByEmailAndPassword(user.getEmail(), user.getPassword())
+        userRepository.findGoodSpaceUserByEmail(user.getEmail())
                 .orElseGet(() -> userRepository.save(user));
     }
 }
