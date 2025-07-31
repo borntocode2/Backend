@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class AdminQuestionController {
     private final AdminQuestionService adminQuestionService;
 
-    @PatchMapping("/question/changeStatus/{questionId}")
-    public ResponseEntity<String> changeStatusToCompleted(@PathVariable Long questionId, @RequestBody AnswerDto answerDto) {
+    @PatchMapping("/registerAnswer/{questionId}")
+    public ResponseEntity<String> registerAnswer(@PathVariable Long questionId, @RequestBody AnswerDto answerDto) {
         return ResponseEntity.ok(adminQuestionService.registerAnswer(questionId, answerDto));
     }
 }
