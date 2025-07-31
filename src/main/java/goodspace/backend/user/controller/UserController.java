@@ -14,7 +14,7 @@ import static java.lang.Long.parseLong;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @PatchMapping("/updateMyPage")
     public ResponseEntity<String> updateMyPage(Principal principal, @RequestBody UserMyPageDto userMyPageDto){
