@@ -27,9 +27,9 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.createQuestion(principal, questionDto, files));
     }
 
-    @GetMapping("/file/{id}")
-    public ResponseEntity<byte[]> getFile(@PathVariable Long id) {
-        return questionService.downloadFile(id);
+    @GetMapping("/files")
+    public ResponseEntity<byte[]> getFiles(@PathVariable List<Long> ids) throws IOException {
+        return questionService.downloadFilesAsZip(ids);
     }
 
     @GetMapping("/question/{id}")

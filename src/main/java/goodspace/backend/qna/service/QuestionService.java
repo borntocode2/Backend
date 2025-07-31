@@ -18,10 +18,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -64,14 +68,29 @@ public class QuestionService {
         return "Question 저장에 성공하였습니다.";
     }
 
-    public ResponseEntity<byte[]> downloadFile(Long id) {
-        QuestionFile file = fileRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("파일 없음"));
+    public ResponseEntity<byte[]> downloadFilesAsZip(List<Long> ids) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zipOut = new ZipOutputStream(baos);
+
+        for (Long id : ids) {
+            Question question = questionRepository.findById(id).orElse(null);
+
+            if (question != null) {
+                for (QuestionFile file : question.getQuestionFiles()) {
+                    ZipEntry zipEntry = new ZipEntry(file.getName());
+                    zipOut.putNextEntry(zipEntry);
+                    zipOut.write(file.getData());
+                    zipOut.closeEntry();
+                }
+            }
+        }
+
+        zipOut.close();
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(file.getMimeType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                .body(file.getData());
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"questions.zip\"")
+                .body(baos.toByteArray());
     }
 
     @Transactional
