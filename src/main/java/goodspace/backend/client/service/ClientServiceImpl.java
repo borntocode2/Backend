@@ -9,6 +9,7 @@ import goodspace.backend.global.domain.Item;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -24,6 +25,7 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public ClientDetailsResponseDto getDetails(long clientId) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(CLIENT_NOT_FOUND);
@@ -34,6 +36,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ClientBriefInfoResponseDto> getPublicClients() {
         List<Client> clients = clientRepository.findAll();
 
@@ -44,6 +47,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClientItemInfoResponseDto getClientAndItem(long clientId, long itemId) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(CLIENT_NOT_FOUND);
