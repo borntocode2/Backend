@@ -48,7 +48,7 @@ public class ItemImageManageServiceImpl implements ItemImageManageService {
                 requestDto.clientId(),
                 requestDto.itemId()
         );
-        String imageUrl = imageManager.createImageUrl(urlPrefix, itemImage.getId(), requestDto.encodedImage());
+        String imageUrl = imageManager.createImageUrl(urlPrefix, itemImage.getId(), requestDto.image());
 
         itemImage.setImageUrl(imageUrl);
 
@@ -62,7 +62,7 @@ public class ItemImageManageServiceImpl implements ItemImageManageService {
                 .orElseThrow(ITEM_NOT_FOUND);
 
         String urlPrefix = getPrefix(requestDto.clientId(), item.getId());
-        String imageUrl = imageManager.createImageUrl(urlPrefix, TITLE_IMAGE, requestDto.encodedImage());
+        String imageUrl = imageManager.createImageUrl(urlPrefix, TITLE_IMAGE, requestDto.image());
 
         ItemImage itemImage = ItemImage.from(imageUrl);
         item.setTitleImage(itemImage);
@@ -76,7 +76,7 @@ public class ItemImageManageServiceImpl implements ItemImageManageService {
         Item item = itemRepository.findById(requestDto.itemId())
                 .orElseThrow(ITEM_NOT_FOUND);
 
-        imageManager.updateImage(requestDto.encodedImage(), item.getTitleImageUrl());
+        imageManager.updateImage(requestDto.image(), item.getTitleImageUrl());
 
         return TitleImageInfoResponseDto.from(item.getTitleImage());
     }

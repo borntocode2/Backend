@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/admin/item/image")
@@ -37,8 +38,16 @@ public class ItemImageManageController {
             summary = "상품 이미지 추가",
             description = "상품에 이미지를 추가합니다."
     )
-    public ResponseEntity<Void> addImage(@RequestBody ItemImageRegisterRequestDto requestDto) {
-        itemImageManageService.register(requestDto);
+    public ResponseEntity<Void> addImage(
+            @RequestPart("clientId") Long clientId,
+            @RequestPart("itemId") Long itemId,
+            @RequestPart("image") MultipartFile image
+    ) {
+        itemImageManageService.register(ItemImageRegisterRequestDto.builder()
+                .clientId(clientId)
+                .itemId(itemId)
+                .image(image)
+                .build());
 
         return ResponseEntity.ok().build();
     }
@@ -48,8 +57,16 @@ public class ItemImageManageController {
             summary = "상품 타이틀 이미지 추가",
             description = "상품에 타이틀 이미지를 추가합니다."
     )
-    public ResponseEntity<Void> addTitleImage(@RequestBody ItemImageRegisterRequestDto requestDto) {
-        itemImageManageService.registerTitleImage(requestDto);
+    public ResponseEntity<Void> addTitleImage(
+            @RequestPart("clientId") Long clientId,
+            @RequestPart("itemId") Long itemId,
+            @RequestPart("image") MultipartFile image
+    ) {
+        itemImageManageService.registerTitleImage(ItemImageRegisterRequestDto.builder()
+                .clientId(clientId)
+                .itemId(itemId)
+                .image(image)
+                .build());
 
         return ResponseEntity.ok().build();
     }
@@ -59,8 +76,14 @@ public class ItemImageManageController {
             summary = "상품 타이틀 이미지 수정",
             description = "상품의 타이틀 이미지를 수정합니다."
     )
-    public ResponseEntity<Void> updateTitleImage(@RequestBody TitleImageUpdateRequestDto requestDto) {
-        itemImageManageService.updateTitleImage(requestDto);
+    public ResponseEntity<Void> updateTitleImage(
+            @RequestPart("itemId") Long itemId,
+            @RequestPart("image") MultipartFile image
+    ) {
+        itemImageManageService.updateTitleImage(TitleImageUpdateRequestDto.builder()
+                .itemId(itemId)
+                .image(image)
+                .build());
 
         return ResponseEntity.ok().build();
     }

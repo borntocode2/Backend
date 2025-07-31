@@ -22,6 +22,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
@@ -37,10 +38,10 @@ class ItemImageManageServiceTest {
     final static Supplier<EntityNotFoundException> DTO_NOT_FOUND = () -> new EntityNotFoundException("DTO가 조회되지 않습니다.");
     final static Supplier<EntityNotFoundException> ITEM_IMAGE_NOT_FOUND = () -> new EntityNotFoundException("Item Image가 조회되지 않습니다.");
     final static String TITLE_IMAGE_FILE_NAME = "title";
-    final static String DEFAULT_TITLE_IMAGE = ImageFixture.JAVA.encodedImage;
-    final static String DEFAULT_IMAGE_A = ImageFixture.GDG.encodedImage;
-    final static String DEFAULT_IMAGE_B = ImageFixture.KOTLIN.encodedImage;
-    final static String NEW_IMAGE = ImageFixture.GOOD_SPACE.encodedImage;
+    final static MultipartFile DEFAULT_TITLE_IMAGE = ImageFixture.JAVA.getImage();
+    final static MultipartFile DEFAULT_IMAGE_A = ImageFixture.GDG.getImage();
+    final static MultipartFile DEFAULT_IMAGE_B = ImageFixture.KOTLIN.getImage();
+    final static MultipartFile NEW_IMAGE = ImageFixture.GOOD_SPACE.getImage();
 
     @Autowired
     ItemRepository itemRepository;
@@ -108,7 +109,7 @@ class ItemImageManageServiceTest {
             String titleImageUrl = responseDto.titleImageUrl();
 
             assertThat(item.getTitleImageUrl()).isEqualTo(titleImageUrl);
-            assertThat(imageUtil.isSameImage(titleImageUrl, DEFAULT_TITLE_IMAGE)).isTrue();
+            assertThat(imageUtil.isSameImage(titleImageUrl, DEFAULT_TITLE_IMAGE.getBytes())).isTrue();
         }
     }
 
@@ -121,7 +122,7 @@ class ItemImageManageServiceTest {
             ItemImageRegisterRequestDto requestDto = ItemImageRegisterRequestDto.builder()
                     .clientId(client.getId())
                     .itemId(item.getId())
-                    .encodedImage(NEW_IMAGE)
+                    .image(NEW_IMAGE)
                     .build();
 
             // when
@@ -132,7 +133,7 @@ class ItemImageManageServiceTest {
                     .orElseThrow(ITEM_IMAGE_NOT_FOUND);
 
             assertThat(itemImage.getItem()).isEqualTo(item);
-            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE)).isTrue();
+            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE.getBytes())).isTrue();
         }
     }
 
@@ -145,7 +146,7 @@ class ItemImageManageServiceTest {
             ItemImageRegisterRequestDto requestDto = ItemImageRegisterRequestDto.builder()
                     .clientId(client.getId())
                     .itemId(item.getId())
-                    .encodedImage(NEW_IMAGE)
+                    .image(NEW_IMAGE)
                     .build();
 
             // when
@@ -155,7 +156,7 @@ class ItemImageManageServiceTest {
             ItemImage itemImage = item.getTitleImage();
 
             assertThat(itemImage.getItem()).isEqualTo(item);
-            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE)).isTrue();
+            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE.getBytes())).isTrue();
         }
     }
 
@@ -167,7 +168,7 @@ class ItemImageManageServiceTest {
             // given
             TitleImageUpdateRequestDto requestDto = TitleImageUpdateRequestDto.builder()
                     .itemId(item.getId())
-                    .encodedImage(NEW_IMAGE)
+                    .image(NEW_IMAGE)
                     .build();
 
             // when
@@ -177,7 +178,7 @@ class ItemImageManageServiceTest {
             ItemImage itemImage = item.getTitleImage();
 
             assertThat(itemImage.getItem()).isEqualTo(item);
-            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE)).isTrue();
+            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE.getBytes())).isTrue();
         }
     }
 

@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -56,8 +57,8 @@ public class ClientManageServiceImpl implements ClientManageService {
                 .status(RegisterStatus.PRIVATE)
                 .build());
 
-        client.setProfileImageUrl(imageManager.createImageUrl(client.getId().toString(), PROFILE, clientDto.encodedProfileImage()));
-        client.setBackgroundImageUrl(imageManager.createImageUrl(client.getId().toString(), BACKGROUND, clientDto.encodedBackgroundImage()));
+        client.setProfileImageUrl(imageManager.createImageUrl(client.getId().toString(), PROFILE, clientDto.profileImage()));
+        client.setBackgroundImageUrl(imageManager.createImageUrl(client.getId().toString(), BACKGROUND, clientDto.backgroundImage()));
 
         return ClientInfoResponseDto.from(client);
     }
@@ -68,11 +69,11 @@ public class ClientManageServiceImpl implements ClientManageService {
         Client client = clientRepository.findById(requestDto.id())
                 .orElseThrow(CLIENT_NOT_FOUND);
 
-        if (requestDto.profileUpdated()) {
-            imageManager.updateImage(requestDto.encodedProfileImage(), client.getProfileImageUrl());
+        if (hasImage(requestDto.profileImage())) {
+            imageManager.updateImage(requestDto.profileImage(), client.getProfileImageUrl());
         }
-        if (requestDto.backgroundUpdated()) {
-            imageManager.updateImage(requestDto.encodedBackgroundImage(), client.getBackgroundImageUrl());
+        if (hasImage(requestDto.backgroundImage())) {
+            imageManager.updateImage(requestDto.backgroundImage(), client.getBackgroundImageUrl());
         }
 
         client.update(
@@ -94,6 +95,10 @@ public class ClientManageServiceImpl implements ClientManageService {
         removeEveryImage(client);
 
         clientRepository.delete(client);
+    }
+
+    private boolean hasImage(MultipartFile image) {
+        return image != null && !image.isEmpty();
     }
 
     private void removeEveryImage(Client client) {
