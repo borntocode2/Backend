@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,16 +18,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 class UserServiceTest {
+    static final String DEFAULT_PASSWORD = "HelloPassword1!";
+
     @Autowired
     UserService userService;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     GoodSpaceUser user;
 
     @BeforeEach
     void resetEntities() {
         user = userRepository.save(GoodSpaceUserFixture.DEFAULT.getInstance());
+        user.updatePassword(passwordEncoder.encode(DEFAULT_PASSWORD));
     }
 
     @Nested
@@ -37,14 +43,19 @@ class UserServiceTest {
             // given
             String newPassword = "HelloNewPassword1!";
             PasswordUpdateRequestDto requestDto = PasswordUpdateRequestDto.builder()
-                    .password(newPassword)
+                    .prevPassword(DEFAULT_PASSWORD)
+                    .newPassword(newPassword)
                     .build();
 
             // when
             userService.updatePassword(user.getId(), requestDto);
 
             // then
-            assertThat(user.getPassword()).isEqualTo(newPassword);
+            assertThat(isSamePassword(newPassword, user.getPassword())).isTrue();
         }
+    }
+
+    private boolean isSamePassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

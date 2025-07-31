@@ -6,10 +6,10 @@ public record SignUpRequestDto(
         String email,
         String password
 ) {
-    public GoodSpaceUser toEntity() {
+    public GoodSpaceUser toEntityWith(String encodedPassword) {
         return GoodSpaceUser.builder()
                 .email(email)
-                .password(password)
+                .password(encodedPassword)
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package goodspace.backend.user.controller;
 
 import goodspace.backend.user.dto.PasswordUpdateRequestDto;
+import goodspace.backend.user.dto.RefreshTokenResponseDto;
 import goodspace.backend.user.dto.UserMyPageDto;
 import goodspace.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,10 @@ public class UserController {
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<Void> updatePassword(Principal principal, @RequestBody PasswordUpdateRequestDto requestDto) {
+    public ResponseEntity<RefreshTokenResponseDto> updatePassword(Principal principal, @RequestBody PasswordUpdateRequestDto requestDto) {
         Long id = parseLong(principal.getName());
-        userService.updatePassword(id, requestDto);
+        RefreshTokenResponseDto responseDto = userService.updatePassword(id, requestDto);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(responseDto);
     }
 }

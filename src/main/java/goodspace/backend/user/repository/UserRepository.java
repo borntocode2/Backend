@@ -16,8 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM GoodSpaceUser u WHERE u.id = :id")
     Optional<GoodSpaceUser> findGoodSpaceUserById(long id);
 
-    @Query("SELECT u FROM GoodSpaceUser u WHERE u.email = :email AND u.password = :password")
-    Optional<GoodSpaceUser> findByEmailAndPassword(String email, String password);
+    @Query("SELECT u FROM GoodSpaceUser u WHERE u.email = :email")
+    Optional<GoodSpaceUser> findGoodSpaceUserByEmail(String email);
 
     @Query("SELECT u FROM OAuthUser u WHERE u.identifier = :identifier AND u.oauthType = :oauthType")
     Optional<OAuthUser> findByIdentifierAndOAuthType(
