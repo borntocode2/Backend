@@ -1,6 +1,7 @@
 package goodspace.backend.qna.controller;
 
 import goodspace.backend.global.swagger.CreateQuestionSwaggerSchema;
+import goodspace.backend.qna.dto.AllQuestionResponseDto;
 import goodspace.backend.qna.dto.QuestionRequestDto;
 import goodspace.backend.qna.dto.QuestionResponseDto;
 import goodspace.backend.qna.service.QuestionService;
@@ -53,5 +54,10 @@ public class QuestionController {
     @DeleteMapping("/question/delete")
     public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.deleteQuestion(id));
+    }
+
+    @GetMapping("question/getUesrQuestions")
+    public ResponseEntity<List<AllQuestionResponseDto>> getUesrQuestions(@PathVariable Long id) {
+        return ResponseEntity.ok(questionService.getAllQuestions(id));
     }
 }
