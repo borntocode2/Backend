@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/qna")
+@RequestMapping("/qna")
 public class QuestionController {
     private final QuestionService questionService;
 
@@ -56,7 +56,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.deleteQuestion(id));
     }
 
-    @GetMapping("question/getUesrQuestions")
+    @GetMapping("/question/getUesrQuestions")
     public ResponseEntity<List<AllQuestionResponseDto>> getUesrQuestions(Principal principal) {
         return ResponseEntity.ok(questionService.getAllQuestions(principal));
     }
