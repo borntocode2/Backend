@@ -40,8 +40,8 @@ public class ItemImageManageController {
             description = "상품에 이미지를 추가합니다."
     )
     public ResponseEntity<Void> addImage(
-            @RequestPart("clientId") Long clientId,
-            @RequestPart("itemId") Long itemId,
+            @RequestParam Long clientId,
+            @RequestParam Long itemId,
             @RequestPart("image") MultipartFile image
     ) {
         itemImageManageService.register(ItemImageRegisterRequestDto.builder()
@@ -59,8 +59,8 @@ public class ItemImageManageController {
             description = "상품에 타이틀 이미지를 추가합니다."
     )
     public ResponseEntity<Void> addTitleImage(
-            @RequestPart("clientId") Long clientId,
-            @RequestPart("itemId") Long itemId,
+            @RequestParam Long clientId,
+            @RequestParam Long itemId,
             @RequestPart("image") MultipartFile image
     ) {
         itemImageManageService.registerTitleImage(ItemImageRegisterRequestDto.builder()
@@ -78,7 +78,7 @@ public class ItemImageManageController {
             description = "상품의 타이틀 이미지를 수정합니다."
     )
     public ResponseEntity<Void> updateTitleImage(
-            @RequestPart("itemId") Long itemId,
+            @RequestParam Long itemId,
             @RequestPart("image") MultipartFile image
     ) {
         itemImageManageService.updateTitleImage(TitleImageUpdateRequestDto.builder()
