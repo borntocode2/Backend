@@ -46,7 +46,7 @@ public class QuestionController {
         return questionService.downloadFilesAsZip(ids);
     }
 
-    @GetMapping("/question/{id}")
+    @GetMapping("/question/getQuestion/{id}")
     public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.getQuestion(id));
     }
