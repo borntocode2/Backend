@@ -116,7 +116,9 @@ public class QuestionService {
     }
 
     @Transactional
-    public List<AllQuestionResponseDto> getAllQuestions(Long id) {
+    public List<AllQuestionResponseDto> getAllQuestions(Principal principal) {
+        Long id = TokenProvider.getUserIdFromPrincipal(principal);
+
         List<Question> questions = questionRepository.findByUserId(id);
 
         return questions.stream()
