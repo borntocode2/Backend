@@ -1,5 +1,6 @@
 package goodspace.backend.qna.service;
 
+import goodspace.backend.qna.dto.AllQuestionResponseDto;
 import goodspace.backend.qna.repository.QuestionFileRepository;
 import goodspace.backend.qna.repository.QuestionRepository;
 import goodspace.backend.qna.domain.Question;
@@ -112,6 +113,24 @@ public class QuestionService {
                 .answer(question.getAnswer())
                 .fileIds(fileId)
                 .build();
+    }
+
+    @Transactional
+    public List<AllQuestionResponseDto> getAllQuestions(Long id) {
+        List<Question> questions = questionRepository.findByUserId(id);
+
+        return questions.stream()
+                .map(q -> AllQuestionResponseDto.builder()
+                        .questionId(q.getId())
+                        .title(q.getTitle())
+                        .content(q.getContent())
+                        .type(q.getQuestionType())
+                        .status(q.getQuestionStatus())
+                        .createdAt(q.getCreatedAt())
+                        .updatedAt(q.getUpdatedAt())
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
     @Transactional
