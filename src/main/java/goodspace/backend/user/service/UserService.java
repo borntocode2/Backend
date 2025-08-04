@@ -5,6 +5,7 @@ import goodspace.backend.email.repository.EmailVerificationRepository;
 import goodspace.backend.global.password.PasswordValidator;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.global.security.TokenType;
+import goodspace.backend.user.domain.Delivery;
 import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.user.domain.User;
 import goodspace.backend.user.dto.*;
@@ -37,20 +38,32 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found while getting information"));
 
-        UserMyPageResponseDto userMyPageResponseDto = UserMyPageResponseDto.builder()
+        Delivery delivery = user.getDelivery();
+
+
+        UserMyPageResponseDto.UserMyPageResponseDtoBuilder builder = UserMyPageResponseDto.builder()
                 .dateOfBirth(user.getDateOfBirth())
                 .email(user.getEmail())
                 .name(user.getName())
-                .phoneNumber(user.getPhoneNumber())
-                .recipient(user.getDelivery().getRecipient())
-                .address(user.getDelivery().getAddress())
-                .contactNumber2(user.getDelivery().getContactNumber2())
-                .contactNumber1(user.getDelivery().getContactNumber1())
-                .detailedAddress(user.getDelivery().getDetailedAddress())
-                .postalCode(user.getDelivery().getPostalCode())
-                .build();
+                .phoneNumber(user.getPhoneNumber());
 
-        return userMyPageResponseDto;
+        if (delivery != null) {
+            builder.recipient(delivery.getRecipient())
+                    .address(delivery.getAddress())
+                    .contactNumber2(delivery.getContactNumber2())
+                    .contactNumber1(delivery.getContactNumber1())
+                    .detailedAddress(delivery.getDetailedAddress())
+                    .postalCode(delivery.getPostalCode());
+        } else {
+            builder.recipient(null)
+                    .address(null)
+                    .contactNumber2(null)
+                    .contactNumber1(null)
+                    .detailedAddress(null)
+                    .postalCode(null);
+        }
+
+        return builder.build();
     }
 
     @Transactional
