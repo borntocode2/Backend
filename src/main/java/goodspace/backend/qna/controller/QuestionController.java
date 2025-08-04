@@ -57,7 +57,7 @@ public class QuestionController {
     }
 
     @GetMapping("question/getUesrQuestions")
-    public ResponseEntity<List<AllQuestionResponseDto>> getUesrQuestions(@PathVariable Long id) {
-        return ResponseEntity.ok(questionService.getAllQuestions(id));
+    public ResponseEntity<List<AllQuestionResponseDto>> getUesrQuestions(Principal principal) {
+        return ResponseEntity.ok(questionService.getAllQuestions(principal));
     }
 }
