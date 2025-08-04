@@ -54,11 +54,11 @@ public class ClientManageController {
             description = "새로운 클라이언트를 생성합니다."
     )
     public ResponseEntity<Void> createClient(
-            @RequestPart("name") String name,
+            @RequestParam String name,
+            @RequestParam String introduction,
+            @RequestParam ClientType clientType,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
-            @RequestPart(value = "backgroundImage", required = false) MultipartFile backgroundImage,
-            @RequestPart("introduction") String introduction,
-            @RequestPart("clientType") ClientType clientType
+            @RequestPart(value = "backgroundImage", required = false) MultipartFile backgroundImage
     ) {
         clientManageService.register(ClientRegisterRequestDto.builder()
                 .name(name)
@@ -77,14 +77,14 @@ public class ClientManageController {
             description = "클라이언트의 정보를 수정합니다."
     )
     public ResponseEntity<Void> updateClient(
-            @RequestPart("id") Long id,
-            @RequestPart("name") String name,
+            @RequestParam Long id,
+            @RequestParam String name,
+            @RequestParam String introduction,
+            @RequestParam ClientType clientType,
+            @RequestParam RegisterStatus status,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
-            @RequestPart(value = "backgroundImage", required = false) MultipartFile backgroundImage,
-            @RequestPart("introduction") String introduction,
-            @RequestPart("clientType") ClientType clientType,
-            @RequestPart("status") RegisterStatus status
-    ) {
+            @RequestPart(value = "backgroundImage", required = false) MultipartFile backgroundImage
+            ) {
         clientManageService.update(ClientUpdateRequestDto.builder()
                 .id(id)
                 .name(name)
