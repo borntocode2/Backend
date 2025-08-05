@@ -48,6 +48,7 @@ public class OrderService {
 
         orderRepository.save(order);
     }
+
     public OrderResponseDto findOrderByOrderId(String orderId) {
         Order order = orderRepository.findByApproveResult_OrderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
