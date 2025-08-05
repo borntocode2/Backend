@@ -8,6 +8,16 @@ public enum GoodSpaceUserFixture {
         "default@email.com",
             "HelloWorldJava1!",
             Role.USER
+    ),
+    A(
+            "A@email.com",
+            "HelloWorldJava1!a",
+            Role.USER
+    ),
+    B(
+            "B@email.com",
+            "HelloWorldJava1!b",
+            Role.USER
     );
 
     private final String email;

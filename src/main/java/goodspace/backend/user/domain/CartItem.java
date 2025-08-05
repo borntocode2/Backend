@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -13,27 +14,24 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class UserCartItem extends BaseEntity {
+public class CartItem extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
 
     private Integer quantity;
-    private Integer amount;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
+    @Setter
     private Item item;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Setter
     private User user;
 
-    @PrePersist
-    @PreUpdate
-    public void updateAmount() {
-        if (item != null){
-            this.amount = item.getPrice() * this.quantity;
-        }
+    public void updateQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }
