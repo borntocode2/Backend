@@ -4,6 +4,7 @@ import goodspace.backend.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -24,6 +25,7 @@ public class QuestionFile extends BaseEntity {
     private String name;
 
     @ManyToOne
+    @Setter
     @JoinColumn(name = "question_id")
     private Question question;
 }
