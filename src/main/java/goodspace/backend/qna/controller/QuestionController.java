@@ -4,6 +4,7 @@ import goodspace.backend.global.swagger.CreateQuestionSwaggerSchema;
 import goodspace.backend.qna.dto.AllQuestionResponseDto;
 import goodspace.backend.qna.dto.QuestionRequestDto;
 import goodspace.backend.qna.dto.QuestionResponseDto;
+import goodspace.backend.qna.repository.QuestionRepository;
 import goodspace.backend.qna.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,6 +25,7 @@ import java.util.List;
 @RequestMapping("/qna")
 public class QuestionController {
     private final QuestionService questionService;
+    private final QuestionRepository questionRepository;
 
     @Operation(
             summary = "질문 작성",
@@ -56,8 +58,14 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.deleteQuestion(id));
     }
 
-    @GetMapping("/question/getUesrQuestions")
-    public ResponseEntity<List<AllQuestionResponseDto>> getUesrQuestions(Principal principal) {
+    @GetMapping("/question/getUserQuestions")
+    public ResponseEntity<List<AllQuestionResponseDto>> getUserQuestions(Principal principal) {
         return ResponseEntity.ok(questionService.getAllQuestions(principal));
     }
+
+    @PatchMapping("/quesiton/modifyQuestions/{id}")
+    public ResponseEntity<String> modifyQuestion(@PathVariable Long id, @RequestBody QuestionRequestDto questionDto) {
+        return ResponseEntity.ok(questionService.modifyQuestion(id, questionDto));
+    }
+
 }

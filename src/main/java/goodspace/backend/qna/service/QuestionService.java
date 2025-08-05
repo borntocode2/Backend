@@ -11,18 +11,17 @@ import goodspace.backend.qna.dto.QuestionResponseDto;
 import goodspace.backend.user.repository.UserRepository;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.user.service.UserService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -140,7 +139,6 @@ public class QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 질문을 찾을 수 없습니다."));
 
-        // (선택) 연관된 파일이나 답변이 있는지 검증/로그
         if (!question.getQuestionFiles().isEmpty()) {
             System.out.println("경고: 삭제하려는 질문에 첨부파일이 존재합니다.");
         }
@@ -151,6 +149,18 @@ public class QuestionService {
 
         questionRepository.delete(question);
         return "질문이 성공적으로 삭제되었습니다.";
+    }
+
+    @Transactional
+    public String modifyQuestion(Long id, QuestionRequestDto dto) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수정하려는 질문을 데이터베이스에서 찾지 못하였습니다."));
+
+        if (question != null) {
+            question.modifyQuestion(dto.getTitle(), dto.getContent(), dto.getType());
+        }
+
+        return "해당 질문의 수정이 성공하였습니다.";
     }
 }
 
