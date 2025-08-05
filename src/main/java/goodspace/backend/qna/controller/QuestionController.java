@@ -44,7 +44,7 @@ public class QuestionController {
     }
 
     @GetMapping("/files")
-    public ResponseEntity<byte[]> getFiles(@PathVariable List<Long> ids) throws IOException {
+    public ResponseEntity<byte[]> getFiles(@RequestBody List<Long> ids) throws IOException {
         return questionService.downloadFilesAsZip(ids);
     }
 
