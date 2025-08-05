@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 @Service
@@ -34,8 +35,8 @@ public class UserService {
     private final TokenProvider tokenProvider;
 
     @Transactional
-    public UserMyPageResponseDto getUserInfo(long id){
-        User user = userRepository.findById(id)
+    public UserMyPageResponseDto getUserInfo(long userId){
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found while getting information"));
 
         Delivery delivery = user.getDelivery();
@@ -67,8 +68,8 @@ public class UserService {
     }
 
     @Transactional
-    public String updateMyPage(long id, UserMyPageDto userMyPageDto) {
-        User user = userRepository.findById(id)
+    public String updateMyPage(long userId, UserMyPageDto userMyPageDto) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found while updating MyPage Information."));
 
         user.setUserFromUserMyPageDto(userMyPageDto);
@@ -77,8 +78,8 @@ public class UserService {
     }
 
     @Transactional
-    public RefreshTokenResponseDto updatePassword(long id, PasswordUpdateRequestDto requestDto) {
-        GoodSpaceUser user = userRepository.findGoodSpaceUserById(id)
+    public RefreshTokenResponseDto updatePassword(long userId, PasswordUpdateRequestDto requestDto) {
+        GoodSpaceUser user = userRepository.findGoodSpaceUserById(userId)
                 .orElseThrow(USER_NOT_FOUND);
         String rawPrevPassword = requestDto.prevPassword();
         String rawNewPassword = requestDto.newPassword();
@@ -98,10 +99,10 @@ public class UserService {
     }
 
     @Transactional
-    public RefreshTokenResponseDto updateEmail(long id, EmailUpdateRequestDto requestDto) {
+    public RefreshTokenResponseDto updateEmail(long userId, EmailUpdateRequestDto requestDto) {
         checkEmailVerification(requestDto.email());
 
-        User user = userRepository.findById(id)
+        User user = userRepository.findById(userId)
                 .orElseThrow(USER_NOT_FOUND);
 
         user.setEmail(requestDto.email());
@@ -109,6 +110,16 @@ public class UserService {
         return RefreshTokenResponseDto.builder()
                 .refreshToken(createNewRefreshToken(user))
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<PurchaseHistoryResponseDto> getPurchaseHistory(long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(USER_NOT_FOUND);
+
+        return user.getOrders().stream()
+                .map(PurchaseHistoryResponseDto::from)
+                .toList();
     }
 
     private void validatePassword(String rawPassword) {
