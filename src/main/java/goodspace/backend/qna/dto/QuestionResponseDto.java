@@ -14,7 +14,6 @@ import java.util.List;
 public class QuestionResponseDto {
     private String title;
     private String content;
-    private Long userId;
     private QuestionType type;
     private QuestionStatus status;
     private LocalDateTime createdAt;
