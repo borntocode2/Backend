@@ -19,7 +19,6 @@ public class UserCartItem extends BaseEntity {
     private Long id;
 
     private Integer quantity;
-    private Integer amount;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
@@ -28,12 +27,4 @@ public class UserCartItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @PrePersist
-    @PreUpdate
-    public void updateAmount() {
-        if (item != null){
-            this.amount = item.getPrice() * this.quantity;
-        }
-    }
 }
