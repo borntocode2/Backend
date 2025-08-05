@@ -42,11 +42,11 @@ public class QuestionController {
     ) throws IOException {
         return ResponseEntity.ok(questionService.createQuestion(principal, questionDto, files));
     }
-
-    @GetMapping("/files")
-    public ResponseEntity<byte[]> getFiles(@RequestBody List<Long> ids) throws IOException {
-        return questionService.downloadFilesAsZip(ids);
-    }
+//
+//    @GetMapping("/files")
+//    public ResponseEntity<byte[]> getFiles(@RequestBody List<Long> ids) throws IOException {
+//        return questionService.downloadFilesAsZip(ids);
+//    }
 
     @GetMapping("/question/getQuestion/{id}")
     public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id) {

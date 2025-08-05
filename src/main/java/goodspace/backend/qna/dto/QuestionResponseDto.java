@@ -6,7 +6,6 @@ import goodspace.backend.qna.domain.QuestionType;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -18,5 +17,5 @@ public class QuestionResponseDto {
     private QuestionType type;
     private QuestionStatus status;
     private AnswerDto answerDto;
-    private List<Long> fileIds = new ArrayList<>();
+    private List<QuestionFileDto> questionFileDtos;
 }
