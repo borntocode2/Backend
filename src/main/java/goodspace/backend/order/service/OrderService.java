@@ -57,7 +57,6 @@ public class OrderService {
                 .map(cartItem -> OrderCartItemDto.builder()
                         .itemId(cartItem.getItem().getId())
                         .quantity(cartItem.getQuantity())
-                        .amount(cartItem.getAmount())
                         .orderId(cartItem.getOrder().getId())
                         .build()
                 )
@@ -70,7 +69,6 @@ public class OrderService {
         return OrderResponseDto.builder()
                 .orderId(order.getApproveResult().getOrderId())
                 .amount((long)totalAmount)
-                .userId(order.getUser().getId())
                 .orderCartItemDtos(cartItemDtos)
                 .build();
     }

@@ -8,7 +8,6 @@ import java.util.List;
 
 @SuperBuilder
 public class OrderResponseDto extends BaseEntity {
-    private Long userId;
     private List<OrderCartItemDto> orderCartItemDtos;
     private Long amount;
     private OrderStatus orderStatus;

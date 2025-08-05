@@ -18,7 +18,6 @@ public class OrderCartItem {
     private Long id;
 
     private Integer quantity;
-    private Integer amount;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
@@ -28,13 +27,7 @@ public class OrderCartItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @PrePersist
-    @PreUpdate
-    public void updateAmount() {
-        if (item != null){
-            this.amount = item.getPrice() * this.quantity;
-        }
-    }
+
 
     public void setOrder(Order order) {
         this.order = order;
