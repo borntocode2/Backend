@@ -121,7 +121,6 @@ public class QuestionService {
         return QuestionResponseDto.builder()
                 .title(question.getTitle())
                 .content(question.getContent())
-                .userId(question.getUser().getId())
                 .createdAt(question.getCreatedAt())
                 .type(question.getQuestionType())
                 .status(question.getQuestionStatus())
