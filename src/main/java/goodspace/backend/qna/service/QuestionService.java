@@ -1,13 +1,12 @@
 package goodspace.backend.qna.service;
 
-import goodspace.backend.qna.dto.AllQuestionResponseDto;
+import goodspace.backend.qna.domain.Answer;
+import goodspace.backend.qna.dto.*;
 import goodspace.backend.qna.repository.QuestionFileRepository;
 import goodspace.backend.qna.repository.QuestionRepository;
 import goodspace.backend.qna.domain.Question;
 import goodspace.backend.qna.domain.QuestionFile;
 import goodspace.backend.qna.domain.QuestionStatus;
-import goodspace.backend.qna.dto.QuestionRequestDto;
-import goodspace.backend.qna.dto.QuestionResponseDto;
 import goodspace.backend.user.repository.UserRepository;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.user.service.UserService;
@@ -31,9 +30,9 @@ import java.util.zip.ZipOutputStream;
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
-    private final QuestionFileRepository fileRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
+    private final QuestionFileRepository questionFileRepository;
+    private final UserService userService;
 
     @Transactional
     public String createQuestion(Principal principal, QuestionRequestDto dto, List<MultipartFile> files) throws IOException {
@@ -69,6 +68,37 @@ public class QuestionService {
         return "Question 저장에 성공하였습니다.";
     }
 
+    @Transactional
+    public String modifyQuestion(Long id, QuestionRequestDto dto, List<MultipartFile> files) throws IOException {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수정하려는 질문을 데이터베이스에서 찾지 못하였습니다."));
+
+        if (question != null) {
+            question.modifyQuestion(dto.getTitle(), dto.getContent(), dto.getType());
+        }
+
+        if (files != null && !files.isEmpty()) {
+            List<QuestionFile> fileEntities = files.stream()
+                    .map(file -> {
+                        try {
+                            return QuestionFile.builder()
+                                    .name(file.getOriginalFilename())
+                                    .data(file.getBytes())
+                                    .mimeType(file.getContentType())
+                                    .question(question)
+                                    .build();
+                        } catch (IOException e) {
+                            throw new RuntimeException("파일 변환 실패", e);
+                        }
+
+                    })
+                    .collect(Collectors.toList());
+
+            question.addQuestionFiles(fileEntities);
+        }
+        return "해당 질문의 수정이 성공하였습니다.";
+    }
+
     public ResponseEntity<byte[]> downloadFilesAsZip(List<Long> ids) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zipOut = new ZipOutputStream(baos);
@@ -99,18 +129,35 @@ public class QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 question은 questionRespository에서 찾을 수 없습니다. "));
 
-        List<Long> fileId = question.getQuestionFiles().stream()
-                .map(QuestionFile::getId)  // 각 파일의 ID 추출
-                .collect(Collectors.toList());
+        List<QuestionFileDto> fileDtos = question.getQuestionFiles() != null
+                ? question.getQuestionFiles().stream()
+                .map(file -> QuestionFileDto.builder()
+                        .data(file.getData())
+                        .mimeType(file.getMimeType())
+                        .name(file.getName())
+                        .mimeType(file.getMimeType())
+                        .build())
+                .collect(Collectors.toList())
+                : List.of();
+
+
+        AnswerDto answerDto = null;
+
+        if (question.getAnswer() != null) {
+            answerDto = AnswerDto.builder()
+                    .content(question.getAnswer().getContent())
+                    .createdAt(question.getAnswer().getCreatedAt())
+                    .build();
+        }
 
         return QuestionResponseDto.builder()
                 .title(question.getTitle())
                 .content(question.getContent())
-                .userId(question.getUser().getId())
+                .createdAt(question.getCreatedAt())
                 .type(question.getQuestionType())
                 .status(question.getQuestionStatus())
-                .answer(question.getAnswer())
-                .fileIds(fileId)
+                .answerDto(answerDto)
+                .questionFileDtos(fileDtos)
                 .build();
     }
 
@@ -149,18 +196,6 @@ public class QuestionService {
 
         questionRepository.delete(question);
         return "질문이 성공적으로 삭제되었습니다.";
-    }
-
-    @Transactional
-    public String modifyQuestion(Long id, QuestionRequestDto dto) {
-        Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("수정하려는 질문을 데이터베이스에서 찾지 못하였습니다."));
-
-        if (question != null) {
-            question.modifyQuestion(dto.getTitle(), dto.getContent(), dto.getType());
-        }
-
-        return "해당 질문의 수정이 성공하였습니다.";
     }
 }
 

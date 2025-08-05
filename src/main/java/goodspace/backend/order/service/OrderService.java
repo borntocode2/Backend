@@ -48,6 +48,7 @@ public class OrderService {
 
         orderRepository.save(order);
     }
+
     public OrderResponseDto findOrderByOrderId(String orderId) {
         Order order = orderRepository.findByApproveResult_OrderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
@@ -56,7 +57,6 @@ public class OrderService {
                 .map(cartItem -> OrderCartItemDto.builder()
                         .itemId(cartItem.getItem().getId())
                         .quantity(cartItem.getQuantity())
-                        .amount(cartItem.getAmount())
                         .orderId(cartItem.getOrder().getId())
                         .build()
                 )
@@ -69,7 +69,6 @@ public class OrderService {
         return OrderResponseDto.builder()
                 .orderId(order.getApproveResult().getOrderId())
                 .amount((long)totalAmount)
-                .userId(order.getUser().getId())
                 .orderCartItemDtos(cartItemDtos)
                 .build();
     }

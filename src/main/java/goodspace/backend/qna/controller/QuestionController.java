@@ -4,7 +4,6 @@ import goodspace.backend.global.swagger.CreateQuestionSwaggerSchema;
 import goodspace.backend.qna.dto.AllQuestionResponseDto;
 import goodspace.backend.qna.dto.QuestionRequestDto;
 import goodspace.backend.qna.dto.QuestionResponseDto;
-import goodspace.backend.qna.repository.QuestionRepository;
 import goodspace.backend.qna.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +24,6 @@ import java.util.List;
 @RequestMapping("/qna")
 public class QuestionController {
     private final QuestionService questionService;
-    private final QuestionRepository questionRepository;
 
     @Operation(
             summary = "질문 작성",
@@ -43,17 +41,12 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.createQuestion(principal, questionDto, files));
     }
 
-    @GetMapping("/files")
-    public ResponseEntity<byte[]> getFiles(@RequestBody List<Long> ids) throws IOException {
-        return questionService.downloadFilesAsZip(ids);
-    }
-
     @GetMapping("/question/getQuestion/{id}")
     public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.getQuestion(id));
     }
 
-    @DeleteMapping("/question/delete")
+    @DeleteMapping("/question/delete/{id}")
     public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.deleteQuestion(id));
     }
@@ -63,9 +56,12 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getAllQuestions(principal));
     }
 
-    @PatchMapping("/quesiton/modifyQuestions/{id}")
-    public ResponseEntity<String> modifyQuestion(@PathVariable Long id, @RequestBody QuestionRequestDto questionDto) {
-        return ResponseEntity.ok(questionService.modifyQuestion(id, questionDto));
+    @PatchMapping("/question/modifyQuestions/{id}")
+    public ResponseEntity<String> modifyQuestion(@PathVariable Long id,
+                                                 @RequestPart("question") QuestionRequestDto questionDto,
+                                                 @RequestPart(value = "file", required = false) List<MultipartFile> files
+    ) throws IOException {
+        return ResponseEntity.ok(questionService.modifyQuestion(id, questionDto, files));
     }
 
 }
