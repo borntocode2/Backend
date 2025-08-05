@@ -30,9 +30,9 @@ import java.util.zip.ZipOutputStream;
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
-    private final QuestionFileRepository fileRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
+    private final QuestionFileRepository questionFileRepository;
+    private final UserService userService;
 
     @Transactional
     public String createQuestion(Principal principal, QuestionRequestDto dto, List<MultipartFile> files) throws IOException {
@@ -68,6 +68,37 @@ public class QuestionService {
         return "Question 저장에 성공하였습니다.";
     }
 
+    @Transactional
+    public String modifyQuestion(Long id, QuestionRequestDto dto, List<MultipartFile> files) throws IOException {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("수정하려는 질문을 데이터베이스에서 찾지 못하였습니다."));
+
+        if (question != null) {
+            question.modifyQuestion(dto.getTitle(), dto.getContent(), dto.getType());
+        }
+
+        if (files != null && !files.isEmpty()) {
+            List<QuestionFile> fileEntities = files.stream()
+                    .map(file -> {
+                        try {
+                            return QuestionFile.builder()
+                                    .name(file.getOriginalFilename())
+                                    .data(file.getBytes())
+                                    .mimeType(file.getContentType())
+                                    .question(question)
+                                    .build();
+                        } catch (IOException e) {
+                            throw new RuntimeException("파일 변환 실패", e);
+                        }
+
+                    })
+                    .collect(Collectors.toList());
+
+            question.addQuestionFiles(fileEntities);
+        }
+        return "해당 질문의 수정이 성공하였습니다.";
+    }
+
     public ResponseEntity<byte[]> downloadFilesAsZip(List<Long> ids) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zipOut = new ZipOutputStream(baos);
@@ -101,6 +132,7 @@ public class QuestionService {
         List<QuestionFileDto> fileDtos = question.getQuestionFiles() != null
                 ? question.getQuestionFiles().stream()
                 .map(file -> QuestionFileDto.builder()
+                        .data(file.getData())
                         .mimeType(file.getMimeType())
                         .name(file.getName())
                         .mimeType(file.getMimeType())
@@ -164,18 +196,6 @@ public class QuestionService {
 
         questionRepository.delete(question);
         return "질문이 성공적으로 삭제되었습니다.";
-    }
-
-    @Transactional
-    public String modifyQuestion(Long id, QuestionRequestDto dto) {
-        Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("수정하려는 질문을 데이터베이스에서 찾지 못하였습니다."));
-
-        if (question != null) {
-            question.modifyQuestion(dto.getTitle(), dto.getContent(), dto.getType());
-        }
-
-        return "해당 질문의 수정이 성공하였습니다.";
     }
 }
 

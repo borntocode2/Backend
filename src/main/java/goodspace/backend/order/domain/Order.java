@@ -45,7 +45,7 @@ public class Order extends BaseEntity {
     public void setOrderCartItems(List<OrderCartItem> cartItems) {
         this.orderCartItems = cartItems;
         for (OrderCartItem cartItem : cartItems) {
-            cartItem.setOrder(this); // 양방향 관계 유지
+            cartItem.setOrder(this);
         }
     }
 

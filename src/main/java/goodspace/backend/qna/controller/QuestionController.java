@@ -4,7 +4,6 @@ import goodspace.backend.global.swagger.CreateQuestionSwaggerSchema;
 import goodspace.backend.qna.dto.AllQuestionResponseDto;
 import goodspace.backend.qna.dto.QuestionRequestDto;
 import goodspace.backend.qna.dto.QuestionResponseDto;
-import goodspace.backend.qna.repository.QuestionRepository;
 import goodspace.backend.qna.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +24,6 @@ import java.util.List;
 @RequestMapping("/qna")
 public class QuestionController {
     private final QuestionService questionService;
-    private final QuestionRepository questionRepository;
 
     @Operation(
             summary = "질문 작성",
@@ -59,8 +57,11 @@ public class QuestionController {
     }
 
     @PatchMapping("/quesiton/modifyQuestions/{id}")
-    public ResponseEntity<String> modifyQuestion(@PathVariable Long id, @RequestBody QuestionRequestDto questionDto) {
-        return ResponseEntity.ok(questionService.modifyQuestion(id, questionDto));
+    public ResponseEntity<String> modifyQuestion(@PathVariable Long id,
+                                                 @RequestPart("question") QuestionRequestDto questionDto,
+                                                 @RequestPart(value = "file") List<MultipartFile> files
+    ) throws IOException {
+        return ResponseEntity.ok(questionService.modifyQuestion(id, questionDto, files));
     }
 
 }
