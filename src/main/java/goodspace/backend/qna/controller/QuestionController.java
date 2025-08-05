@@ -56,7 +56,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getAllQuestions(principal));
     }
 
-    @PatchMapping("/quesiton/modifyQuestions/{id}")
+    @PatchMapping("/question/modifyQuestions/{id}")
     public ResponseEntity<String> modifyQuestion(@PathVariable Long id,
                                                  @RequestPart("question") QuestionRequestDto questionDto,
                                                  @RequestPart(value = "file") List<MultipartFile> files
