@@ -17,6 +17,6 @@ public class QuestionResponseDto {
     private Long userId;
     private QuestionType type;
     private QuestionStatus status;
-    private Answer answer;
+    private AnswerDto answerDto;
     private List<Long> fileIds = new ArrayList<>();
 }
