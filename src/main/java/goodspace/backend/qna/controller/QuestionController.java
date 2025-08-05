@@ -59,7 +59,7 @@ public class QuestionController {
     @PatchMapping("/question/modifyQuestions/{id}")
     public ResponseEntity<String> modifyQuestion(@PathVariable Long id,
                                                  @RequestPart("question") QuestionRequestDto questionDto,
-                                                 @RequestPart(value = "file") List<MultipartFile> files
+                                                 @RequestPart(value = "file", required = false) List<MultipartFile> files
     ) throws IOException {
         return ResponseEntity.ok(questionService.modifyQuestion(id, questionDto, files));
     }
