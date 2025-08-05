@@ -43,7 +43,9 @@ public abstract class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCartItem> userCartItems = new ArrayList<>();
 
+    // TODO 이후에 이름을 questions로 수정
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Question> question = new ArrayList<>();
 
     @Embedded
@@ -89,5 +91,13 @@ public abstract class User extends BaseEntity {
         this.name = userMyPageDto.getName();
         this.dateOfBirth = userMyPageDto.getDateOfBirth();
         this.delivery = Delivery.from(userMyPageDto);
+    }
+
+    /**
+     * User - Question 연관관계 편의 메서드
+     */
+    public void addQuestion(Question question) {
+        this.question.add(question);
+        question.setUser(this);
     }
 }

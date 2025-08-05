@@ -3,12 +3,15 @@ package goodspace.backend.qna.domain;
 import goodspace.backend.global.domain.BaseEntity;
 import goodspace.backend.user.domain.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -24,6 +27,7 @@ public class Question extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private QuestionType questionType;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private QuestionStatus questionStatus;
 
@@ -31,21 +35,27 @@ public class Question extends BaseEntity {
     private Answer answer;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<QuestionFile> questionFiles = new ArrayList<>();
 
-
     @ManyToOne
+    @Setter
     private User user;
 
-    public void setQuestionFiles(List<QuestionFile> questionFiles) {
-        this.questionFiles = questionFiles;
+    public void addQuestionFiles(List<QuestionFile> questionFiles) {
+        this.questionFiles.addAll(questionFiles);
+
+        for (QuestionFile questionFile : questionFiles) {
+            questionFile.setQuestion(this);
+        }
     }
     public void setAnswer(Answer answer) {
         this.answer = answer;
+        answer.setQuestion(this);
     }
 
-    public void setQuestionStatus(QuestionStatus questionStatus) {
-        this.questionStatus = questionStatus;
+    public String getUserEmail() {
+        return user.getEmail();
     }
 
     public void modifyQuestion(String title, String content, QuestionType questionType) {

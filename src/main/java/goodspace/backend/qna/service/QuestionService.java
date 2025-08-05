@@ -62,7 +62,7 @@ public class QuestionService {
                     })
                             .collect(Collectors.toList());
 
-            question.setQuestionFiles(fileEntities);
+            question.addQuestionFiles(fileEntities);
         }
         questionRepository.save(question);
 
