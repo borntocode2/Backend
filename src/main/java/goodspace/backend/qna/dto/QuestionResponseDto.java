@@ -6,6 +6,7 @@ import goodspace.backend.qna.domain.QuestionType;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -16,6 +17,7 @@ public class QuestionResponseDto {
     private Long userId;
     private QuestionType type;
     private QuestionStatus status;
+    private LocalDateTime createdAt;
     private AnswerDto answerDto;
     private List<QuestionFileDto> questionFileDtos;
 }

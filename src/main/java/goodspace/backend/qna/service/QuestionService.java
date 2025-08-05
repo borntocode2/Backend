@@ -122,6 +122,7 @@ public class QuestionService {
                 .title(question.getTitle())
                 .content(question.getContent())
                 .userId(question.getUser().getId())
+                .createdAt(question.getCreatedAt())
                 .type(question.getQuestionType())
                 .status(question.getQuestionStatus())
                 .answerDto(answerDto)
