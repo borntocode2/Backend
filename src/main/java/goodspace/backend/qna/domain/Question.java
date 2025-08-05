@@ -42,6 +42,14 @@ public class Question extends BaseEntity {
     @Setter
     private User user;
 
+    public void clearQuestionFiles() {
+        for (QuestionFile questionFile : questionFiles) {
+            questionFile.setQuestion(null);
+        }
+
+        questionFiles.clear();
+    }
+
     public void addQuestionFiles(List<QuestionFile> questionFiles) {
         this.questionFiles.clear();
 

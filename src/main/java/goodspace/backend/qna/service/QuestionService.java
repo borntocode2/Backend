@@ -63,6 +63,7 @@ public class QuestionService {
 
             question.addQuestionFiles(fileEntities);
         }
+
         questionRepository.save(question);
 
         return "Question 저장에 성공하였습니다.";
@@ -73,9 +74,9 @@ public class QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("수정하려는 질문을 데이터베이스에서 찾지 못하였습니다."));
 
-        if (question != null) {
-            question.modifyQuestion(dto.getTitle(), dto.getContent(), dto.getType());
-        }
+        question.modifyQuestion(dto.getTitle(), dto.getContent(), dto.getType());
+
+        question.clearQuestionFiles();
 
         if (files != null && !files.isEmpty()) {
             List<QuestionFile> fileEntities = files.stream()
