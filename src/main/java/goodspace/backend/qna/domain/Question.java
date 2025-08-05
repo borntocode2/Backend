@@ -43,6 +43,8 @@ public class Question extends BaseEntity {
     private User user;
 
     public void addQuestionFiles(List<QuestionFile> questionFiles) {
+        this.questionFiles.clear();
+
         this.questionFiles.addAll(questionFiles);
 
         for (QuestionFile questionFile : questionFiles) {
