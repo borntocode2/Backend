@@ -1,15 +1,12 @@
 package goodspace.backend.qna.service;
 
 import goodspace.backend.qna.domain.Answer;
-import goodspace.backend.qna.dto.AllQuestionResponseDto;
-import goodspace.backend.qna.dto.AnswerDto;
+import goodspace.backend.qna.dto.*;
 import goodspace.backend.qna.repository.QuestionFileRepository;
 import goodspace.backend.qna.repository.QuestionRepository;
 import goodspace.backend.qna.domain.Question;
 import goodspace.backend.qna.domain.QuestionFile;
 import goodspace.backend.qna.domain.QuestionStatus;
-import goodspace.backend.qna.dto.QuestionRequestDto;
-import goodspace.backend.qna.dto.QuestionResponseDto;
 import goodspace.backend.user.repository.UserRepository;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.user.service.UserService;
@@ -101,9 +98,16 @@ public class QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 question은 questionRespository에서 찾을 수 없습니다. "));
 
-        List<Long> fileIds = question.getQuestionFiles().stream()
-                .map(QuestionFile::getId)
-                .collect(Collectors.toList());
+        List<QuestionFileDto> fileDtos = question.getQuestionFiles() != null
+                ? question.getQuestionFiles().stream()
+                .map(file -> QuestionFileDto.builder()
+                        .mimeType(file.getMimeType())
+                        .name(file.getName())
+                        .mimeType(file.getMimeType())
+                        .build())
+                .collect(Collectors.toList())
+                : List.of();
+
 
         AnswerDto answerDto = null;
 
@@ -121,7 +125,7 @@ public class QuestionService {
                 .type(question.getQuestionType())
                 .status(question.getQuestionStatus())
                 .answerDto(answerDto)
-                .fileIds(fileIds)
+                .questionFileDtos(fileDtos)
                 .build();
     }
 
