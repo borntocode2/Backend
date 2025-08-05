@@ -23,7 +23,7 @@ import java.util.List;
 @Table(name = "`user`")
 public abstract class User extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Integer dateOfBirth;
@@ -41,7 +41,8 @@ public abstract class User extends BaseEntity {
     private final List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserCartItem> userCartItems = new ArrayList<>();
+    @Builder.Default
+    private List<CartItem> cartItems = new ArrayList<>();
 
     // TODO 이후에 이름을 questions로 수정
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -99,5 +100,18 @@ public abstract class User extends BaseEntity {
     public void addQuestion(Question question) {
         this.question.add(question);
         question.setUser(this);
+    }
+
+    /**
+     * User - CartItem 연관관계 편의 메서드
+     */
+    public void addCartItem(CartItem cartItem) {
+        cartItems.add(cartItem);
+        cartItem.setUser(this);
+    }
+
+    public void removeCartItem(CartItem cartItem) {
+        cartItems.remove(cartItem);
+        cartItem.setUser(null);
     }
 }
