@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class QuestionFile extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Lob
