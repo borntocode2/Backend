@@ -41,11 +41,7 @@ public enum QuestionFixture {
     private final String content;
     private final QuestionType type;
 
-    QuestionFixture(
-            String title,
-            String content,
-            QuestionType type
-    ) {
+    QuestionFixture(String title, String content, QuestionType type) {
         this.title = title;
         this.content = content;
         this.type = type;

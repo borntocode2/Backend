@@ -142,7 +142,6 @@ public class QuestionService {
                 .collect(Collectors.toList())
                 : List.of();
 
-
         AnswerDto answerDto = null;
 
         if (question.getAnswer() != null) {
