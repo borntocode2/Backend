@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/orderTest/**", "/payment/**","/css/**", "/js/**", "/images/**", "/stylesheets/**","/api/**", "/api/qna").permitAll()
                         .requestMatchers("/client/**").permitAll() // 클라이언트 상품 페이지 관련
                         .requestMatchers("/stylesheets/**","/api/**").permitAll()
+                        .requestMatchers("/meta/**").permitAll() // 카테고리/타입 관련
                         .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용 API
                         .anyRequest().authenticated()
                 )
