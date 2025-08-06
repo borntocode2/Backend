@@ -30,13 +30,24 @@ public class OAuthController {
     private final FacebookOAuthService facebookOAuthService;
     private final NaverOAuthService naverOAuthService;
 
-    @GetMapping("/google")
+    @GetMapping("/google/web")
     @Operation(
-            summary = "구글 소셜 로그인/회원가입",
+            summary = "구글 소셜 로그인(웹)",
             description = "구글을 통해 사용자를 인증하고 JWT를 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> googleAuthorization(@RequestParam(name = "code") String code) {
+    public ResponseEntity<TokenResponseDto> googleWebAuthorization(@RequestParam(name = "code") String code) {
         String accessToken = googleOAuthService.getAccessToken(code);
+        TokenResponseDto responseDto = googleOAuthService.signUpOrSignIn(accessToken);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/google/app")
+    @Operation(
+            summary = "구글 소셜 로그인(앱)",
+            description = "구글이 발급한 AccessToken을 통해 사용자를 인증하고 JWT를 발급합니다"
+    )
+    public ResponseEntity<TokenResponseDto> googleAppAuthorization(@RequestParam(name = "accessToken") String accessToken) {
         TokenResponseDto responseDto = googleOAuthService.signUpOrSignIn(accessToken);
 
         return ResponseEntity.ok(responseDto);
@@ -53,13 +64,24 @@ public class OAuthController {
                 .build();
     }
 
-    @GetMapping("/kakao")
+    @GetMapping("/kakao/web")
     @Operation(
-            summary = "카카오 소셜 로그인",
-            description = "카카오를 통해 사용자를 인증하고 JWT를 발급합니다"
+            summary = "카카오 소셜 로그인(웹)",
+            description = "카카오가 발급한 code를 통해 사용자를 인증하고 JWT를 발급합니다."
     )
-    public ResponseEntity<TokenResponseDto> kakaoAuthorization(@RequestParam(name = "code") String code) {
+    public ResponseEntity<TokenResponseDto> kakaoWebAuthorization(@RequestParam(name = "code") String code) {
         String accessToken = kaKaoOAuthService.getAccessToken(code);
+        TokenResponseDto responseDto = kaKaoOAuthService.signUpOrSignIn(accessToken);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/kakao/app")
+    @Operation(
+            summary = "카카오 소셜 로그인(앱)",
+            description = "카카오가 발급한 AccessToken을 통해 사용자를 인증하고 JWT를 발급합니다."
+    )
+    public ResponseEntity<TokenResponseDto> kakaoAppAuthorization(@RequestParam(name = "accessToken") String accessToken) {
         TokenResponseDto responseDto = kaKaoOAuthService.signUpOrSignIn(accessToken);
 
         return ResponseEntity.ok(responseDto);
@@ -76,13 +98,24 @@ public class OAuthController {
                 .build();
     }
 
-    @GetMapping("/facebook")
+    @GetMapping("/facebook/web")
     @Operation(
-            summary = "페이스북 소셜 로그인",
+            summary = "페이스북 소셜 로그인(웹)",
             description = "페이스북을 통해 사용자를 인증하고 JWT를 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> facebookAuthorization(@RequestParam(name = "code") String code) {
+    public ResponseEntity<TokenResponseDto> facebookWebAuthorization(@RequestParam(name = "code") String code) {
         String accessToken = facebookOAuthService.getAccessToken(code);
+        TokenResponseDto responseDto = facebookOAuthService.signUpOrSignIn(accessToken);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/facebook/app")
+    @Operation(
+            summary = "페이스북 소셜 로그인(앱)",
+            description = "페이스북이 발급한 AccessToken 통해 사용자를 인증하고 JWT를 발급합니다"
+    )
+    public ResponseEntity<TokenResponseDto> facebookAppAuthorization(@RequestParam(name = "accessToken") String accessToken) {
         TokenResponseDto responseDto = facebookOAuthService.signUpOrSignIn(accessToken);
 
         return ResponseEntity.ok(responseDto);
@@ -99,13 +132,24 @@ public class OAuthController {
                 .build();
     }
 
-    @GetMapping("/naver")
+    @GetMapping("/naver/web")
     @Operation(
-            summary = "네이버 소셜 로그인",
+            summary = "네이버 소셜 로그인(웹)",
             description = "네이버를 통해 사용자를 인증하고 JWT를 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> naverAuthorization(@RequestParam(name = "code") String code) {
+    public ResponseEntity<TokenResponseDto> naverWebAuthorization(@RequestParam(name = "code") String code) {
         String accessToken = naverOAuthService.getAccessToken(code);
+        TokenResponseDto responseDto = naverOAuthService.signUpOrSignIn(accessToken);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/naver/app")
+    @Operation(
+            summary = "네이버 소셜 로그인(앱)",
+            description = "네이버가 발급한 AccessToken을 통해 사용자를 인증하고 JWT를 발급합니다"
+    )
+    public ResponseEntity<TokenResponseDto> naverAppAuthorization(@RequestParam(name = "accessToken") String accessToken) {
         TokenResponseDto responseDto = naverOAuthService.signUpOrSignIn(accessToken);
 
         return ResponseEntity.ok(responseDto);
