@@ -20,7 +20,7 @@ import java.util.Objects;
 @Table(name = "`order`")
 public class Order extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Embedded
@@ -36,10 +36,11 @@ public class Order extends BaseEntity {
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<OrderCartItem> orderCartItems = new ArrayList<>();
 
     public void setOrderCartItems(List<OrderCartItem> cartItems) {

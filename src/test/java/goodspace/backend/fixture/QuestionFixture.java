@@ -3,6 +3,7 @@ package goodspace.backend.fixture;
 import goodspace.backend.qna.domain.Question;
 import goodspace.backend.qna.domain.QuestionStatus;
 import goodspace.backend.qna.domain.QuestionType;
+import goodspace.backend.user.domain.User;
 
 public enum QuestionFixture {
     DELIVERY(
@@ -57,5 +58,18 @@ public enum QuestionFixture {
                 .questionType(type)
                 .questionStatus(QuestionStatus.WAITING)
                 .build();
+    }
+
+    public Question getInstanceWith(User user) {
+        Question question = Question.builder()
+                .user(user)
+                .title(title)
+                .content(content)
+                .questionType(type)
+                .questionStatus(QuestionStatus.WAITING)
+                .build();
+        user.addQuestion(question);
+
+        return question;
     }
 }

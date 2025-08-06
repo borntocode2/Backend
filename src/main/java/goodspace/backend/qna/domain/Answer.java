@@ -18,6 +18,7 @@ public class Answer extends BaseEntity {
     private Long id;
 
     @Setter
+    @Column(nullable = false)
     private String content;
 
     @OneToOne

@@ -19,17 +19,22 @@ public class Client extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
+
     @Setter
     private String profileImageUrl;
+
     @Setter
     private String backgroundImageUrl;
+
     @Column(nullable = false)
     private String introduction;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ClientType clientType;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RegisterStatus status;

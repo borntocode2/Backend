@@ -71,7 +71,7 @@ class ItemImageManageServiceTest {
         itemImageManageService = new ItemImageManageServiceImpl(imageManager, itemRepository, itemImageRepository);
 
         client = clientRepository.save(ClientFixture.CREATOR.getInstance());
-        item = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
+        item = itemRepository.save(ItemFixture.PUBLIC_A.getInstanceWith(client));
 
         titleImage = ItemImage.from(imageManager.createImageUrl(item.getId(), TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
         item.setTitleImage(titleImage);

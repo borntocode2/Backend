@@ -69,17 +69,15 @@ class ItemManageServiceTest {
         imageManager = new ImageManagerImpl(basePath.toString());
 
         client = clientRepository.save(ClientFixture.CREATOR.getInstance());
-        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
-        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstance());
+        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstanceWith(client));
+        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstanceWith(client));
+        existItems = List.of(itemA, itemB);
 
         ItemImage itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
         ItemImage itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
 
         itemImageA.setImageUrl(imageManager.createImageUrl(itemA.getId(), itemImageA.getId(), ImageFixture.GDG.getImage()));
         itemImageB.setImageUrl(imageManager.createImageUrl(itemB.getId(), itemImageB.getId(), ImageFixture.KOTLIN.getImage()));
-
-        client.addItems(List.of(itemA, itemB));
-        existItems = List.of(itemA, itemB);
     }
 
     @Nested

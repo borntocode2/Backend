@@ -1,5 +1,6 @@
 package goodspace.backend.fixture;
 
+import goodspace.backend.client.domain.Client;
 import goodspace.backend.client.domain.RegisterStatus;
 import goodspace.backend.global.domain.Item;
 
@@ -75,5 +76,20 @@ public enum ItemFixture {
                 .landingPageDescription(landingPageDescription)
                 .status(status)
                 .build();
+    }
+
+    public Item getInstanceWith(Client client) {
+        Item item = Item.builder()
+                .client(client)
+                .name(name)
+                .price(price)
+                .shortDescription(shortDescription)
+                .landingPageDescription(landingPageDescription)
+                .status(status)
+                .build();
+
+        client.addItem(item);
+
+        return item;
     }
 }
