@@ -37,6 +37,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private final MessageBuilder messageBuilder;
     private final CodeGenerator codeGenerator;
 
+    @Override
     @Transactional
     public void sendVerificationCode(CodeSendRequestDto requestDto) throws MessagingException {
         String email = requestDto.email();
@@ -59,6 +60,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         emailVerificationRepository.save(emailVerification);
     }
 
+    @Override
     @Transactional
     public void verifyEmail(VerifyRequestDto requestDto) {
         String email = requestDto.email();
