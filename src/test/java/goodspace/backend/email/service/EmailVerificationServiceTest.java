@@ -6,8 +6,11 @@ import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;
 import goodspace.backend.fixture.EmailFixture;
 import goodspace.backend.fixture.EmailVerificationFixture;
+import goodspace.backend.fixture.GoodSpaceUserFixture;
+import goodspace.backend.user.domain.GoodSpaceUser;
+import goodspace.backend.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,17 +18,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class EmailVerificationServiceTest {
-    private static final String NOISE = "2193812";
+    static final String NOISE = "2193812555555123";
 
-    private final EmailVerificationService emailVerificationService;
-    private final EmailVerificationRepository emailVerificationRepository;
+    @Autowired
+    EmailVerificationService emailVerificationService;
+    @Autowired
+    EmailVerificationRepository emailVerificationRepository;
+    @Autowired
+    UserRepository userRepository;
+
+    String existEmail;
+    EmailVerification existEmailVerification;
+
+    @BeforeEach
+    void resetEntities() {
+        GoodSpaceUser user = userRepository.save(GoodSpaceUserFixture.DEFAULT.getInstance());
+        existEmail = user.getEmail();
+
+        existEmailVerification = emailVerificationRepository.save(EmailVerificationFixture.NOT_VERIFIED.getInstance());
+        existEmailVerification.setCode(NOISE);
+    }
 
     @Nested
     class sendVerificationCode {
@@ -43,6 +63,40 @@ class EmailVerificationServiceTest {
                     .isPresent();
             assertThat(isPresent).isTrue();
         }
+
+        @Test
+        @DisplayName("이미 회원가입된 이메일이라면 예외를 던진다")
+        void ifUsedEmailThenThrowException() {
+            CodeSendRequestDto requestDto = CodeSendRequestDto.builder()
+                    .email(existEmail)
+                    .build();
+
+            assertThatThrownBy(() -> emailVerificationService.sendVerificationCode(requestDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("기존에 같은 이메일의 EmailVerification이 존재한다면 덮어써 갱신한다")
+        void idExistEmailVerificationThenUpdate() throws MessagingException {
+            // given
+            String existEmail = existEmailVerification.getEmail();
+            LocalDateTime existExpiredTime = existEmailVerification.getExpiresAt();
+            String existCode = existEmailVerification.getCode();
+
+            CodeSendRequestDto requestDto = CodeSendRequestDto.builder()
+                    .email(existEmail)
+                    .build();
+
+            // when
+            emailVerificationService.sendVerificationCode(requestDto);
+
+            // then
+            LocalDateTime updatedExpiredTime = existEmailVerification.getExpiresAt();
+            String updatedCode = existEmailVerification.getCode();
+
+            assertThat(updatedExpiredTime).isNotEqualTo(existExpiredTime);
+            assertThat(updatedCode).isNotEqualTo(existCode);
+        }
     }
 
     @Nested
@@ -51,13 +105,10 @@ class EmailVerificationServiceTest {
         @DisplayName("코드가 일치하면 이메일을 인증 처리 한다")
         void ifCodeSameThenVerifyEmail() {
             // given
-            EmailVerification emailVerification = EmailVerificationFixture.NOT_VERIFIED.getInstance();
-            emailVerificationRepository.save(emailVerification);
+            String email = existEmailVerification.getEmail();
+            String correctCode = existEmailVerification.getCode();
 
             // when
-            String email = emailVerification.getEmail();
-            String correctCode = emailVerification.getCode();
-
             emailVerificationService.verifyEmail(new VerifyRequestDto(email, correctCode));
 
             // then
@@ -70,12 +121,8 @@ class EmailVerificationServiceTest {
         @DisplayName("코드가 일치하지 않으면 예외를 발생시킨다")
         void ifCodeDifferentThenThrowException() {
             // given
-            EmailVerification emailVerification = EmailVerificationFixture.NOT_VERIFIED.getInstance();
-            emailVerificationRepository.save(emailVerification);
-
-            // when
-            String email = emailVerification.getEmail();
-            String wrongCode = emailVerification.getCode() + NOISE;
+            String email = existEmailVerification.getEmail();
+            String wrongCode = existEmailVerification.getCode() + NOISE;
 
             // then
             assertThatThrownBy(() -> emailVerificationService.verifyEmail(new VerifyRequestDto(email, wrongCode)))

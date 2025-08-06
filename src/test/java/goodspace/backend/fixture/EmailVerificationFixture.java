@@ -25,9 +25,15 @@ public enum EmailVerificationFixture {
     ),
     EXPIRED(
             "expired@email.com",
-            "789789",
+            "987654",
             LocalDateTime.now().minusMinutes(1),
             false
+    ),
+    EXPIRED_AND_VERIFIED(
+            "expired_and_verified@email.com",
+            "668866",
+            LocalDateTime.now().minusMinutes(1),
+            true
     );
 
     private final String email;
