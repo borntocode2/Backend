@@ -21,8 +21,10 @@ public class UserRole extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private User user;
 }

@@ -1,5 +1,6 @@
 package goodspace.backend.user.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GoodSpaceUser extends User {
+    @Column(nullable = false)
     private String password;
 
     public void updatePassword(String password) {

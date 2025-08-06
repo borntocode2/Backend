@@ -76,9 +76,9 @@ class ClientServiceTest {
         clientB = clientRepository.save(ClientFixture.CREATOR.getInstance());
         hasItemClient = clientRepository.save(ClientFixture.SINGER.getInstance());
 
-        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
-        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstance());
-        privateItem = itemRepository.save(ItemFixture.PRIVATE_A.getInstance());
+        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstanceWith(hasItemClient));
+        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstanceWith(hasItemClient));
+        privateItem = itemRepository.save(ItemFixture.PRIVATE_A.getInstanceWith(hasItemClient));
 
         ItemImage titleImageA = ItemImage.from(imageManager.createImageUrl(itemA.getId(), DEFAULT_TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
         ItemImage titleImageB = ItemImage.from(imageManager.createImageUrl(itemB.getId(), DEFAULT_TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
@@ -87,10 +87,6 @@ class ClientServiceTest {
         itemA.setTitleImage(titleImageA);
         itemB.setTitleImage(titleImageB);
         privateItem.setTitleImage(titleImagePrivate);
-
-        hasItemClient.addItem(itemA);
-        hasItemClient.addItem(itemB);
-        hasItemClient.addItem(privateItem);
 
         publicClients = Set.of(clientA, clientB, hasItemClient);
         publicItems = Set.of(itemA, itemB);

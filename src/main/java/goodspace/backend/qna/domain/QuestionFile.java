@@ -17,7 +17,7 @@ public class QuestionFile extends BaseEntity {
     private Long id;
 
     @Lob
-    @Column(name = "data", columnDefinition = "LONGBLOB")
+    @Column(name = "data", columnDefinition = "LONGBLOB", nullable = false)
     private byte[] data;
 
     private String extension;

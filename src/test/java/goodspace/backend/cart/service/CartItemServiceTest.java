@@ -8,7 +8,7 @@ import goodspace.backend.fixture.ItemFixture;
 import goodspace.backend.global.domain.Item;
 import goodspace.backend.global.repository.CartItemRepository;
 import goodspace.backend.global.repository.ItemRepository;
-import goodspace.backend.user.domain.CartItem;
+import goodspace.backend.cart.domain.CartItem;
 import goodspace.backend.user.domain.User;
 import goodspace.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;

@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -21,17 +20,24 @@ public class Question extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private QuestionType questionType;
 
     @Setter
     @Enumerated(EnumType.STRING)
-    private QuestionStatus questionStatus;
+    @Column(nullable = false)
+    @Builder.Default
+    private QuestionStatus questionStatus = QuestionStatus.WAITING;
 
-    @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Answer answer;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -39,6 +45,7 @@ public class Question extends BaseEntity {
     private List<QuestionFile> questionFiles = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     @Setter
     private User user;
 

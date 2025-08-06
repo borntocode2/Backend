@@ -67,17 +67,13 @@ class AdminQuestionServiceTest {
 
     @BeforeEach
     void resetEntities() throws IOException {
-        question = questionRepository.save(QuestionFixture.DELIVERY.getInstance());
-        notAnsweredQuestion = questionRepository.save(QuestionFixture.ORDER.getInstance());
-        answeredQuestion = questionRepository.save(QuestionFixture.ITEM.getInstance());
-        emptyFileQuestion = questionRepository.save(QuestionFixture.B.getInstance());
-        existQuestions = List.of(question, notAnsweredQuestion, answeredQuestion, emptyFileQuestion);
-
         user = userRepository.save(GoodSpaceUserFixture.DEFAULT.getInstance());
-        user.addQuestion(question);
-        user.addQuestion(notAnsweredQuestion);
-        user.addQuestion(answeredQuestion);
-        user.addQuestion(emptyFileQuestion);
+
+        question = questionRepository.save(QuestionFixture.DELIVERY.getInstanceWith(user));
+        notAnsweredQuestion = questionRepository.save(QuestionFixture.ORDER.getInstanceWith(user));
+        answeredQuestion = questionRepository.save(QuestionFixture.ITEM.getInstanceWith(user));
+        emptyFileQuestion = questionRepository.save(QuestionFixture.A.getInstanceWith(user));
+        existQuestions = List.of(question, notAnsweredQuestion, answeredQuestion, emptyFileQuestion);
 
         answer = answerRepository.save(AnswerFixture.A.getInstance());
         answeredQuestion.setAnswer(answer);

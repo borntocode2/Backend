@@ -1,5 +1,6 @@
 package goodspace.backend.user.domain;
 
+import goodspace.backend.cart.domain.CartItem;
 import goodspace.backend.global.domain.BaseEntity;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.qna.domain.Question;

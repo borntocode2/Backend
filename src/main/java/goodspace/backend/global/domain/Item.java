@@ -2,7 +2,6 @@ package goodspace.backend.global.domain;
 
 import goodspace.backend.client.domain.Client;
 import goodspace.backend.client.domain.RegisterStatus;
-import goodspace.backend.order.domain.Order;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -19,9 +18,17 @@ public class Item extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private Integer price;
+
+    @Column(nullable = false)
     private String shortDescription;
+
+    @Column(nullable = false)
     private String landingPageDescription;
 
     @Column(nullable = false)
@@ -29,14 +36,9 @@ public class Item extends BaseEntity {
     private RegisterStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "client_id", nullable = false)
     @Setter
     private Client client;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    @Setter
-    private Order order;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

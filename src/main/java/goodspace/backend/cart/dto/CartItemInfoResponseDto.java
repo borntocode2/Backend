@@ -1,7 +1,7 @@
 package goodspace.backend.cart.dto;
 
 import goodspace.backend.global.domain.Item;
-import goodspace.backend.user.domain.CartItem;
+import goodspace.backend.cart.domain.CartItem;
 import lombok.Builder;
 
 @Builder
