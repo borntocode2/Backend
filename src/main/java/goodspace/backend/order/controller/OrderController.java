@@ -27,7 +27,7 @@ public class OrderController {
             description = "생성된 order를 삭제합니다."
     )
     @DeleteMapping("/cancel/{orderId}")
-    public ResponseEntity<Void> deleteOrder(@RequestBody Long orderId) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);
         return ResponseEntity.noContent().build();
     }
