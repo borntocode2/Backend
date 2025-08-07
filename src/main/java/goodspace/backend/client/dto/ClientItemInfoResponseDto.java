@@ -2,17 +2,18 @@ package goodspace.backend.client.dto;
 
 import goodspace.backend.client.domain.Client;
 import goodspace.backend.global.domain.Item;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.util.List;
 
-// TODO: 배송 관련 정보를 추가해야 함
 @Builder
 public record ClientItemInfoResponseDto(
         ClientDto client,
         ItemDto item
 ) {
     @Builder
+    @Schema(name = "ClientItemInfoResponseDto.ClientDto")
     public record ClientDto(
             long id,
             String name,
@@ -21,6 +22,7 @@ public record ClientItemInfoResponseDto(
     }
 
     @Builder
+    @Schema(name = "ClientItemInfoResponseDto.ItemDto")
     public record ItemDto(
             long id,
             String name,
