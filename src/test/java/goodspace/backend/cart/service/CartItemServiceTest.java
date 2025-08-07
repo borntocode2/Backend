@@ -3,6 +3,9 @@ package goodspace.backend.cart.service;
 import goodspace.backend.cart.dto.CartItemAddRequestDto;
 import goodspace.backend.cart.dto.CartItemInfoResponseDto;
 import goodspace.backend.cart.dto.CartItemUpdateRequestDto;
+import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.repository.ClientRepository;
+import goodspace.backend.fixture.ClientFixture;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
 import goodspace.backend.fixture.ItemFixture;
 import goodspace.backend.global.domain.Item;
@@ -43,6 +46,8 @@ class CartItemServiceTest {
     ItemRepository itemRepository;
     @Autowired
     CartItemRepository cartItemRepository;
+    @Autowired
+    ClientRepository clientRepository;
 
     User user;
     User emptyCartUser;
@@ -56,9 +61,10 @@ class CartItemServiceTest {
     void resetEntities() {
         user = userRepository.save(GoodSpaceUserFixture.A.getInstance());
         emptyCartUser = userRepository.save(GoodSpaceUserFixture.B.getInstance());
+        Client client = clientRepository.save(ClientFixture.CREATOR.getInstance());
 
-        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstance());
-        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstance());
+        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstanceWith(client));
+        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstanceWith(client));
 
         cartItemA = cartItemRepository.save(CartItem.builder()
                 .user(user)
