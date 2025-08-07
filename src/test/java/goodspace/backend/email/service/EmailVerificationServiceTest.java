@@ -4,7 +4,6 @@ import goodspace.backend.email.dto.CodeSendRequestDto;
 import goodspace.backend.email.dto.VerifyRequestDto;
 import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;
-import goodspace.backend.fixture.EmailFixture;
 import goodspace.backend.fixture.EmailVerificationFixture;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
 import goodspace.backend.user.domain.GoodSpaceUser;
@@ -35,6 +34,7 @@ class EmailVerificationServiceTest {
     @Autowired
     UserRepository userRepository;
 
+    String notExistEmail = "NOT_EXIST@email.com";
     String existEmail;
     EmailVerification existEmailVerification;
 
@@ -53,7 +53,10 @@ class EmailVerificationServiceTest {
         @DisplayName("이메일 인증 정보 객체를 생성한다")
         void createEmailVerificationEntity() throws MessagingException {
             // given
-            CodeSendRequestDto requestDto = createDtoFromFixture(EmailFixture.USER_A);
+            CodeSendRequestDto requestDto = CodeSendRequestDto.builder()
+                    .email(notExistEmail)
+                    .shouldAlreadyExist(false)
+                    .build();
 
             // when
             emailVerificationService.sendVerificationCode(requestDto);
@@ -65,10 +68,23 @@ class EmailVerificationServiceTest {
         }
 
         @Test
-        @DisplayName("이미 회원가입된 이메일이라면 예외를 던진다")
-        void ifUsedEmailThenThrowException() {
+        @DisplayName("ShouldAlreadyExist가 false이면서 이미 회원가입된 이메일이라면 예외를 던진다")
+        void ifShouldNotAlreadyExistEmailUsedEmailThenThrowException() {
             CodeSendRequestDto requestDto = CodeSendRequestDto.builder()
                     .email(existEmail)
+                    .shouldAlreadyExist(false)
+                    .build();
+
+            assertThatThrownBy(() -> emailVerificationService.sendVerificationCode(requestDto))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("ShouldAlreadyExist가 true이면서 회원가입되지 않은 이메일이라면 예외를 던진다")
+        void ifShouldAlreadyExistEmailNotUsedEmailThenThrowException() {
+            CodeSendRequestDto requestDto = CodeSendRequestDto.builder()
+                    .email(notExistEmail)
+                    .shouldAlreadyExist(true)
                     .build();
 
             assertThatThrownBy(() -> emailVerificationService.sendVerificationCode(requestDto))
@@ -128,9 +144,5 @@ class EmailVerificationServiceTest {
             assertThatThrownBy(() -> emailVerificationService.verifyEmail(new VerifyRequestDto(email, wrongCode)))
                     .isInstanceOf(IllegalArgumentException.class);
         }
-    }
-
-    private CodeSendRequestDto createDtoFromFixture(EmailFixture fixture) {
-        return new CodeSendRequestDto(fixture.getEmail());
     }
 }
