@@ -64,7 +64,6 @@ public class OrderService {
                 .map(cartItem -> OrderCartItemDto.builder()
                         .itemId(cartItem.getItem().getId())
                         .quantity(cartItem.getQuantity())
-                        .orderId(cartItem.getOrder().getId())
                         .build()
                 )
                 .toList();
