@@ -2,6 +2,7 @@ package goodspace.backend.user.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -15,7 +16,9 @@ import lombok.experimental.SuperBuilder;
 public class OAuthUser extends User {
     @Column(nullable = false)
     private String identifier;
+
     @Enumerated
     @Column(nullable = false)
+    @Getter
     private OAuthType oauthType;
 }
