@@ -54,7 +54,7 @@ public class OrderService {
         return order.getId();
     }
 
-    public OrderResponseDto findOrderByOrderId(String orderId) {
+    public OrderResponseDto findOrderByOrderId(Long orderId) {
         Order order = orderRepository.findByApproveResult_OrderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
 

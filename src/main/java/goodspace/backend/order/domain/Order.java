@@ -21,7 +21,7 @@ import java.util.Objects;
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Embedded
     private PaymentApproveResult approveResult;
@@ -31,7 +31,7 @@ public class Order extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
+    private OrderStatus orderStatus = OrderStatus.PAYMENT_CHECKING;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -50,7 +50,7 @@ public class Order extends BaseEntity {
 
     public void updateOrderStatus(String status){
         if(status.equals("결제 확인")){
-            this.orderStatus = OrderStatus.PAYMENT_CONFIRMED;
+            this.orderStatus = OrderStatus.PAYMENT_CHECKING;
         }
         else if(status.equals("제작 준비중")){
             this.orderStatus = OrderStatus.PREPARING_PRODUCT;
@@ -73,7 +73,7 @@ public class Order extends BaseEntity {
     }
 
     public void setPaymentApproveResult(PaymentApproveResult approveResult) {
-        if (Objects.equals(this.orderOutId, approveResult.getOrderId()))
+        if (Objects.equals(this.id, approveResult.getOrderId()))
         {
             this.approveResult = approveResult;
         }

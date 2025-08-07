@@ -11,6 +11,6 @@ public class OrderResponseDto extends BaseEntity {
     private List<OrderCartItemDto> orderCartItemDtos;
     private Long amount;
     private OrderStatus orderStatus;
-    private String orderId;
+    private Long orderId;
     private String orderDate;
 }

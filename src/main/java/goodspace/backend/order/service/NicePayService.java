@@ -15,7 +15,7 @@ public class NicePayService {
 
     public void MappingOrderWithPaymentApproveResult(PaymentApproveResult approveResult) {
         try {
-            Order order = orderRepository.findByOrderOutId(approveResult.getOrderId())
+            Order order = orderRepository.findById(approveResult.getOrderId())
                     .orElseThrow(() -> new IllegalArgumentException("결제 성공 후, 결제API에서 응답받은 orderId로 orderRepository에 해당 order를 찾을 수 없습니다."));
 
             order.setPaymentApproveResult(approveResult);
