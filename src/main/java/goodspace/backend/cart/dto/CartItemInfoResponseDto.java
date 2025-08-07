@@ -2,6 +2,7 @@ package goodspace.backend.cart.dto;
 
 import goodspace.backend.global.domain.Item;
 import goodspace.backend.cart.domain.CartItem;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
@@ -19,6 +20,7 @@ public record CartItemInfoResponseDto(
     }
 
     @Builder
+    @Schema(name = "CartItemInfoResponseDto.ItemDto")
     public record ItemDto(
             String name,
             Integer price,
