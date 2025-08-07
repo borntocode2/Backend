@@ -49,9 +49,11 @@ public class OrderService {
         order.setOrderCartItems(orderCartItems);
         orderRepository.save(order);
 
-
-
         return order.getId();
+    }
+
+    public void deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
     }
 
     public OrderResponseDto findOrderByOrderId(Long orderId) {
