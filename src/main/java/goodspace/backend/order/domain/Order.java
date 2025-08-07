@@ -21,7 +21,7 @@ import java.util.Objects;
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Embedded
     private PaymentApproveResult approveResult;
@@ -73,7 +73,7 @@ public class Order extends BaseEntity {
     }
 
     public void setPaymentApproveResult(PaymentApproveResult approveResult) {
-        if (Objects.equals(this.orderOutId, approveResult.getOrderId()))
+        if (Objects.equals(this.id, approveResult.getOrderId()))
         {
             this.approveResult = approveResult;
         }

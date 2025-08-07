@@ -86,7 +86,7 @@ public class NicePayController {
                     } catch (IllegalArgumentException e) {
                         return ResponseEntity
                                 .status(HttpStatus.BAD_REQUEST)
-                                .body(Map.of("error", "IllegalArgumentException에러가 발생하였습니다.PaymentApproveResult와 order매핑에 실패하였습니다." + e.getMessage()));
+                                .body(Map.of("error", "[결제성공]IllegalArgumentException에러가 발생하였습니다.PaymentApproveResult와 order매핑에 실패하였습니다." + e.getMessage()));
                     } catch (Exception e) {
                         log.info("[info 에러 발생]", e.getMessage());
                         tryCount--;
@@ -96,28 +96,31 @@ public class NicePayController {
                 if (tryCount == 0){
                     return ResponseEntity
                             .status(HttpStatus.BAD_REQUEST)
-                            .body(Map.of("error", "IllegalArgumentException를 제외한 에러가 발생하였습니다. 상위 에러메세지를 확인하세요."));
+                            .body(Map.of("error", "[결제성공]IllegalArgumentException를 제외한 에러가 발생하였습니다. 상위 에러메세지를 확인하세요."));
                 }
             }
 
+            //결제실패: 2XX, 3XX이나 결제 실패 코드 발생
             else {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Payment의 ResultCode가 0000이 아닙니다. 결제에 실패하였습니다."));
+                        .body(Map.of("error", "[결제실패]Payment의 ResultCode가 0000이 아닙니다. 결제에 실패하였습니다."));
             }
 
+            //결제실패: 400 - 우리 서버의 값이 이상한 탓에 결제 실패
         } catch (HttpClientErrorException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "클라이언트 에러 발생." + e.getMessage()));
+                    .body(Map.of("error", "[결제실패]클라이언트 에러 발생." + e.getMessage()));
+            //결제실패: 500 - 나이스페이측 문제 발생으로 인해 결제 실패
         } catch (HttpServerErrorException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "서버에 에러 발생." + e.getMessage()));
+                    .body(Map.of("error", "[결제실패]서버에 에러 발생." + e.getMessage()));
         }
 
         return ResponseEntity
-                .ok(Map.of("message", "결제에 성공했습니다."));
+                .ok(Map.of("message", "[결제성공] 결제에 성공했습니다."));
     }
 
     @RequestMapping(value="/cancel")

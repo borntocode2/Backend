@@ -13,7 +13,7 @@ public class PaymentApproveResult {
     private String resultMsg;
     private String tid;
     private String cancelledTid;
-    private String orderId;
+    private Long orderId;
     private String ediDate;
     private String signature;
     private String status;
