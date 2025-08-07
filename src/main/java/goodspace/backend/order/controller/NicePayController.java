@@ -7,6 +7,7 @@ import goodspace.backend.order.domain.PaymentApproveResult;
 import goodspace.backend.order.dto.PaymentVerifyRequestDto;
 import goodspace.backend.order.service.NicePayService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class NicePayController {
     private final NicePayService nicePayService;
 
@@ -36,7 +38,7 @@ public class NicePayController {
     }
 
     @RequestMapping("/payment/verify")
-    public String verifyPayment(@ModelAttribute PaymentVerifyRequestDto paymentVerifyResultDto, Model model) throws JsonProcessingException {
+    public ResponseEntity<Map<String, String>> verifyPayment(@ModelAttribute PaymentVerifyRequestDto paymentVerifyResultDto, Model model) throws JsonProcessingException {
 
         model.addAttribute("paymentVerifyResultDto", paymentVerifyResultDto);
 
@@ -73,25 +75,49 @@ public class NicePayController {
 
             System.out.println(responseNode.toPrettyString());
 
-            if (resultCode.equalsIgnoreCase("0000")){
-                //TODO
-                //해당 결제 응답을 유저와 매핑하여 저장할 서비스 - 레포지토리 로직 필요
-                // tid와 amout저장 후에 추후 환불로직에도 쓰여야 함.
-                PaymentApproveResult result = mapper.treeToValue(responseNode, PaymentApproveResult.class);
-                nicePayService.MappingOrderWithPaymentApproveResult(result);
+            if (resultCode.equalsIgnoreCase("0000")) {
+                int tryCount = 5;
 
+                while (tryCount > 0) {
+                    try {
+                        PaymentApproveResult result = mapper.treeToValue(responseNode, PaymentApproveResult.class);
+                        nicePayService.MappingOrderWithPaymentApproveResult(result);
+                        break;
+                    } catch (IllegalArgumentException e) {
+                        return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(Map.of("error", "IllegalArgumentException에러가 발생하였습니다.PaymentApproveResult와 order매핑에 실패하였습니다." + e.getMessage()));
+                    } catch (Exception e) {
+                        log.info("[info 에러 발생]", e.getMessage());
+                        tryCount--;
+                    }
+                }
+
+                if (tryCount == 0){
+                    return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(Map.of("error", "IllegalArgumentException를 제외한 에러가 발생하였습니다. 상위 에러메세지를 확인하세요."));
+                }
             }
-            else{
 
+            else {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Payment의 ResultCode가 0000이 아닙니다. 결제에 실패하였습니다."));
             }
 
         } catch (HttpClientErrorException e) {
-            System.out.println("클라이언트 에러: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "클라이언트 에러 발생." + e.getMessage()));
         } catch (HttpServerErrorException e) {
-            System.out.println("서버 에러: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "서버에 에러 발생." + e.getMessage()));
         }
 
-        return "paymentVerifyResult";
+        return ResponseEntity
+                .ok(Map.of("message", "결제에 성공했습니다."));
     }
 
     @RequestMapping(value="/cancel")

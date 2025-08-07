@@ -15,11 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private final OrderService orderService;
 
-    //TODO - order에 delivery 임베더블 해놨으니, 로직 수정하시오.
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto orderRequest) {
-        orderService.saveOrder(orderRequest);
-        return ResponseEntity.ok("Order created");
+    public ResponseEntity<Long> createOrder(@RequestBody OrderRequestDto orderRequest) {
+        return ResponseEntity.ok(orderService.saveOrder(orderRequest));
     }
 }
 
