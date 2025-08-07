@@ -11,6 +11,7 @@ import goodspace.backend.global.repository.ItemRepository;
 import goodspace.backend.order.repository.OrderRepository;
 import goodspace.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +24,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
 
-    public void saveOrder(OrderRequestDto orderRequest) {
+    //TODO - error handling
+    public Long saveOrder(OrderRequestDto orderRequest) {
         User user = userRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 User를 매핑하는 Service과정에서 User를 찾는 것을 실패했습니다."));
 
         Order order = Order.builder()
                 .user(user)
-                .orderOutId(orderRequest.getOrderOutId())
+                .delivery(user.getDelivery())
                 .build();
 
         List<OrderCartItem> orderCartItems = orderRequest.getOrderCartItemDtos().stream()
@@ -45,8 +47,11 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         order.setOrderCartItems(orderCartItems);
-
         orderRepository.save(order);
+
+
+
+        return order.getId();
     }
 
     public OrderResponseDto findOrderByOrderId(String orderId) {

@@ -29,8 +29,6 @@ public class Order extends BaseEntity {
     @Embedded
     private Delivery delivery;
 
-    private String orderOutId;
-
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
