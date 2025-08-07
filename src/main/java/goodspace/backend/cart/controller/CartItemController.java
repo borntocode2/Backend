@@ -15,6 +15,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
+@RequestMapping("/cart")
 @RequiredArgsConstructor
 @Tag(
         name = "장바구니 API",
