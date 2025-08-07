@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/order")
@@ -18,8 +20,8 @@ public class OrderController {
             description = "결제가 완료되기 전, order를 생성합니다."
     )
     @PostMapping
-    public ResponseEntity<Long> createOrder(@RequestBody OrderRequestDto orderRequest) {
-        return ResponseEntity.ok(orderService.saveOrder(orderRequest));
+    public ResponseEntity<Long> createOrder(Principal principal, @RequestBody OrderRequestDto orderRequest) {
+        return ResponseEntity.ok(orderService.saveOrder(principal, orderRequest));
     }
 
     @Operation(

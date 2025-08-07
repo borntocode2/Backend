@@ -1,5 +1,6 @@
 package goodspace.backend.order.service;
 
+import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderCartItem;
 import goodspace.backend.global.domain.Item;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,8 +27,8 @@ public class OrderService {
     private final ItemRepository itemRepository;
 
     //TODO - error handling
-    public Long saveOrder(OrderRequestDto orderRequest) {
-        User user = userRepository.findById(orderRequest.getUserId())
+    public Long saveOrder(Principal principal, OrderRequestDto orderRequest) {
+        User user = userRepository.findById(TokenProvider.getUserIdFromPrincipal(principal))
                 .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 User를 매핑하는 Service과정에서 User를 찾는 것을 실패했습니다."));
 
         Order order = Order.builder()
