@@ -20,8 +20,8 @@ import java.util.List;
 @RequestMapping("/admin/client")
 @RequiredArgsConstructor
 @Tag(
-        name = "클라이언트 관리 API",
-        description = "클라이언트 관리 관련 기능(관리자 전용)"
+        name = "클라이언트 관리 API(관리자 전용)",
+        description = "클라이언트 관리 관련 기능"
 )
 public class ClientManageController {
     private final ClientManageService clientManageService;

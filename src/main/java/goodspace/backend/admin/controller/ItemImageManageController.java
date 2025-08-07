@@ -17,8 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/admin/item/image")
 @RequiredArgsConstructor
 @Tag(
-        name = "상품 이미지 관리 API",
-        description = "상품 이미지 관리 관련 기능(관리자 전용)"
+        name = "상품 이미지 관리 API(관리자 전용)",
+        description = "상품 이미지 관리 관련 기능"
 )
 public class ItemImageManageController {
     private final ItemImageManageService itemImageManageService;

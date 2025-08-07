@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/admin/question")
 @RequiredArgsConstructor
 @Tag(
-        name = "관리자 전용 QNA게시판",
+        name = "QNA게시판(관리자 전용)",
         description = "답변 등록 및 질문 상태 변경"
 )
 public class AdminQuestionController {

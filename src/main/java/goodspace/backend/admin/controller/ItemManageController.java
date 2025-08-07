@@ -17,8 +17,8 @@ import java.util.List;
 @RequestMapping("/admin/item")
 @RequiredArgsConstructor
 @Tag(
-        name = "상품 관리 API",
-        description = "상품 관리 관련 기능(관리자 전용)"
+        name = "상품 관리 API(관리자 전용)",
+        description = "상품 관리 관련 기능"
 )
 public class ItemManageController {
     private final ItemManageService itemManageService;
