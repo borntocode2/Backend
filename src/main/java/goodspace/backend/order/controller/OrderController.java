@@ -1,5 +1,6 @@
 package goodspace.backend.order.controller;
 
+import goodspace.backend.order.dto.OrderCreateResponseDto;
 import goodspace.backend.order.dto.OrderRequestDto;
 import goodspace.backend.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,8 +21,12 @@ public class OrderController {
             description = "결제가 완료되기 전, order를 생성합니다."
     )
     @PostMapping
-    public ResponseEntity<Long> createOrder(Principal principal, @RequestBody OrderRequestDto orderRequest) {
-        return ResponseEntity.ok(orderService.saveOrder(principal, orderRequest));
+    public ResponseEntity<OrderCreateResponseDto> createOrder(Principal principal, @RequestBody OrderRequestDto orderRequest) {
+        return ResponseEntity.ok(
+                OrderCreateResponseDto.builder()
+                        .orderId(orderService.saveOrder(principal, orderRequest))
+                        .build()
+        );
     }
 
     @Operation(
