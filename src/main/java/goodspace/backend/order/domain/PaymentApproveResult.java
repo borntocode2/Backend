@@ -2,12 +2,17 @@ package goodspace.backend.order.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Embeddable
+@EqualsAndHashCode
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PaymentApproveResult {
     private String resultCode;
     private String resultMsg;
@@ -58,6 +63,10 @@ public class PaymentApproveResult {
 
     @Data
     @Embeddable
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
     public static class CancelInfo {
         private String cancelDate;
         private String cancelAmount;
@@ -68,6 +77,10 @@ public class PaymentApproveResult {
 
     @Data
     @Embeddable
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
     public static class CashReceiptInfo {
         private String receiptId;
         private String orgTid;
@@ -82,12 +95,20 @@ public class PaymentApproveResult {
 
     @Data
     @Embeddable
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
     public static class Coupon {
         private int couponAmt;
     }
 
     @Data
     @Embeddable
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
     public static class CardInfo {
         private String cardCode;
         private String cardName;
@@ -103,6 +124,10 @@ public class PaymentApproveResult {
 
     @Data
     @Embeddable
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
     public static class VbankInfo {
         private String vbankName;
         private String vbankNumber;
@@ -113,6 +138,10 @@ public class PaymentApproveResult {
 
     @Data
     @Embeddable
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
     public static class Bank {
         private String bankCode;
         private String bankName;

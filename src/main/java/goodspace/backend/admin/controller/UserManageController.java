@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/admin/user")
 @RequiredArgsConstructor
 @Tag(
-        name = "회원 API(관리자용)",
+        name = "회원 API(관리자 전용)",
         description = "회원 정보 조회/수정 관련 기능"
 )
 public class UserManageController {
