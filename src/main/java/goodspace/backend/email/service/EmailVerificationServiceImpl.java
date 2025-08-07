@@ -25,6 +25,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private static final int EXPIRE_MINUTES = 5;
 
     private static final Supplier<IllegalArgumentException> DUPLICATED_EMAIL = () -> new IllegalArgumentException("이미 존재하는 이메일입니다.");
+    private static final Supplier<IllegalArgumentException> NOT_DUPLICATED_EMAIL = () -> new IllegalArgumentException("존재하지 않는 이메일입니다.");
     private static final Supplier<EntityNotFoundException> EMAIL_NOT_FOUND = () -> new EntityNotFoundException("이메일을 찾을 수 없습니다.");
     private static final Supplier<IllegalArgumentException> ILLEGAL_CODE = () -> new IllegalArgumentException("코드가 올바르지 않습니다.");
     private static final Supplier<IllegalStateException> EXPIRED = () -> new IllegalStateException("이메일 인증이 만료되었습니다.");
@@ -41,9 +42,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     public void sendVerificationCode(CodeSendRequestDto requestDto) throws MessagingException {
         String email = requestDto.email();
 
-        if (isDuplicatedEmail(email)) {
-            throw DUPLICATED_EMAIL.get();
-        }
+        validateDuplicate(email, requestDto.shouldAlreadyExist());
 
         String code = codeGenerator.generate(CODE_LENGTH);
         LocalDateTime now = LocalDateTime.now();
@@ -78,6 +77,16 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         }
 
         emailVerification.verify();
+    }
+
+    private void validateDuplicate(String email, boolean shouldDuplicate) {
+        if (shouldDuplicate && !isDuplicatedEmail(email)) {
+            throw NOT_DUPLICATED_EMAIL.get();
+        }
+
+        if (!shouldDuplicate && isDuplicatedEmail(email)) {
+            throw DUPLICATED_EMAIL.get();
+        }
     }
 
     private boolean isDuplicatedEmail(String email) {
