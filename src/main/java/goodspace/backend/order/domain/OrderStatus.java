@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-    PAYMENT_CONFIRMED("결제 확인"),
+    PAYMENT_CHECKING("결제 확인"),
     PREPARING_PRODUCT("제작 준비중"),
     MAKING_PRODUCT("제작 중"),
     PREPARING_DELIVERY("배송 준비중"),
