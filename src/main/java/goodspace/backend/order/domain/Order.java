@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -27,14 +28,19 @@ public class Order extends BaseEntity {
     private PaymentApproveResult approveResult;
 
     @Embedded
+    @Setter
     private Delivery delivery;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CHECKING;
 
+    @Setter
+    private String trackingNumber;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @Setter
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -70,6 +76,10 @@ public class Order extends BaseEntity {
         else if (status.equals("취소")){
             this.orderStatus = OrderStatus.CANCELED;
         }
+    }
+
+    public void updateOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
     public void setPaymentApproveResult(PaymentApproveResult approveResult) {

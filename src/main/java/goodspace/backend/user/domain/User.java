@@ -115,4 +115,23 @@ public abstract class User extends BaseEntity {
         cartItems.remove(cartItem);
         cartItem.setUser(null);
     }
+
+    /**
+     * User - Order 연관관계 편의 메서드
+     */
+    public void addOrder(Order order) {
+        orders.add(order);
+        order.setUser(this);
+    }
+
+    public void addOrders(Order... orders) {
+        for (Order order : orders) {
+            addOrder(order);
+        }
+    }
+
+    public void removeOrder(Order order) {
+        orders.remove(order);
+        order.setUser(null);
+    }
 }
