@@ -1,6 +1,7 @@
 package goodspace.backend.authorization.controller;
 
 import goodspace.backend.authorization.dto.naver.NaverAppAuthRequestDto;
+import goodspace.backend.authorization.dto.request.WebOauthRequestDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
 import goodspace.backend.authorization.service.facebook.FacebookOAuthService;
 import goodspace.backend.authorization.service.google.GoogleOAuthService;
@@ -28,13 +29,13 @@ public class OAuthController {
     private final FacebookOAuthService facebookOAuthService;
     private final NaverOAuthService naverOAuthService;
 
-    @GetMapping("/google/web")
+    @PostMapping("/google/web")
     @Operation(
             summary = "구글 소셜 로그인(웹)",
             description = "구글을 통해 사용자를 인증하고 JWT를 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> googleWebAuthorization(@RequestParam(name = "code") String code) {
-        String accessToken = googleOAuthService.getAccessToken(code);
+    public ResponseEntity<TokenResponseDto> googleWebAuthorization(@RequestBody WebOauthRequestDto requestDto) {
+        String accessToken = googleOAuthService.getAccessToken(requestDto.code());
         TokenResponseDto responseDto = googleOAuthService.signUpOrSignIn(accessToken);
 
         return ResponseEntity.ok(responseDto);
@@ -62,13 +63,13 @@ public class OAuthController {
                 .build();
     }
 
-    @GetMapping("/kakao/web")
+    @PostMapping("/kakao/web")
     @Operation(
             summary = "카카오 소셜 로그인(웹)",
             description = "카카오가 발급한 code를 통해 사용자를 인증하고 JWT를 발급합니다."
     )
-    public ResponseEntity<TokenResponseDto> kakaoWebAuthorization(@RequestParam(name = "code") String code) {
-        String accessToken = kaKaoOAuthService.getAccessToken(code);
+    public ResponseEntity<TokenResponseDto> kakaoWebAuthorization(@RequestBody WebOauthRequestDto requestDto) {
+        String accessToken = kaKaoOAuthService.getAccessToken(requestDto.code());
         TokenResponseDto responseDto = kaKaoOAuthService.signUpOrSignIn(accessToken);
 
         return ResponseEntity.ok(responseDto);
@@ -96,13 +97,13 @@ public class OAuthController {
                 .build();
     }
 
-    @GetMapping("/facebook/web")
+    @PostMapping("/facebook/web")
     @Operation(
             summary = "페이스북 소셜 로그인(웹)",
             description = "페이스북을 통해 사용자를 인증하고 JWT를 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> facebookWebAuthorization(@RequestParam(name = "code") String code) {
-        String accessToken = facebookOAuthService.getAccessToken(code);
+    public ResponseEntity<TokenResponseDto> facebookWebAuthorization(@RequestBody WebOauthRequestDto requestDto) {
+        String accessToken = facebookOAuthService.getAccessToken(requestDto.code());
         TokenResponseDto responseDto = facebookOAuthService.signUpOrSignIn(accessToken);
 
         return ResponseEntity.ok(responseDto);
@@ -130,13 +131,13 @@ public class OAuthController {
                 .build();
     }
 
-    @GetMapping("/naver/web")
+    @PostMapping("/naver/web")
     @Operation(
             summary = "네이버 소셜 로그인(웹)",
             description = "네이버를 통해 사용자를 인증하고 JWT를 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> naverWebAuthorization(@RequestParam(name = "code") String code) {
-        String accessToken = naverOAuthService.getAccessToken(code);
+    public ResponseEntity<TokenResponseDto> naverWebAuthorization(@RequestBody WebOauthRequestDto requestDto) {
+        String accessToken = naverOAuthService.getAccessToken(requestDto.code());
         TokenResponseDto responseDto = naverOAuthService.signUpOrSignIn(accessToken);
 
         return ResponseEntity.ok(responseDto);
