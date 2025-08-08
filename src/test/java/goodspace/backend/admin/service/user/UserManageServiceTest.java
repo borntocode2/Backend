@@ -96,6 +96,6 @@ class UserManageServiceTest {
                 Objects.equals(user.getEmail(), dto.email()) &&
                 Objects.equals(user.getPhoneNumber(), dto.phoneNumber()) &&
                 Objects.equals(user.getRoles(), dto.roles()) &&
-                Objects.equals(user.getDelivery(), dto.deliveryInfo());
+                Objects.equals(user.getDeliveryInfo(), dto.deliveryInfo());
     }
 }

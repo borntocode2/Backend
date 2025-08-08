@@ -12,7 +12,6 @@ import goodspace.backend.global.repository.ItemRepository;
 import goodspace.backend.order.repository.OrderRepository;
 import goodspace.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -33,7 +32,7 @@ public class OrderService {
 
         Order order = Order.builder()
                 .user(user)
-                .delivery(user.getDelivery())
+                .deliveryInfo(user.getDeliveryInfo())
                 .build();
 
         List<OrderCartItem> orderCartItems = orderRequest.getOrderCartItemDtos().stream()

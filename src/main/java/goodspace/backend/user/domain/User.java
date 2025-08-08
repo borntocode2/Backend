@@ -51,7 +51,7 @@ public abstract class User extends BaseEntity {
     private List<Question> question = new ArrayList<>();
 
     @Embedded
-    private Delivery delivery;
+    private DeliveryInfo deliveryInfo;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshToken refreshToken;
@@ -92,7 +92,7 @@ public abstract class User extends BaseEntity {
         this.phoneNumber = userMyPageDto.getPhoneNumber();
         this.name = userMyPageDto.getName();
         this.dateOfBirth = userMyPageDto.getDateOfBirth();
-        this.delivery = Delivery.from(userMyPageDto);
+        this.deliveryInfo = DeliveryInfo.from(userMyPageDto);
     }
 
     /**

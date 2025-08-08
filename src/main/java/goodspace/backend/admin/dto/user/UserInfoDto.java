@@ -14,7 +14,7 @@ public record UserInfoDto(
         String email,
         String phoneNumber,
         List<Role> roles,
-        Delivery deliveryInfo,
+        DeliveryInfo deliveryInfo,
         OAuthType oauthType
 ) {
     public static UserInfoDto from(User user) {
@@ -25,7 +25,7 @@ public record UserInfoDto(
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .roles(user.getRoles())
-                .deliveryInfo(user.getDelivery())
+                .deliveryInfo(user.getDeliveryInfo())
                 .oauthType(user instanceof OAuthUser ? ((OAuthUser) user).getOauthType() : OAuthType.GOOD_SPACE)
                 .build();
     }

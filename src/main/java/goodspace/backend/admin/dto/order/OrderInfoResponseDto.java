@@ -5,7 +5,7 @@ import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderCartItem;
 import goodspace.backend.order.domain.OrderStatus;
 import goodspace.backend.order.domain.PaymentApproveResult;
-import goodspace.backend.user.domain.Delivery;
+import goodspace.backend.user.domain.DeliveryInfo;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ import java.util.List;
 public record OrderInfoResponseDto(
         Long id,
         PaymentApproveResult approveResult,
-        Delivery deliveryInfo,
+        DeliveryInfo deliveryInfo,
         OrderStatus status,
         LocalDateTime createAt,
         LocalDateTime updatedAt,
@@ -30,7 +30,7 @@ public record OrderInfoResponseDto(
         return OrderInfoResponseDto.builder()
                 .id(order.getId())
                 .approveResult(order.getApproveResult())
-                .deliveryInfo(order.getDelivery())
+                .deliveryInfo(order.getDeliveryInfo())
                 .status(order.getOrderStatus())
                 .createAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
