@@ -1,5 +1,6 @@
 package goodspace.backend.authorization.controller;
 
+import goodspace.backend.authorization.dto.naver.NaverAppAuthRequestDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
 import goodspace.backend.authorization.service.facebook.FacebookOAuthService;
 import goodspace.backend.authorization.service.google.GoogleOAuthService;
@@ -10,10 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.SEE_OTHER;
 
@@ -144,13 +142,13 @@ public class OAuthController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/naver/app")
+    @PostMapping("/naver/app")
     @Operation(
             summary = "네이버 소셜 로그인(앱)",
             description = "네이버가 발급한 AccessToken을 통해 사용자를 인증하고 JWT를 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> naverAppAuthorization(@RequestParam(name = "accessToken") String accessToken) {
-        TokenResponseDto responseDto = naverOAuthService.signUpOrSignIn(accessToken);
+    public ResponseEntity<TokenResponseDto> naverAppAuthorization(@RequestBody NaverAppAuthRequestDto requestDto) {
+        TokenResponseDto responseDto = naverOAuthService.signUpOrSignIn(requestDto.accessToken());
 
         return ResponseEntity.ok(responseDto);
     }
