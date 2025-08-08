@@ -22,6 +22,7 @@ public class KakaoUserInfoDto {
 
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     static class KakaoAccount {
         @SerializedName("email_needs_agreement")
         private Boolean emailNeedsAgreement;

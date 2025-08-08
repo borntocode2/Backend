@@ -21,6 +21,7 @@ public class NaverUserInfoDto {
 
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     static class Response {
         private String id;
         private String email;
