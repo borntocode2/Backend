@@ -38,9 +38,9 @@ public class NicePayController {
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +
                 "    <title>NicePay 결제</title>\n" +
+                "    <script src=\"https://pay.nicepay.co.kr/v1/js/\"></script>\n" +
                 "</head>\n" +
-                "<body>\n" +
-                "<script src=\"https://pay.nicepay.co.kr/v1/js/\"></script>\n" +
+                "<body onload=\"serverAuth()\">\n" +
                 "\n" +
                 "<script>\n" +
                 "    function serverAuth() {\n" +
@@ -52,13 +52,11 @@ public class NicePayController {
                 "            goodsName: '" + goodsName + "',\n" +
                 "            returnUrl: 'http://13.209.4.64:8080/payment/verify',\n" +
                 "            fnError: function (result) {\n" +
-                "                alert('개발자확인용 : ' + result.errorMsg + '')\n" +
+                "                alert('개발자확인용 : ' + result.errorMsg);\n" +
                 "            }\n" +
                 "        });\n" +
                 "    }\n" +
                 "</script>\n" +
-                "\n" +
-                "<button onclick=\"serverAuth()\">serverAuth 결제하기</button>\n" +
                 "\n" +
                 "</body>\n" +
                 "</html>";
