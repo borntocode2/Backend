@@ -5,7 +5,7 @@ import goodspace.backend.email.repository.EmailVerificationRepository;
 import goodspace.backend.global.password.PasswordValidator;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.global.security.TokenType;
-import goodspace.backend.user.domain.Delivery;
+import goodspace.backend.user.domain.DeliveryInfo;
 import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.user.domain.User;
 import goodspace.backend.user.dto.*;
@@ -39,7 +39,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found while getting information"));
 
-        Delivery delivery = user.getDelivery();
+        DeliveryInfo deliveryInfo = user.getDeliveryInfo();
 
 
         UserMyPageResponseDto.UserMyPageResponseDtoBuilder builder = UserMyPageResponseDto.builder()
@@ -48,13 +48,13 @@ public class UserService {
                 .name(user.getName())
                 .phoneNumber(user.getPhoneNumber());
 
-        if (delivery != null) {
-            builder.recipient(delivery.getRecipient())
-                    .address(delivery.getAddress())
-                    .contactNumber2(delivery.getContactNumber2())
-                    .contactNumber1(delivery.getContactNumber1())
-                    .detailedAddress(delivery.getDetailedAddress())
-                    .postalCode(delivery.getPostalCode());
+        if (deliveryInfo != null) {
+            builder.recipient(deliveryInfo.getRecipient())
+                    .address(deliveryInfo.getAddress())
+                    .contactNumber2(deliveryInfo.getContactNumber2())
+                    .contactNumber1(deliveryInfo.getContactNumber1())
+                    .detailedAddress(deliveryInfo.getDetailedAddress())
+                    .postalCode(deliveryInfo.getPostalCode());
         } else {
             builder.recipient(null)
                     .address(null)

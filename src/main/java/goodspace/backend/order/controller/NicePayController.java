@@ -21,20 +21,46 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 public class NicePayController {
     private final NicePayService nicePayService;
 
-    @GetMapping("/payment")
-    public String showPaymentPage() {
-        try {
-            return "nicepay";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
+    @GetMapping(value = "/html", produces = MediaType.TEXT_HTML_VALUE)
+    public String showPaymentPage(@RequestParam int amount,
+                                  @RequestParam String goodsName,
+                                  @RequestParam String orderId) {
+
+        return "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>NicePay 결제</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "<script src=\"https://pay.nicepay.co.kr/v1/js/\"></script>\n" +
+                "\n" +
+                "<script>\n" +
+                "    function serverAuth() {\n" +
+                "        AUTHNICE.requestPay({\n" +
+                "            clientId: 'S2_fb903ce81792411ab6c459ec3a2a82c6',\n" +
+                "            method: 'card',\n" +
+                "            orderId: '" + orderId + "',\n" +
+                "            amount: " + amount + ",\n" +
+                "            goodsName: '" + goodsName + "',\n" +
+                "            returnUrl: 'http://13.209.4.64:8080/payment/verify',\n" +
+                "            fnError: function (result) {\n" +
+                "                alert('개발자확인용 : ' + result.errorMsg + '')\n" +
+                "            }\n" +
+                "        });\n" +
+                "    }\n" +
+                "</script>\n" +
+                "\n" +
+                "<button onclick=\"serverAuth()\">serverAuth 결제하기</button>\n" +
+                "\n" +
+                "</body>\n" +
+                "</html>";
     }
 
     @RequestMapping("/payment/verify")
