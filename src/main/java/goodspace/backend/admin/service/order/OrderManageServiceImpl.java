@@ -64,7 +64,7 @@ public class OrderManageServiceImpl implements OrderManageService {
                 .orElseThrow(ORDER_NOT_FOUND);
 
         order.setPaymentApproveResult(requestDto.approveResult());
-        order.setDelivery(requestDto.deliveryInfo());
+        order.setDeliveryInfo(requestDto.deliveryInfo());
     }
 
     @Override
