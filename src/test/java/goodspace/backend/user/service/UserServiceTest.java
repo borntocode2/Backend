@@ -6,6 +6,7 @@ import goodspace.backend.fixture.EmailVerificationFixture;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
 import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.user.dto.EmailUpdateRequestDto;
+import goodspace.backend.user.dto.PasswordUpdateByVerifiedEmailRequestDto;
 import goodspace.backend.user.dto.PasswordUpdateRequestDto;
 import goodspace.backend.user.dto.RefreshTokenResponseDto;
 import goodspace.backend.user.repository.UserRepository;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class UserServiceTest {
     static final String DEFAULT_PASSWORD = "HelloPassword1!";
     static final String DEFAULT_REFRESH_TOKEN = "defaultRefreshToken";
+    static final String NEW_PASSWORD = "HelloNewPassword1!";
 
     @Autowired
     UserService userService;
@@ -37,6 +39,7 @@ class UserServiceTest {
     EmailVerificationRepository emailVerificationRepository;
 
     GoodSpaceUser user;
+    EmailVerification verifiedEmailOfUser;
     EmailVerification verifiedEmail;
     EmailVerification notVerifiedEmail;
 
@@ -45,6 +48,10 @@ class UserServiceTest {
         user = userRepository.save(GoodSpaceUserFixture.DEFAULT.getInstance());
         user.updatePassword(passwordEncoder.encode(DEFAULT_PASSWORD));
         user.updateRefreshToken(DEFAULT_REFRESH_TOKEN);
+
+        verifiedEmailOfUser = emailVerificationRepository.save(EmailVerificationFixture.DEFAULT.getInstance());
+        verifiedEmailOfUser.verify();
+        user.setEmail(verifiedEmailOfUser.getEmail());
 
         verifiedEmail = emailVerificationRepository.save(EmailVerificationFixture.VERIFIED.getInstance());
         notVerifiedEmail = emailVerificationRepository.save(EmailVerificationFixture.NOT_VERIFIED.getInstance());
@@ -56,17 +63,67 @@ class UserServiceTest {
         @DisplayName("비밀번호를 변경한다")
         void changePassword() {
             // given
-            String newPassword = "HelloNewPassword1!";
             PasswordUpdateRequestDto requestDto = PasswordUpdateRequestDto.builder()
                     .prevPassword(DEFAULT_PASSWORD)
-                    .newPassword(newPassword)
+                    .newPassword(NEW_PASSWORD)
                     .build();
 
             // when
             userService.updatePassword(user.getId(), requestDto);
 
             // then
-            assertThat(isSamePassword(newPassword, user.getPassword())).isTrue();
+            assertThat(isSamePassword(NEW_PASSWORD, user.getPassword())).isTrue();
+        }
+
+        @Test
+        @DisplayName("리프레쉬 토큰을 새로 발급한다")
+        void reissueRefreshToken() {
+            // given
+            PasswordUpdateRequestDto requestDto = PasswordUpdateRequestDto.builder()
+                    .prevPassword(DEFAULT_PASSWORD)
+                    .newPassword(NEW_PASSWORD)
+                    .build();
+
+            // when
+            RefreshTokenResponseDto refreshTokenDto = userService.updatePassword(user.getId(), requestDto);
+
+            // then
+            assertThat(user.getRefreshToken()).isEqualTo(refreshTokenDto.refreshToken());
+        }
+    }
+
+    @Nested
+    class updatePasswordByVerifiedEmail {
+        @Test
+        @DisplayName("비밀번호를 변경한다")
+        void changePassword() {
+            // given
+            PasswordUpdateByVerifiedEmailRequestDto requestDto = PasswordUpdateByVerifiedEmailRequestDto.builder()
+                    .email(verifiedEmailOfUser.getEmail())
+                    .password(NEW_PASSWORD)
+                    .build();
+
+            // when
+            userService.updatePasswordByVerifiedEmail(requestDto);
+
+            // then
+            assertThat(isSamePassword(NEW_PASSWORD, user.getPassword())).isTrue();
+        }
+
+        @Test
+        @DisplayName("리프레쉬 토큰을 새로 발급한다")
+        void reissueRefreshToken() {
+            // given
+            PasswordUpdateByVerifiedEmailRequestDto requestDto = PasswordUpdateByVerifiedEmailRequestDto.builder()
+                    .email(verifiedEmailOfUser.getEmail())
+                    .password(NEW_PASSWORD)
+                    .build();
+
+            // when
+            RefreshTokenResponseDto refreshTokenDto = userService.updatePasswordByVerifiedEmail(requestDto);
+
+            // then
+            assertThat(user.getRefreshToken()).isEqualTo(refreshTokenDto.refreshToken());
         }
     }
 

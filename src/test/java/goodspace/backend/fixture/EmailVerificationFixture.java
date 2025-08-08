@@ -5,6 +5,12 @@ import goodspace.backend.email.entity.EmailVerification;
 import java.time.LocalDateTime;
 
 public enum EmailVerificationFixture {
+    DEFAULT(
+            "default@email.com",
+            "444555",
+            LocalDateTime.now().plusMinutes(5),
+            true
+    ),
     NOT_VERIFIED(
             "not@email.com",
             "123123",
