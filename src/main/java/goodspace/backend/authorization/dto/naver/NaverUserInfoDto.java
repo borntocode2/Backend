@@ -3,6 +3,7 @@ package goodspace.backend.authorization.dto.naver;
 import goodspace.backend.user.domain.OAuthUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static goodspace.backend.user.domain.OAuthType.NAVER;
 
@@ -11,6 +12,7 @@ import static goodspace.backend.user.domain.OAuthType.NAVER;
  */
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class NaverUserInfoDto {
     private String resultCode;
     private String message;
