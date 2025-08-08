@@ -48,11 +48,10 @@ public class DeliveryService {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("Order not found"));
 
         orderMappingWithDeliveryDtos(order, deliveryStatusDto, historyList);
-
     }
 
 
-    public void orderMappingWithDeliveryDtos(Order order, DeliveryStatusDto deliveryStatusDto, List<DeliveryHistoryDto> deliveryHistoryDtos) throws JsonProcessingException {
+    private void orderMappingWithDeliveryDtos(Order order, DeliveryStatusDto deliveryStatusDto, List<DeliveryHistoryDto> deliveryHistoryDtos) throws JsonProcessingException {
         if (order != null && deliveryStatusDto != null && deliveryHistoryDtos != null) {
             order.setDeliveryStatus(DeliveryStatus.builder()
                             .sender(deliveryStatusDto.getSender())
