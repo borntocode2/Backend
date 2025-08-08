@@ -99,6 +99,22 @@ public class UserService {
     }
 
     @Transactional
+    public RefreshTokenResponseDto updatePasswordByVerifiedEmail(PasswordUpdateByVerifiedEmailRequestDto requestDto) {
+        GoodSpaceUser user = userRepository.findGoodSpaceUserByEmail(requestDto.email())
+                .orElseThrow(USER_NOT_FOUND);
+        checkEmailVerification(requestDto.email());
+
+        validatePassword(requestDto.password());
+
+        String encodedPassword = passwordEncoder.encode(requestDto.password());
+        user.updatePassword(encodedPassword);
+
+        return RefreshTokenResponseDto.builder()
+                .refreshToken(createNewRefreshToken(user))
+                .build();
+    }
+
+    @Transactional
     public RefreshTokenResponseDto updateEmail(long userId, EmailUpdateRequestDto requestDto) {
         checkEmailVerification(requestDto.email());
 

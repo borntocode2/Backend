@@ -49,7 +49,7 @@ public class UserController {
 
     @PatchMapping("/password")
     @Operation(
-            summary = "비밀번호 수정",
+            summary = "비밀번호 수정(마이페이지 용도)",
             description = "비밀번호를 수정합니다."
     )
     public ResponseEntity<RefreshTokenResponseDto> updatePassword(
@@ -58,6 +58,19 @@ public class UserController {
     ) {
         long id = principalUtil.findIdFromPrincipal(principal);
         RefreshTokenResponseDto responseDto = userService.updatePassword(id, requestDto);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PatchMapping("/forget-password")
+    @Operation(
+            summary = "비밀번호 수정(비밀번호를 잊어버렸을 때)",
+            description = "비밀번호를 수정합니다. 사전에 이메일 인증이 필요한 대신 AccessToken을 필요로 하지 않습니다."
+    )
+    public ResponseEntity<RefreshTokenResponseDto> updatePasswordByVerifiedEmail(
+            @RequestBody PasswordUpdateByVerifiedEmailRequestDto requestDto
+    ) {
+        RefreshTokenResponseDto responseDto = userService.updatePasswordByVerifiedEmail(requestDto);
 
         return ResponseEntity.ok(responseDto);
     }
