@@ -50,7 +50,8 @@ public class SecurityConfig {
                         .requestMatchers("/stylesheets/**","/api/**").permitAll()
                         .requestMatchers("/meta/**").permitAll() // 카테고리/타입 관련
                         .requestMatchers("/user/forget-password").permitAll() // 이메일 인증을 통한 비밀번호 재설정
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용 API
+                        .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 API
+                        .requestMatchers("/payment/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))

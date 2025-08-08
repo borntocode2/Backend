@@ -24,6 +24,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/payment")
 public class NicePayController {
     private final NicePayService nicePayService;
 
@@ -63,7 +64,7 @@ public class NicePayController {
                 "</html>";
     }
 
-    @RequestMapping("/payment/verify")
+    @PostMapping("/payment/verify")
     public ResponseEntity<Map<String, String>> verifyPayment(@ModelAttribute PaymentVerifyRequestDto paymentVerifyResultDto, Model model) throws JsonProcessingException {
 
         model.addAttribute("paymentVerifyResultDto", paymentVerifyResultDto);
@@ -149,7 +150,7 @@ public class NicePayController {
                 .ok(Map.of("message", "[결제성공] 결제에 성공했습니다."));
     }
 
-    @RequestMapping(value="/cancel")
+    @GetMapping(value="/cancel")
     public String cancelDemo(){
         //TODO - 프론트엔드 측, 결제 도중 취소 버튼을 눌렀을 시, 보여줄 화면
         return "";}
