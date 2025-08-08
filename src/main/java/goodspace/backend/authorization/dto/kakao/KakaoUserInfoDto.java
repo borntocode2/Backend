@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import goodspace.backend.user.domain.OAuthUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static goodspace.backend.user.domain.OAuthType.KAKAO;
 
@@ -12,6 +13,7 @@ import static goodspace.backend.user.domain.OAuthType.KAKAO;
  */
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class KakaoUserInfoDto {
     private String id;
 
@@ -20,6 +22,7 @@ public class KakaoUserInfoDto {
 
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     static class KakaoAccount {
         @SerializedName("email_needs_agreement")
         private Boolean emailNeedsAgreement;
