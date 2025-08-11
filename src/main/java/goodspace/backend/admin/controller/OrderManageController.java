@@ -53,4 +53,15 @@ public class OrderManageController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/payment/issue")
+    @Operation(
+            summary = "결제 에러 이슈",
+            description = "개발자가 해결해야할 결제 이슈입니다."
+    )
+    public ResponseEntity<Void> paymentIssue(@RequestParam Long orderId, @RequestParam Long tid) {
+        orderManageService.createPaymentIssue(orderId, tid);
+
+        return ResponseEntity.noContent().build();
+    }
 }
