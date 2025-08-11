@@ -48,7 +48,7 @@ public class NicePayController {
                 "        AUTHNICE.requestPay({\n" +
                 "            clientId: 'S2_fb903ce81792411ab6c459ec3a2a82c6',\n" +
                 "            method: 'card',\n" +
-                "            appScheme: 'nicepaysample://,'\n" +
+                "            appScheme: 'nicepaysample://',\n" +
                 "            orderId: '" + orderId + "',\n" +
                 "            amount: " + amount + ",\n" +
                 "            goodsName: '" + goodsName + "',\n" +

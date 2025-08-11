@@ -1,10 +1,20 @@
 package goodspace.backend.delivery.dto;
 
+
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class DeliveryStatusDto {
+@JacksonXmlRootElement(localName = "LongitudinalDomesticListResponse")
+public class DeliveryResponseDto {
+
+    @JacksonXmlProperty(localName = "cmmMsgHeader")
+    private CmmMsgHeaderDto cmmMsgHeader;
+
     @JacksonXmlProperty(localName = "applcntNm")
     private String sender;
 
@@ -26,9 +36,7 @@ public class DeliveryStatusDto {
     @JacksonXmlProperty(localName = "trtmntSe")
     private String treatType;
 
-
-
-
-
-
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "longitudinalDomesticList")
+    private List<DeliveryHistoryDto> longitudinalDomesticList;
 }
