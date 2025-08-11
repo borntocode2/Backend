@@ -1,6 +1,6 @@
 package goodspace.backend.fixture;
 
-import goodspace.backend.user.domain.Delivery;
+import goodspace.backend.user.domain.DeliveryInfo;
 
 public enum DeliveryFixture {
     A(
@@ -43,8 +43,8 @@ public enum DeliveryFixture {
         this.detailedAddress = detailedAddress;
     }
 
-    public Delivery getInstance() {
-        return Delivery.builder()
+    public DeliveryInfo getInstance() {
+        return DeliveryInfo.builder()
                 .recipient(recipient)
                 .contactNumber1(contactNumber1)
                 .contactNumber2(contactNumber2)

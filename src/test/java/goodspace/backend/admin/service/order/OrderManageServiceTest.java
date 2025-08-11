@@ -9,7 +9,7 @@ import goodspace.backend.fixture.PaymentApproveResultFixture;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.PaymentApproveResult;
 import goodspace.backend.order.repository.OrderRepository;
-import goodspace.backend.user.domain.Delivery;
+import goodspace.backend.user.domain.DeliveryInfo;
 import goodspace.backend.user.domain.User;
 import goodspace.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 class OrderManageServiceTest {
     static final Supplier<EntityNotFoundException> DTO_NOT_FOUND = () -> new EntityNotFoundException("DTO를 찾을 수 없습니다.");
-    static final Delivery DEFAULT_DELIVERY = DeliveryFixture.A.getInstance();
-    static final Delivery NEW_DELIVERY = DeliveryFixture.B.getInstance();
+    static final DeliveryInfo DEFAULT_DELIVERY = DeliveryFixture.A.getInstance();
+    static final DeliveryInfo NEW_DELIVERY = DeliveryFixture.B.getInstance();
     static final PaymentApproveResultFixture DEFAULT_PAYMENT_APPROVE_RESULT_FIXTURE = PaymentApproveResultFixture.A;
     static final PaymentApproveResultFixture NEW_PAYMENT_APPROVE_RESULT_FIXTURE = PaymentApproveResultFixture.B;
     static final String TRACKING_NUMBER = "12345";
@@ -57,20 +57,20 @@ class OrderManageServiceTest {
         User user = userRepository.save(GoodSpaceUserFixture.DEFAULT.getInstance());
 
         order = orderRepository.save(Order.builder()
-                .delivery(DEFAULT_DELIVERY)
+                .deliveryInfo(DEFAULT_DELIVERY)
                 .user(user)
                 .build());
         order.setPaymentApproveResult(DEFAULT_PAYMENT_APPROVE_RESULT_FIXTURE.getInstanceWith(order.getId()));
 
         preparingProductOrder = orderRepository.save(Order.builder()
-                .delivery(DEFAULT_DELIVERY)
+                .deliveryInfo(DEFAULT_DELIVERY)
                 .orderStatus(PREPARING_PRODUCT)
                 .user(user)
                 .build());
         preparingProductOrder.setPaymentApproveResult(DEFAULT_PAYMENT_APPROVE_RESULT_FIXTURE.getInstanceWith(preparingProductOrder.getId()));
 
         makingProductOrder = orderRepository.save(Order.builder()
-                .delivery(DEFAULT_DELIVERY)
+                .deliveryInfo(DEFAULT_DELIVERY)
                 .orderStatus(MAKING_PRODUCT)
                 .user(user)
                 .build());
@@ -181,7 +181,7 @@ class OrderManageServiceTest {
 
             // then
             assertThat(order.getApproveResult()).isEqualTo(newApproveResult);
-            assertThat(order.getDelivery()).isEqualTo(NEW_DELIVERY);
+            assertThat(order.getDeliveryInfo()).isEqualTo(NEW_DELIVERY);
         }
     }
 
@@ -206,7 +206,7 @@ class OrderManageServiceTest {
     private boolean isEqualWithoutItem(Order order, OrderInfoResponseDto dto) {
         return Objects.equals(order.getId(), dto.id()) &&
                 Objects.equals(order.getApproveResult(), dto.approveResult()) &&
-                Objects.equals(order.getDelivery(), dto.deliveryInfo()) &&
+                Objects.equals(order.getDeliveryInfo(), dto.deliveryInfo()) &&
                 Objects.equals(order.getOrderStatus(), dto.status()) &&
                 Objects.equals(order.getCreatedAt(), dto.createAt()) &&
                 Objects.equals(order.getUpdatedAt(), dto.updatedAt());
