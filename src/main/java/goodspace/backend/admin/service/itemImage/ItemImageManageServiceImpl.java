@@ -88,8 +88,7 @@ public class ItemImageManageServiceImpl implements ItemImageManageService {
                 .orElseThrow(ITEM_NOT_FOUND);
         ItemImage itemImage = findItemImageFromItem(item, requestDto.itemImageId());
 
-        imageManager.deleteImage(itemImage.getImageUrl());
-        item.removeItemImage(itemImage);
+        itemImageRepository.delete(itemImage);
     }
 
     private ItemImage createEmptyItemImage(Item item) {

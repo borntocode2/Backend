@@ -2,14 +2,15 @@ package goodspace.backend.user.domain;
 
 import goodspace.backend.cart.domain.CartItem;
 import goodspace.backend.global.domain.BaseEntity;
+import goodspace.backend.global.security.RefreshToken;
+import goodspace.backend.global.security.Role;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.qna.domain.Question;
-import goodspace.backend.global.security.RefreshToken;
 import goodspace.backend.user.dto.UserMyPageDto;
-import goodspace.backend.global.security.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +23,14 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
 @Table(name = "`user`")
+@SQLDelete(sql = "UPDATE user SET deleted = true, deleted_at = NOW() WHERE id = ?")
 public abstract class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Integer dateOfBirth;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     @Setter
     private String email;
     private String phoneNumber;
@@ -111,11 +113,6 @@ public abstract class User extends BaseEntity {
         cartItem.setUser(this);
     }
 
-    public void removeCartItem(CartItem cartItem) {
-        cartItems.remove(cartItem);
-        cartItem.setUser(null);
-    }
-
     /**
      * User - Order 연관관계 편의 메서드
      */
@@ -128,10 +125,5 @@ public abstract class User extends BaseEntity {
         for (Order order : orders) {
             addOrder(order);
         }
-    }
-
-    public void removeOrder(Order order) {
-        orders.remove(order);
-        order.setUser(null);
     }
 }

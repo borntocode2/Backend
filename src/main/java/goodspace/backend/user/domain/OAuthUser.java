@@ -5,19 +5,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {
-        @UniqueConstraint(name = "oauth_user_uq_identifier_oauth_type", columnNames = {"identifier", "oauth_type"})
-})
+@SQLDelete(sql = "UPDATE oauth_user " +
+        "SET identifier = CONCAT('DELETED_', identifier) " +
+        "WHERE id = ?")
 public class OAuthUser extends User {
     @Column(nullable = false)
     private String identifier;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Getter
     private OAuthType oauthType;

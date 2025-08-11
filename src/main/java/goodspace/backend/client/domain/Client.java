@@ -5,6 +5,7 @@ import goodspace.backend.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE client SET deleted = true, deleted_at = NOW() WHERE id = ?")
 public class Client extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,14 +75,7 @@ public class Client extends BaseEntity {
         item.setClient(this);
     }
 
-    public void addItems(List<Item> items) {
-        for (Item item : items) {
-            addItem(item);
-        }
-    }
-
     public void removeItem(Item item) {
         items.remove(item);
-        item.setClient(null);
     }
 }

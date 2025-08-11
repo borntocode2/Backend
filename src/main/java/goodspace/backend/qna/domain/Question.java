@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE question SET deleted = true, deleted_at = NOW() WHERE id = ?")
 public class Question extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,6 +68,7 @@ public class Question extends BaseEntity {
             questionFile.setQuestion(this);
         }
     }
+
     public void setAnswer(Answer answer) {
         this.answer = answer;
         answer.setQuestion(this);

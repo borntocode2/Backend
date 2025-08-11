@@ -22,7 +22,7 @@ public record PurchaseHistoryResponseDto(
         PaymentApproveResult approveResult = order.getApproveResult();
 
         return PurchaseHistoryResponseDto.builder()
-                .date(OffsetDateTime.parse(approveResult.getPaidAt()))
+                .date(approveResult.getPaidAt() == null ? null : OffsetDateTime.parse(approveResult.getPaidAt()))
                 .id(order.getId())
                 .itemInfo(approveResult.getGoodsName())
                 .totalQuantity(getTotalQuantity(order.getOrderCartItems()))

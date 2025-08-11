@@ -4,6 +4,7 @@ import goodspace.backend.cart.dto.CartItemAddRequestDto;
 import goodspace.backend.cart.dto.CartItemInfoResponseDto;
 import goodspace.backend.cart.dto.CartItemUpdateRequestDto;
 import goodspace.backend.global.domain.Item;
+import goodspace.backend.global.repository.CartItemRepository;
 import goodspace.backend.global.repository.ItemRepository;
 import goodspace.backend.user.domain.User;
 import goodspace.backend.cart.domain.CartItem;
@@ -26,6 +27,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final CartItemRepository cartItemRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -45,7 +47,7 @@ public class CartItemServiceImpl implements CartItemService {
                 .orElseThrow(USER_NOT_FOUND);
         CartItem cartItem = findCartItemById(user, cartItemId);
 
-        user.removeCartItem(cartItem);
+        cartItemRepository.delete(cartItem);
     }
 
     @Override

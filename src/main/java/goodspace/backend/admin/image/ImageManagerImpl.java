@@ -7,8 +7,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.*;
-import java.util.Base64;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 @Component
 public class ImageManagerImpl implements ImageManager {
@@ -52,16 +54,6 @@ public class ImageManagerImpl implements ImageManager {
             String debugInfo = buildDebugInfo(prefixUrl, fileName, image);
 
             throw new RuntimeException(debugInfo, ex);
-        }
-    }
-
-    @Override
-    public void deleteImage(String imageUrl) {
-        try {
-            Path file = resolvePath(imageUrl);
-            Files.deleteIfExists(file);
-        } catch (IOException ex) {
-            throw new RuntimeException("이미지 삭제에 실패했습니다.", ex);
         }
     }
 
@@ -110,6 +102,15 @@ public class ImageManagerImpl implements ImageManager {
             return new ParsedUrl(prefixUrl, fileName);
         } catch (URISyntaxException ex) {
             throw new RuntimeException("이미지 URL 파싱에 실패했습니다.", ex);
+        }
+    }
+
+    private void deleteImage(String imageUrl) {
+        try {
+            Path file = resolvePath(imageUrl);
+            Files.deleteIfExists(file);
+        } catch (IOException ex) {
+            throw new RuntimeException("이미지 삭제에 실패했습니다.", ex);
         }
     }
 
