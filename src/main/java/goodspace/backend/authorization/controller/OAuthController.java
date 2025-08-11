@@ -1,8 +1,9 @@
 package goodspace.backend.authorization.controller;
 
-import goodspace.backend.authorization.dto.naver.NaverAppAuthRequestDto;
+import goodspace.backend.authorization.dto.naver.AppAuthRequestDto;
 import goodspace.backend.authorization.dto.request.WebOauthRequestDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
+import goodspace.backend.authorization.service.apple.AppleOAuthService;
 import goodspace.backend.authorization.service.facebook.FacebookOAuthService;
 import goodspace.backend.authorization.service.google.GoogleOAuthService;
 import goodspace.backend.authorization.service.kakao.KaKaoOAuthService;
@@ -28,6 +29,7 @@ public class OAuthController {
     private final KaKaoOAuthService kaKaoOAuthService;
     private final FacebookOAuthService facebookOAuthService;
     private final NaverOAuthService naverOAuthService;
+    private final AppleOAuthService appleOAuthService;
 
     @PostMapping("/google/web")
     @Operation(
@@ -148,7 +150,7 @@ public class OAuthController {
             summary = "네이버 소셜 로그인(앱)",
             description = "네이버가 발급한 AccessToken을 통해 사용자를 인증하고 JWT를 발급합니다"
     )
-    public ResponseEntity<TokenResponseDto> naverAppAuthorization(@RequestBody NaverAppAuthRequestDto requestDto) {
+    public ResponseEntity<TokenResponseDto> naverAppAuthorization(@RequestBody AppAuthRequestDto requestDto) {
         TokenResponseDto responseDto = naverOAuthService.signUpOrSignIn(requestDto.accessToken());
 
         return ResponseEntity.ok(responseDto);
@@ -162,6 +164,40 @@ public class OAuthController {
     public ResponseEntity<Void> naverRedirect() {
         return ResponseEntity.status(SEE_OTHER)
                 .header(HttpHeaders.LOCATION, naverOAuthService.getOauthPageRedirectUrl())
+                .build();
+    }
+
+    @PostMapping("/apple/web")
+    @Operation(
+            summary = "애플 소셜 로그인(웹)",
+            description = "애플을 통해 사용자를 인증하고 JWT를 발급합니다"
+    )
+    public ResponseEntity<TokenResponseDto> appleWebAuthorization(@RequestBody WebOauthRequestDto requestDto) {
+        String accessToken = appleOAuthService.getAccessToken(requestDto.code());
+        TokenResponseDto responseDto = appleOAuthService.signUpOrSignIn(accessToken);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/apple/app")
+    @Operation(
+            summary = "애플 소셜 로그인(앱)",
+            description = "애플이 발급한 Apple ID Token을 통해 사용자를 인증하고 JWT를 발급합니다"
+    )
+    public ResponseEntity<TokenResponseDto> appleAppAuthorization(@RequestBody AppAuthRequestDto requestDto) {
+        TokenResponseDto responseDto = appleOAuthService.signUpOrSignIn(requestDto.accessToken());
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/apple/redirection")
+    @Operation(
+            summary = "애플 로그인 화면 리다이렉트",
+            description = "애플 로그인 화면으로 리다이렉트합니다"
+    )
+    public ResponseEntity<Void> appleRedirect() {
+        return ResponseEntity.status(SEE_OTHER)
+                .header(HttpHeaders.LOCATION, appleOAuthService.getOauthPageRedirectUrl())
                 .build();
     }
 }
