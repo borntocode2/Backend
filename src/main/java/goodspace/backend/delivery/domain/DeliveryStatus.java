@@ -1,10 +1,8 @@
 package goodspace.backend.delivery.domain;
 
-import goodspace.backend.delivery.dto.DeliveryStatusDto;
 import goodspace.backend.order.domain.Order;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Builder

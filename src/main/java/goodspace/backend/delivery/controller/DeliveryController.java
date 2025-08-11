@@ -4,7 +4,7 @@ import goodspace.backend.delivery.dto.DeliveryRequestDto;
 import goodspace.backend.delivery.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DeliveryController {
     private final DeliveryService deliveryService;
 
-    @PostMapping("/delivery/callTrace")
+    @GetMapping("/delivery/callTrace")
     public ResponseEntity<String> callTrace(@RequestBody DeliveryRequestDto request) {
         try {
             return ResponseEntity.ok(deliveryService.RegistrationMappingWithOrderIdAfterCallTrace(

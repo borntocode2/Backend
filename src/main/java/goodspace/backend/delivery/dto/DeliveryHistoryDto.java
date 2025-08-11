@@ -1,11 +1,9 @@
 package goodspace.backend.delivery.dto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 
 @Data
-@JacksonXmlRootElement(localName = "LongitudinalDomesticListResponse")
 public class DeliveryHistoryDto {
     @JacksonXmlProperty(localName = "dlvyDate")
     private String date;
@@ -18,4 +16,7 @@ public class DeliveryHistoryDto {
 
     @JacksonXmlProperty(localName = "processSttus")
     private String processStatus;
+
+    @JacksonXmlProperty(localName = "detailDc")
+    private String detailDescription;
 }
