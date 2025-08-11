@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Getter
-@SuperBuilder
 @Entity
+@SuperBuilder
 @NoArgsConstructor
 public class OrderPaymentIssue extends BaseEntity {
     @Id

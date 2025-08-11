@@ -3,6 +3,7 @@ package goodspace.backend.admin.controller;
 import goodspace.backend.admin.dto.order.OrderInfoResponseDto;
 import goodspace.backend.admin.dto.order.OrderUpdateRequestDto;
 import goodspace.backend.admin.service.order.OrderManageService;
+import goodspace.backend.order.dto.OrderPaymentIssueDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -63,5 +64,27 @@ public class OrderManageController {
         orderManageService.createPaymentIssue(orderId, tid);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/payment/Issue")
+    @Operation(
+            summary = "결제 에러 이슈 삭제",
+            description = "개발자가 결제 에러 이슈를 해결하여 삭제합니다."
+    )
+    public ResponseEntity<Void> deletePaymentIssue(@RequestParam Long issueId) {
+        orderManageService.deletePaymentIssue(issueId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/payment/issue")
+    @Operation(
+            summary = "결제 에러 이슈 확인",
+            description = "결제 에러 이슈 리스트를 확인합니다."
+    )
+    public ResponseEntity<List<OrderPaymentIssueDto>> getPaymentIssues() {
+        return ResponseEntity.ok(orderManageService.getOrderPaymentIssues());
+
+
     }
 }
