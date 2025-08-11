@@ -24,7 +24,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping
+@RequestMapping("/payment")
 public class NicePayController {
     private final NicePayService nicePayService;
 
@@ -64,7 +64,7 @@ public class NicePayController {
                 "</html>";
     }
 
-    @PostMapping("/payment/verify")
+    @PostMapping("/verify")
     public ResponseEntity<Map<String, String>> verifyPayment(@ModelAttribute PaymentVerifyRequestDto paymentVerifyResultDto, Model model) throws JsonProcessingException {
 
         model.addAttribute("paymentVerifyResultDto", paymentVerifyResultDto);
