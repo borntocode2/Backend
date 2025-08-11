@@ -28,7 +28,7 @@ public class DeliveryService {
     }
 
     public String RegistrationMappingWithOrderIdAfterCallTrace(Long orderId, String rgist) throws JsonProcessingException {
-        String url = "http://openapi.epost.go.kr/trace/retrieveLongitudinalService/retrieveLongitudinalService/getLongitudinalList"
+        String url = "http://openapi.epost.go.kr/trace/retrieveLongitudinalService/retrieveLongitudinalService/getLongitudinalDomesticList"
                 + "?rgist=" + rgist
                 + "&serviceKey=" + serviceKey;
 
