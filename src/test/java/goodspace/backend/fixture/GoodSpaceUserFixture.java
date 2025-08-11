@@ -6,7 +6,17 @@ import goodspace.backend.global.security.Role;
 public enum GoodSpaceUserFixture {
     DEFAULT(
         "default@email.com",
-            "helloPassword!",
+            "HelloWorldJava1!",
+            Role.USER
+    ),
+    A(
+            "A@email.com",
+            "HelloWorldJava1!a",
+            Role.USER
+    ),
+    B(
+            "B@email.com",
+            "HelloWorldJava1!b",
             Role.USER
     );
 

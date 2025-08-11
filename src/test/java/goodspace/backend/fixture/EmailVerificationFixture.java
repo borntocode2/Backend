@@ -5,6 +5,12 @@ import goodspace.backend.email.entity.EmailVerification;
 import java.time.LocalDateTime;
 
 public enum EmailVerificationFixture {
+    DEFAULT(
+            "default@email.com",
+            "444555",
+            LocalDateTime.now().plusMinutes(5),
+            true
+    ),
     NOT_VERIFIED(
             "not@email.com",
             "123123",
@@ -25,9 +31,15 @@ public enum EmailVerificationFixture {
     ),
     EXPIRED(
             "expired@email.com",
-            "789789",
+            "987654",
             LocalDateTime.now().minusMinutes(1),
             false
+    ),
+    EXPIRED_AND_VERIFIED(
+            "expired_and_verified@email.com",
+            "668866",
+            LocalDateTime.now().minusMinutes(1),
+            true
     );
 
     private final String email;

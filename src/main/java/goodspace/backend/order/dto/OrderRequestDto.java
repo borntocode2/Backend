@@ -6,8 +6,6 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class OrderRequestDto extends BaseEntity {
-    private String orderOutId;
-    private long userId;
+public class OrderRequestDto {
     private List<OrderCartItemDto> orderCartItemDtos;
 }

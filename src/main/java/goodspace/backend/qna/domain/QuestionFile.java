@@ -4,6 +4,7 @@ import goodspace.backend.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -12,11 +13,11 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class QuestionFile extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Lob
-    @Column(name = "data", columnDefinition = "LONGBLOB")
+    @Column(name = "data", columnDefinition = "LONGBLOB", nullable = false)
     private byte[] data;
 
     private String extension;
@@ -24,6 +25,7 @@ public class QuestionFile extends BaseEntity {
     private String name;
 
     @ManyToOne
+    @Setter
     @JoinColumn(name = "question_id")
     private Question question;
 }

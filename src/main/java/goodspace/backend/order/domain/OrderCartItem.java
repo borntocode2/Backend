@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -12,31 +13,23 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "order_cart_item_uq_item_id_order_id", columnNames = {"item_id", "order_id"})
+})
 public class OrderCartItem {
     @Id
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private Integer quantity;
-    private Integer amount;
 
     @ManyToOne
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
+    @Setter
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
-
-    @PrePersist
-    @PreUpdate
-    public void updateAmount() {
-        if (item != null){
-            this.amount = item.getPrice() * this.quantity;
-        }
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
 }

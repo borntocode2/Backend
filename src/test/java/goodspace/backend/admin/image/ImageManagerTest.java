@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -19,8 +20,8 @@ class ImageManagerTest {
     static final String EXTENSION = ".png";
     static final String FULL_URL = PREFIX_URL + "/" + FILE_NAME + EXTENSION;
 
-    static final String IMAGE_1 = ImageFixture.KOTLIN.encodedImage;
-    static final String IMAGE_2 = ImageFixture.CHOLOG.encodedImage;
+    MultipartFile IMAGE_1;
+    MultipartFile IMAGE_2;
 
     final ImageUtil imageUtil = new ImageUtil();
 
@@ -31,6 +32,8 @@ class ImageManagerTest {
     @BeforeEach
     void resetImageManager() {
         imageManager = new ImageManagerImpl(basePath.toString());
+        IMAGE_1 = ImageFixture.KOTLIN.getImage();
+        IMAGE_2 = ImageFixture.CHOLOG.getImage();
     }
 
     @Nested
@@ -40,7 +43,7 @@ class ImageManagerTest {
         void createImageFile() throws Exception {
             String imageUrl = imageManager.createImageUrl(PREFIX_URL, FILE_NAME, IMAGE_1);
 
-            boolean isImageCreated = imageUtil.isSameImage(imageUrl, IMAGE_1);
+            boolean isImageCreated = imageUtil.isSameImage(imageUrl, IMAGE_1.getBytes());
             assertThat(isImageCreated).isTrue();
         }
 
@@ -84,7 +87,7 @@ class ImageManagerTest {
             imageManager.updateImage(IMAGE_2, imageUrl);
 
             // then
-            boolean isUpdated = imageUtil.isSameImage(imageUrl, IMAGE_2);
+            boolean isUpdated = imageUtil.isSameImage(imageUrl, IMAGE_2.getBytes());
             assertThat(isUpdated).isTrue();
         }
     }

@@ -19,16 +19,25 @@ public class Client extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
+
     @Setter
     private String profileImageUrl;
+
     @Setter
     private String backgroundImageUrl;
+
     @Column(nullable = false)
     private String introduction;
+
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ClientType clientType;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RegisterStatus status;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -37,11 +46,23 @@ public class Client extends BaseEntity {
     public void update(
             String name,
             String introduction,
-            ClientType clientType
+            ClientType clientType,
+            RegisterStatus status
     ) {
         this.name = name;
         this.introduction = introduction;
         this.clientType = clientType;
+        this.status = status;
+    }
+
+    public boolean isPublic() {
+        return status == RegisterStatus.PUBLIC;
+    }
+
+    public List<Item> getPublicItems() {
+        return items.stream()
+                .filter(Item::isPublic)
+                .toList();
     }
 
     /**

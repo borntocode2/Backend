@@ -1,12 +1,15 @@
 package goodspace.backend.order.domain;
 
+import goodspace.backend.delivery.domain.DeliveryHistory;
+import goodspace.backend.delivery.domain.DeliveryStatus;
 import goodspace.backend.global.domain.BaseEntity;
-import goodspace.backend.user.domain.Delivery;
+import goodspace.backend.user.domain.DeliveryInfo;
 import goodspace.backend.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -20,38 +23,60 @@ import java.util.Objects;
 @Table(name = "`order`")
 public class Order extends BaseEntity {
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Embedded
     private PaymentApproveResult approveResult;
 
+    @Setter
     @Embedded
-    private Delivery delivery;
-
-    private String orderOutId;
+    private DeliveryInfo deliveryInfo;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private OrderStatus orderStatus = OrderStatus.PAYMENT_CONFIRMED;
+    private OrderStatus orderStatus = OrderStatus.PAYMENT_CHECKING;
+
+    @Setter
+    private String trackingNumber;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
+    @Setter
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<OrderCartItem> orderCartItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeliveryHistory> deliveryHistorys = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private DeliveryStatus deliveryStatus;
+
+    public void addDeliveryHistory(DeliveryHistory deliveryHistory) {
+        if (deliveryHistory != null) {
+            deliveryHistorys.add(deliveryHistory);
+        }
+    }
+
+    public void setDeliveryStatus(DeliveryStatus deliveryStatus) {
+        if (deliveryStatus != null) {
+            this.deliveryStatus = deliveryStatus;
+        }
+    }
 
     public void setOrderCartItems(List<OrderCartItem> cartItems) {
         this.orderCartItems = cartItems;
         for (OrderCartItem cartItem : cartItems) {
-            cartItem.setOrder(this); // 양방향 관계 유지
+            cartItem.setOrder(this);
         }
     }
 
     public void updateOrderStatus(String status){
         if(status.equals("결제 확인")){
-            this.orderStatus = OrderStatus.PAYMENT_CONFIRMED;
+            this.orderStatus = OrderStatus.PAYMENT_CHECKING;
         }
         else if(status.equals("제작 준비중")){
             this.orderStatus = OrderStatus.PREPARING_PRODUCT;
@@ -73,8 +98,12 @@ public class Order extends BaseEntity {
         }
     }
 
+    public void updateOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     public void setPaymentApproveResult(PaymentApproveResult approveResult) {
-        if (Objects.equals(this.orderOutId, approveResult.getOrderId()))
+        if (Objects.equals(this.id, approveResult.getOrderId()))
         {
             this.approveResult = approveResult;
         }

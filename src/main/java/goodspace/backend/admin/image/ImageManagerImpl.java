@@ -2,14 +2,12 @@ package goodspace.backend.admin.image;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.Base64;
 
 @Component
@@ -17,42 +15,44 @@ public class ImageManagerImpl implements ImageManager {
     private final String baseUrl;
 
     public ImageManagerImpl(
-            @Value("${image.base.url}") String baseUrl
+            @Value("${image.base.url:images}") String baseUrl
     ) {
         this.baseUrl = trimSlash(baseUrl);
     }
 
     @Override
-    public String createImageUrl(String prefixUrl, String fileName, String encodedImage) {
+    public String createImageUrl(Object prefixUrl, Object fileName, MultipartFile image) {
+        return createImageUrl(prefixUrl.toString(), fileName.toString(), image);
+    }
+
+    @Override
+    public String createImageUrl(String prefixUrl, String fileName, MultipartFile image) {
+        if (image == null || image.isEmpty()) {
+            throw new IllegalArgumentException("업로드된 파일이 없습니다.");
+        }
+
         try {
             Path dir = getDirectory(prefixUrl);
             Files.createDirectories(dir);
 
-            String[] parts = splitEncoded(encodedImage);
-            String meta = parts[0];
-            String data = parts[1];
+            // 원본 확장자 추출
+            String originalFileName = image.getOriginalFilename();
+            String ext = "png";
+            if (originalFileName != null && originalFileName.contains(".")) {
+                ext = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+            }
 
-            String ext = extractExtension(meta);
             String finalFileName = fileName + "." + ext;
             Path filePath = dir.resolve(finalFileName);
 
-            byte[] bytes = Base64.getDecoder().decode(data);
-            Files.write(filePath, bytes, StandardOpenOption.CREATE_NEW);
+            Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             return buildUrl(prefixUrl, finalFileName);
         } catch (IOException ex) {
-            throw new RuntimeException("이미지 저장에 실패했습니다.", ex);
+            String debugInfo = buildDebugInfo(prefixUrl, fileName, image);
+
+            throw new RuntimeException(debugInfo, ex);
         }
-    }
-
-    @Override
-    public String createImageUrl(String prefixUrl, Object fileName, String encodedImage) {
-        return createImageUrl(prefixUrl, fileName.toString(), encodedImage);
-    }
-
-    @Override
-    public String createImageUrl(Object prefixUrl, Object fileName, String encodedImage) {
-        return createImageUrl(prefixUrl.toString(), fileName.toString(), encodedImage);
     }
 
     @Override
@@ -66,10 +66,14 @@ public class ImageManagerImpl implements ImageManager {
     }
 
     @Override
-    public void updateImage(String encodedImage, String imageUrl) {
-        ParsedUrl p = parseUrl(imageUrl);
+    public void updateImage(MultipartFile multipartFile, String imageUrl) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new IllegalArgumentException("업데이트할 파일이 없습니다.");
+        }
+
+        ParsedUrl parsedUrl = parseUrl(imageUrl);
         deleteImage(imageUrl);
-        createImageUrl(p.prefixUrl(), p.fileName(), encodedImage);
+        createImageUrl(parsedUrl.prefixUrl(), parsedUrl.fileName(), multipartFile);
     }
 
     private Path getDirectory(String prefixUrl) {
@@ -81,19 +85,10 @@ public class ImageManagerImpl implements ImageManager {
 
     private String buildUrl(String prefixUrl, String fileNameExt) {
         String cleanedPrefixUrl = trimSlash(prefixUrl);
-        
+
         return "/" + baseUrl
                 + (cleanedPrefixUrl.isEmpty() ? "" : "/" + cleanedPrefixUrl)
                 + "/" + fileNameExt;
-    }
-
-    private String[] splitEncoded(String encoded) {
-        String[] parts = encoded.split(",", 2);
-        if (parts.length < 2) {
-            return new String[]{"", parts[0]};
-        }
-        
-        return parts;
     }
 
     private ParsedUrl parseUrl(String imageUrl) {
@@ -165,17 +160,6 @@ public class ImageManagerImpl implements ImageManager {
         }
     }
 
-    private String extractExtension(String meta) {
-        if (meta.startsWith("data:") && meta.contains(";base64")) {
-            String mime = meta.substring(5, meta.indexOf(';'));
-            String ext = mime.substring(mime.indexOf('/') + 1);
-            int plus = ext.indexOf('+');
-            if (plus > 0) ext = ext.substring(0, plus);
-            return ext;
-        }
-        return "png";
-    }
-
     private String trimSlash(String s) {
         String t = s;
         if (t.startsWith("/")) t = t.substring(1);
@@ -183,9 +167,41 @@ public class ImageManagerImpl implements ImageManager {
         return t;
     }
 
+    private String buildDebugInfo(String prefixUrl, String fileName, MultipartFile image) {
+        StringBuilder debugInfo = new StringBuilder();
+        debugInfo.append("이미지 저장에 실패했습니다.\n")
+                .append("prefixUrl: ").append(prefixUrl).append("\n")
+                .append("fileName: ").append(fileName).append("\n");
+
+        try {
+            String originalFileName = image.getOriginalFilename();
+            String contentType = image.getContentType();
+            long size = image.getSize();
+
+            String ext = "png";
+            if (originalFileName != null && originalFileName.contains(".")) {
+                ext = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+            }
+
+            String finalFileName = fileName + "." + ext;
+            Path filePath = getDirectory(prefixUrl).resolve(finalFileName);
+
+            debugInfo.append("원본 파일명: ").append(originalFileName).append("\n")
+                    .append("확장자: ").append(ext).append("\n")
+                    .append("Content-Type: ").append(contentType).append("\n")
+                    .append("파일 크기: ").append(size).append(" bytes\n")
+                    .append("저장 경로: ").append(filePath).append("\n");
+        } catch (Exception innerEx) {
+            debugInfo.append("디버그 정보 생성 중 오류 발생: ").append(innerEx.getMessage());
+        }
+
+        return debugInfo.toString();
+    }
+
     private record ParsedUrl(
             String prefixUrl,
             String fileName
     ) {
+
     }
 }

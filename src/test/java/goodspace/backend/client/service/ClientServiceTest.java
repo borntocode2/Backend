@@ -1,54 +1,95 @@
 package goodspace.backend.client.service;
 
+import goodspace.backend.admin.image.ImageManager;
+import goodspace.backend.admin.image.ImageManagerImpl;
+import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.RegisterStatus;
 import goodspace.backend.client.dto.ClientBriefInfoResponseDto;
 import goodspace.backend.client.dto.ClientDetailsResponseDto;
+import goodspace.backend.client.dto.ClientItemInfoResponseDto;
 import goodspace.backend.client.dto.ItemBriefInfoResponseDto;
-import goodspace.backend.client.domain.Client;
-import goodspace.backend.global.domain.Item;
-import goodspace.backend.fixture.ClientFixture;
-import goodspace.backend.fixture.ItemFixture;
 import goodspace.backend.client.repository.ClientRepository;
-import lombok.RequiredArgsConstructor;
+import goodspace.backend.fixture.ClientFixture;
+import goodspace.backend.fixture.ImageFixture;
+import goodspace.backend.fixture.ItemFixture;
+import goodspace.backend.global.domain.Item;
+import goodspace.backend.global.domain.ItemImage;
+import goodspace.backend.global.repository.ItemRepository;
+import goodspace.backend.testUtil.ImageUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Transactional
 class ClientServiceTest {
-    private final ClientService clientService;
-    private final ClientRepository clientRepository;
+    final MultipartFile DEFAULT_TITLE_IMAGE = ImageFixture.JAVA.getImage();
+    final String DEFAULT_TITLE_IMAGE_FILE_NAME = "title";
 
-    private Client clientA;
-    private Client clientB;
-    private Set<Client> clients;
-    
+    @Autowired
+    ClientService clientService;
+    @Autowired
+    ClientRepository clientRepository;
+    @Autowired
+    ItemRepository itemRepository;
+    @Autowired
+    ImageUtil imageUtil;
+
+    @TempDir
+    Path basePath;
+    ImageManager imageManager;
+
+    Client clientA;
+    Client clientB;
+
+    Client hasItemClient;
+    Item itemA;
+    Item itemB;
+    Item privateItem;
+
+    Set<Client> publicClients;
+    Set<Item> publicItems;
+
     @BeforeEach
     void resetEntities() {
-        Client client1 = ClientFixture.INFLUENCER.getInstance();
-        Item item1 = ItemFixture.A.getInstance();
-        client1.addItem(item1);
+        imageManager = new ImageManagerImpl(basePath.toString());
 
-        Client client2 = ClientFixture.CREATOR.getInstance();
-        Item item2 = ItemFixture.B.getInstance();
-        client1.addItem(item2);
+        clientA = clientRepository.save(ClientFixture.INFLUENCER.getInstance());
+        clientB = clientRepository.save(ClientFixture.CREATOR.getInstance());
+        hasItemClient = clientRepository.save(ClientFixture.SINGER.getInstance());
 
-        this.clientA = clientRepository.save(client1);
-        this.clientB = clientRepository.save(client2);
-        this.clients = Set.of(clientA, clientB);
+        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstanceWith(hasItemClient));
+        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstanceWith(hasItemClient));
+        privateItem = itemRepository.save(ItemFixture.PRIVATE_A.getInstanceWith(hasItemClient));
+
+        ItemImage titleImageA = ItemImage.from(imageManager.createImageUrl(itemA.getId(), DEFAULT_TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
+        ItemImage titleImageB = ItemImage.from(imageManager.createImageUrl(itemB.getId(), DEFAULT_TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
+        ItemImage titleImagePrivate = ItemImage.from(imageManager.createImageUrl(privateItem.getId(), DEFAULT_TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
+
+        itemA.setTitleImage(titleImageA);
+        itemB.setTitleImage(titleImageB);
+        privateItem.setTitleImage(titleImagePrivate);
+
+        publicClients = Set.of(clientA, clientB, hasItemClient);
+        publicItems = Set.of(itemA, itemB);
     }
 
     @Nested
@@ -56,22 +97,43 @@ class ClientServiceTest {
         @Test
         @DisplayName("클라이언트의 상세 정보를 반환한다")
         void returnDetailsOfClient() {
-            ClientDetailsResponseDto details = clientService.getDetails(clientA.getId());
+            ClientDetailsResponseDto clientDetails = clientService.getDetails(clientA.getId());
 
-            assertThat(isEqual(clientA, details)).isTrue();
+            assertThat(isEqualWithoutItem(clientA, clientDetails)).isTrue();
+        }
+
+        @Test
+        @DisplayName("클라이언트의 공개된 상품들을 반환한다")
+        void returnItemsOfClient() throws IOException {
+            ClientDetailsResponseDto clientDetails = clientService.getDetails(hasItemClient.getId());
+
+            assertThat(isEqual(publicItems, clientDetails.items())).isTrue();
+
+            for (ItemBriefInfoResponseDto itemDto : clientDetails.items()) {
+                imageUtil.isSameImage(itemDto.titleImageUrl(), DEFAULT_TITLE_IMAGE.getBytes());
+            }
+        }
+
+        @Test
+        @DisplayName("공개되지 않은 클라이언트라면 예외를 던진다")
+        void ifNotReadyClientThenThrowException() {
+            changeStatus(clientA, RegisterStatus.PRIVATE);
+
+            assertThatThrownBy(() -> clientService.getDetails(clientA.getId()))
+                    .isInstanceOf(IllegalStateException.class);
         }
     }
 
     @Nested
     class getClients {
         @Test
-        @DisplayName("클라이언트의 목록을 반환한다")
+        @DisplayName("공개된 클라이언트의 목록을 반환한다")
         void returnClients() {
-            List<ClientBriefInfoResponseDto> clientDtos = clientService.getClients();
+            List<ClientBriefInfoResponseDto> clientDtos = clientService.getPublicClients();
 
-            assertThat(clientDtos.size() == clients.size()).isTrue();
+            assertThat(clientDtos.size() == publicClients.size()).isTrue();
 
-            for (Client client : clients) {
+            for (Client client : publicClients) {
                 ClientBriefInfoResponseDto clientDto = clientDtos.stream()
                         .filter(dto -> dto.id().equals(client.getId()))
                         .findAny()
@@ -82,15 +144,55 @@ class ClientServiceTest {
         }
     }
 
-    private boolean isEqual(Client client, ClientDetailsResponseDto dto) {
+    @Nested
+    class getClientAndItem {
+        @Test
+        @DisplayName("ID와 일치하는 클라이언트 정보를 반환한다")
+        void returnClientInfoById() {
+            ClientItemInfoResponseDto responseDto = clientService.getClientAndItem(hasItemClient.getId(), itemA.getId());
+
+            assertThat(isEqual(hasItemClient, responseDto.client())).isTrue();
+        }
+
+        @Test
+        @DisplayName("ID와 일치하는 상품 정보를 반환한다")
+        void returnItemInfoById() {
+            ClientItemInfoResponseDto responseDto = clientService.getClientAndItem(hasItemClient.getId(), itemA.getId());
+
+            assertThat(isEqual(itemA, responseDto.item())).isTrue();
+        }
+
+        @Test
+        @DisplayName("비공개 클라이언트라면 예외를 던진다")
+        void ifPrivateClientThenThrowException() {
+            changeStatus(hasItemClient, RegisterStatus.PRIVATE);
+
+            assertThatThrownBy(() -> clientService.getClientAndItem(hasItemClient.getId(), itemA.getId()))
+                    .isInstanceOf(IllegalStateException.class);
+        }
+
+        @Test
+        @DisplayName("비공개 상품이라면 예외를 던진다")
+        void ifPrivateItemThenThrowException() {
+            assertThatThrownBy(() -> clientService.getClientAndItem(hasItemClient.getId(), privateItem.getId()))
+                    .isInstanceOf(IllegalStateException.class);
+        }
+    }
+
+    private boolean isEqualWithoutItem(Client client, ClientDetailsResponseDto dto) {
         return client.getName().equals(dto.name()) &&
                 client.getProfileImageUrl().equals(dto.profileImageUrl()) &&
                 client.getBackgroundImageUrl().equals(dto.backgroundImageUrl()) &&
-                client.getIntroduction().equals(dto.introduction()) &&
-                isEqual(client.getItems(), dto.items());
+                client.getIntroduction().equals(dto.introduction());
     }
 
-    private boolean isEqual(List<Item> items, List<ItemBriefInfoResponseDto> dtos) {
+    private boolean isEqual(Set<Item> items, List<ItemBriefInfoResponseDto> dtos) {
+        Set<Long> itemIdSet = toSet(items, Item::getId);
+        Set<Long> dtoIdSet = toSet(dtos, ItemBriefInfoResponseDto::id);
+
+        Set<String> itemTitleImageUrlSet = toSet(items, Item::getTitleImageUrl);
+        Set<String> dtoTitleImageUrlSet = toSet(dtos, ItemBriefInfoResponseDto::titleImageUrl);
+
         Set<String> itemNameSet = toSet(items, Item::getName);
         Set<String> dtoNameSet = toSet(dtos, ItemBriefInfoResponseDto::name);
 
@@ -106,7 +208,9 @@ class ClientServiceTest {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
 
-        return itemNameSet.equals(dtoNameSet) &&
+        return itemIdSet.equals(dtoIdSet) &&
+                itemTitleImageUrlSet.equals(dtoTitleImageUrlSet) &&
+                itemNameSet.equals(dtoNameSet) &&
                 itemDescriptionSet.equals(dtoDescriptionSet) &&
                 itemUrlSet.equals(dtoUrlSet);
     }
@@ -118,9 +222,36 @@ class ClientServiceTest {
                 client.getClientType() == dto.clientType();
     }
 
-    private <E, T> Set<T> toSet(List<E> list, Function<E, T> function) {
-        return list.stream()
+    private boolean isEqual(Client client, ClientItemInfoResponseDto.ClientDto dto) {
+        return client.getId().equals(dto.id()) &&
+                client.getName().equals(dto.name()) &&
+                client.getProfileImageUrl().equals(dto.profileImageUrl());
+    }
+
+    private boolean isEqual(Item item, ClientItemInfoResponseDto.ItemDto dto) {
+        HashSet<String> itemImageUrlSet = new HashSet<>(item.getEveryImageUrl());
+        HashSet<String> dtoImageUrlSet = new HashSet<>(dto.imageUrls());
+
+        return item.getId().equals(dto.id()) &&
+                item.getName().equals(dto.name()) &&
+                item.getPrice().equals(dto.price()) &&
+                item.getShortDescription().equals(dto.shortDescription()) &&
+                item.getLandingPageDescription().equals(dto.landingPageDescription()) &&
+                itemImageUrlSet.equals(dtoImageUrlSet);
+    }
+
+    private <E, T> Set<T> toSet(Collection<E> collection, Function<E, T> function) {
+        return collection.stream()
                 .map(function)
                 .collect(Collectors.toSet());
+    }
+
+    private void changeStatus(Client client, RegisterStatus status) {
+        client.update(
+                client.getName(),
+                client.getIntroduction(),
+                client.getClientType(),
+                status
+        );
     }
 }

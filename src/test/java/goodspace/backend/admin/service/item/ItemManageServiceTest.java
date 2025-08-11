@@ -62,8 +62,6 @@ class ItemManageServiceTest {
     Client client;
     Item itemA;
     Item itemB;
-    ItemImage itemImageA;
-    ItemImage itemImageB;
     List<Item> existItems;
 
     @BeforeEach
@@ -71,17 +69,15 @@ class ItemManageServiceTest {
         imageManager = new ImageManagerImpl(basePath.toString());
 
         client = clientRepository.save(ClientFixture.CREATOR.getInstance());
-        itemA = itemRepository.save(ItemFixture.A.getInstance());
-        itemB = itemRepository.save(ItemFixture.B.getInstance());
-
-        itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
-        itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
-
-        itemImageA.setImageUrl(imageManager.createImageUrl(itemA.getId(), itemImageA.getId(), ImageFixture.GDG.encodedImage));
-        itemImageB.setImageUrl(imageManager.createImageUrl(itemB.getId(), itemImageB.getId(), ImageFixture.KOTLIN.encodedImage));
-
-        client.addItems(List.of(itemA, itemB));
+        itemA = itemRepository.save(ItemFixture.PUBLIC_A.getInstanceWith(client));
+        itemB = itemRepository.save(ItemFixture.PUBLIC_B.getInstanceWith(client));
         existItems = List.of(itemA, itemB);
+
+        ItemImage itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
+        ItemImage itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
+
+        itemImageA.setImageUrl(imageManager.createImageUrl(itemA.getId(), itemImageA.getId(), ImageFixture.GDG.getImage()));
+        itemImageB.setImageUrl(imageManager.createImageUrl(itemB.getId(), itemImageB.getId(), ImageFixture.KOTLIN.getImage()));
     }
 
     @Nested
@@ -181,6 +177,8 @@ class ItemManageServiceTest {
                 item.getPrice().equals(dto.price()) &&
                 item.getShortDescription().equals(dto.shortDescription()) &&
                 item.getLandingPageDescription().equals(dto.landingPageDescription()) &&
+                item.getStatus() == dto.status() &&
+                ((item.getTitleImage() == null && dto.titleImageUrl() == null) || (item.getTitleImageUrl().equals(dto.titleImageUrl()))) &&
                 itemUrlSet.equals(dtoUrlSet);
     }
 
@@ -197,7 +195,8 @@ class ItemManageServiceTest {
                 item.getName().equals(dto.name()) &&
                 item.getPrice().equals(dto.price()) &&
                 item.getShortDescription().equals(dto.shortDescription()) &&
-                item.getLandingPageDescription().equals(dto.landingPageDescription());
+                item.getLandingPageDescription().equals(dto.landingPageDescription()) &&
+                item.getStatus() == dto.status();
     }
 
     private boolean isClientHasItem(Client client, long itemId) {

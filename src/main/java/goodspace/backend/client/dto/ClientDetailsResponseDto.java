@@ -1,6 +1,7 @@
 package goodspace.backend.client.dto;
 
 import goodspace.backend.client.domain.Client;
+import goodspace.backend.global.domain.Item;
 import lombok.Builder;
 
 import java.util.List;
@@ -13,8 +14,8 @@ public record ClientDetailsResponseDto(
         String introduction,
         List<ItemBriefInfoResponseDto> items
 ) {
-    public static ClientDetailsResponseDto from(Client client) {
-        List<ItemBriefInfoResponseDto> items = client.getItems().stream()
+    public static ClientDetailsResponseDto of(Client client, boolean completeStatusOnly) {
+        List<ItemBriefInfoResponseDto> items = getQualifiedItems(client, completeStatusOnly).stream()
                 .map(ItemBriefInfoResponseDto::from)
                 .toList();
 
@@ -25,5 +26,13 @@ public record ClientDetailsResponseDto(
                 .introduction(client.getIntroduction())
                 .items(items)
                 .build();
+    }
+
+    private static List<Item> getQualifiedItems(Client client, boolean completeStatusOnly) {
+        if (completeStatusOnly) {
+            return client.getPublicItems();
+        }
+
+        return client.getItems();
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -46,6 +48,11 @@ public class SecurityConfig {
                         .requestMatchers("/orderTest/**", "/payment/**","/css/**", "/js/**", "/images/**", "/stylesheets/**","/api/**", "/api/qna").permitAll()
                         .requestMatchers("/client/**").permitAll() // 클라이언트 상품 페이지 관련
                         .requestMatchers("/stylesheets/**","/api/**").permitAll()
+                        .requestMatchers("/meta/**").permitAll() // 카테고리/타입 관련
+                        .requestMatchers("/user/forget-password").permitAll() // 이메일 인증을 통한 비밀번호 재설정
+                        .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 API
+                        .requestMatchers("/payment/**").permitAll()
+                        .requestMatchers("/delivery/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))
@@ -68,5 +75,10 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

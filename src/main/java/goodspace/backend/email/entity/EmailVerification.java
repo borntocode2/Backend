@@ -46,6 +46,7 @@ public class EmailVerification extends BaseEntity {
     /**
      * 인증됨 여부
      */
+    @Column(nullable = false)
     @Builder.Default
     private boolean isVerified = false;
 

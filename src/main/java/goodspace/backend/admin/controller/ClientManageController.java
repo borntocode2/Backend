@@ -4,11 +4,15 @@ import goodspace.backend.admin.dto.client.ClientInfoResponseDto;
 import goodspace.backend.admin.dto.client.ClientRegisterRequestDto;
 import goodspace.backend.admin.dto.client.ClientUpdateRequestDto;
 import goodspace.backend.admin.service.client.ClientManageService;
+import goodspace.backend.client.domain.ClientType;
+import goodspace.backend.client.domain.RegisterStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,8 +20,8 @@ import java.util.List;
 @RequestMapping("/admin/client")
 @RequiredArgsConstructor
 @Tag(
-        name = "클라이언트 관리 API",
-        description = "클라이언트 관리 관련 기능(관리자 전용)"
+        name = "클라이언트 관리 API(관리자 전용)",
+        description = "클라이언트 관리 관련 기능"
 )
 public class ClientManageController {
     private final ClientManageService clientManageService;
@@ -44,24 +48,52 @@ public class ClientManageController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "클라이언트 생성",
             description = "새로운 클라이언트를 생성합니다."
     )
-    public ResponseEntity<Void> createClient(@RequestBody ClientRegisterRequestDto requestDto) {
-        clientManageService.register(requestDto);
+    public ResponseEntity<Void> createClient(
+            @RequestParam String name,
+            @RequestParam String introduction,
+            @RequestParam ClientType clientType,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(value = "backgroundImage", required = false) MultipartFile backgroundImage
+    ) {
+        clientManageService.register(ClientRegisterRequestDto.builder()
+                .name(name)
+                .profileImage(profileImage)
+                .backgroundImage(backgroundImage)
+                .introduction(introduction)
+                .clientType(clientType)
+                .build());
 
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "클라이언트 수정",
             description = "클라이언트의 정보를 수정합니다."
     )
-    public ResponseEntity<Void> updateClient(@RequestBody ClientUpdateRequestDto requestDto) {
-        clientManageService.update(requestDto);
+    public ResponseEntity<Void> updateClient(
+            @RequestParam Long id,
+            @RequestParam String name,
+            @RequestParam String introduction,
+            @RequestParam ClientType clientType,
+            @RequestParam RegisterStatus status,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(value = "backgroundImage", required = false) MultipartFile backgroundImage
+            ) {
+        clientManageService.update(ClientUpdateRequestDto.builder()
+                .id(id)
+                .name(name)
+                .profileImage(profileImage)
+                .backgroundImage(backgroundImage)
+                .introduction(introduction)
+                .clientType(clientType)
+                .status(status)
+                .build());
 
         return ResponseEntity.ok().build();
     }

@@ -3,14 +3,15 @@ package goodspace.backend.authorization.service.goodspace;
 import goodspace.backend.authorization.dto.request.SignInRequestDto;
 import goodspace.backend.authorization.dto.request.SignUpRequestDto;
 import goodspace.backend.authorization.dto.response.TokenResponseDto;
-import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;
 import goodspace.backend.fixture.EmailVerificationFixture;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
-import goodspace.backend.user.repository.UserRepository;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.global.security.TokenType;
+import goodspace.backend.user.domain.GoodSpaceUser;
+import goodspace.backend.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +19,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,13 +31,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class GoodSpaceAuthorizationServiceTest {
-    private static final int SLEEP_FOR_GET_DIFFERENT_TOKEN = 1000;
-    private static final String DEFAULT_PASSWORD = "defaultPassword!";
+    private static final Supplier<EntityNotFoundException> ENTITY_NOT_FOUND = () -> new EntityNotFoundException("엔티티를 조회할 수 없습니다.");
+
+    private static final String DEFAULT_PASSWORD = "HelloWorldJava1!";
 
     private final GoodSpaceAuthorizationService authorizationService;
     private final EmailVerificationRepository emailVerificationRepository;
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     private EmailVerification verifiedEmail;
     private EmailVerification notVerifiedEmail;
@@ -44,6 +50,7 @@ class GoodSpaceAuthorizationServiceTest {
         verifiedEmail = createEntityFromFixture(EmailVerificationFixture.VERIFIED);
         notVerifiedEmail = createEntityFromFixture(EmailVerificationFixture.NOT_VERIFIED);
         existUser = createEntityFromFixture(GoodSpaceUserFixture.DEFAULT);
+        existUser.updatePassword(passwordEncoder.encode(DEFAULT_PASSWORD));
     }
 
     @Nested
@@ -58,9 +65,10 @@ class GoodSpaceAuthorizationServiceTest {
             authorizationService.signUp(new SignUpRequestDto(email, DEFAULT_PASSWORD));
 
             // then
-            boolean isPresent = userRepository.findByEmailAndPassword(email, DEFAULT_PASSWORD)
-                    .isPresent();
-            assertThat(isPresent).isTrue();
+            GoodSpaceUser user = userRepository.findGoodSpaceUserByEmail(email)
+                    .orElseThrow(ENTITY_NOT_FOUND);
+
+            assertThat(isSamePassword(DEFAULT_PASSWORD, user.getPassword())).isTrue();
         }
 
         @Test
@@ -114,10 +122,9 @@ class GoodSpaceAuthorizationServiceTest {
         void issueJwtIfEmailAndPasswordAreCorrect() {
             // given
             String email = existUser.getEmail();
-            String password = existUser.getPassword();
 
             // when
-            TokenResponseDto jwt = authorizationService.signIn(new SignInRequestDto(email, password));
+            TokenResponseDto jwt = authorizationService.signIn(new SignInRequestDto(email, DEFAULT_PASSWORD));
 
             // then
             boolean isLegalAccessToken = tokenProvider.validateToken(jwt.accessToken(), TokenType.ACCESS);
@@ -133,12 +140,11 @@ class GoodSpaceAuthorizationServiceTest {
             // given
             String existRefreshToken = existUser.getRefreshToken();
             String email = existUser.getEmail();
-            String password = existUser.getPassword();
 
-            Thread.sleep(SLEEP_FOR_GET_DIFFERENT_TOKEN);
+            sleepForGetDifferentToken();
 
             // when
-            authorizationService.signIn(new SignInRequestDto(email, password));
+            authorizationService.signIn(new SignInRequestDto(email, DEFAULT_PASSWORD));
 
             // then
             String newRefreshToken = existUser.getRefreshToken();
@@ -161,7 +167,15 @@ class GoodSpaceAuthorizationServiceTest {
         String refreshToken = tokenProvider.createToken(user.getId(), TokenType.REFRESH, user.getRoles());
         user.updateRefreshToken(refreshToken);
 
-        return (GoodSpaceUser) userRepository.findById(user.getId())
+        return userRepository.findGoodSpaceUserById(user.getId())
                 .orElseThrow();
+    }
+
+    private void sleepForGetDifferentToken() throws InterruptedException {
+        Thread.sleep(1000);
+    }
+
+    private boolean isSamePassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

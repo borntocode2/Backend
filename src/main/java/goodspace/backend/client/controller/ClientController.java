@@ -2,6 +2,7 @@ package goodspace.backend.client.controller;
 
 import goodspace.backend.client.dto.ClientBriefInfoResponseDto;
 import goodspace.backend.client.dto.ClientDetailsResponseDto;
+import goodspace.backend.client.dto.ClientItemInfoResponseDto;
 import goodspace.backend.client.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +31,7 @@ public class ClientController {
             description = "모든 클라이언트에 대한 간략한 정보를 반환합니다"
     )
     public ResponseEntity<List<ClientBriefInfoResponseDto>> findClients() {
-        List<ClientBriefInfoResponseDto> responseDto = clientService.getClients();
+        List<ClientBriefInfoResponseDto> responseDto = clientService.getPublicClients();
 
         return ResponseEntity.ok(responseDto);
     }
@@ -42,6 +43,20 @@ public class ClientController {
     )
     public ResponseEntity<ClientDetailsResponseDto> findClientDetails(@PathVariable long clientId) {
         ClientDetailsResponseDto responseDto = clientService.getDetails(clientId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/{clientId}/{itemId}")
+    @Operation(
+            summary = "상품 조회",
+            description = "클라이언트의 정보와 단일 상품의 정보를 반환합니다(상품 상세 페이지 용도)"
+    )
+    public ResponseEntity<ClientItemInfoResponseDto> findClientAndItem(
+            @PathVariable long clientId,
+            @PathVariable long itemId
+    ) {
+        ClientItemInfoResponseDto responseDto =clientService.getClientAndItem(clientId, itemId);
 
         return ResponseEntity.ok(responseDto);
     }

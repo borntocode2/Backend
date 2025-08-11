@@ -1,25 +1,42 @@
 package goodspace.backend.order.controller;
 
+import goodspace.backend.order.dto.OrderCreateResponseDto;
 import goodspace.backend.order.dto.OrderRequestDto;
 import goodspace.backend.order.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/orderTest")
+@RequestMapping("/order")
 public class OrderController {
     private final OrderService orderService;
 
-    //TODO - order에 delivery 임베더블 해놨으니, 로직 수정하시오.
+    @Operation(
+            summary = "주문 생성",
+            description = "결제가 완료되기 전, order를 생성합니다."
+    )
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto orderRequest) {
-        orderService.saveOrder(orderRequest);
-        return ResponseEntity.ok("Order created");
+    public ResponseEntity<OrderCreateResponseDto> createOrder(Principal principal, @RequestBody OrderRequestDto orderRequest) {
+        return ResponseEntity.ok(
+                OrderCreateResponseDto.builder()
+                        .orderId(orderService.saveOrder(principal, orderRequest))
+                        .build()
+        );
+    }
+
+    @Operation(
+            summary = "주문 삭제",
+            description = "생성된 order를 삭제합니다."
+    )
+    @DeleteMapping("/cancel/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.noContent().build();
     }
 }
 

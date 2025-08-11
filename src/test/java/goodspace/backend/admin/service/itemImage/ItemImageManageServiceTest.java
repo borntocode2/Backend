@@ -1,8 +1,6 @@
 package goodspace.backend.admin.service.itemImage;
 
-import goodspace.backend.admin.dto.itemImage.ItemImageDeleteRequestDto;
-import goodspace.backend.admin.dto.itemImage.ItemImageInfoResponseDto;
-import goodspace.backend.admin.dto.itemImage.ItemImageRegisterRequestDto;
+import goodspace.backend.admin.dto.itemImage.*;
 import goodspace.backend.admin.image.ImageManager;
 import goodspace.backend.admin.image.ImageManagerImpl;
 import goodspace.backend.client.domain.Client;
@@ -24,6 +22,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
@@ -38,7 +37,11 @@ import static org.assertj.core.api.Assertions.*;
 class ItemImageManageServiceTest {
     final static Supplier<EntityNotFoundException> DTO_NOT_FOUND = () -> new EntityNotFoundException("DTO가 조회되지 않습니다.");
     final static Supplier<EntityNotFoundException> ITEM_IMAGE_NOT_FOUND = () -> new EntityNotFoundException("Item Image가 조회되지 않습니다.");
-    final static String DEFAULT_IMAGE = ImageFixture.GOOD_SPACE.encodedImage;
+    final static String TITLE_IMAGE_FILE_NAME = "title";
+    final static MultipartFile DEFAULT_TITLE_IMAGE = ImageFixture.JAVA.getImage();
+    final static MultipartFile DEFAULT_IMAGE_A = ImageFixture.GDG.getImage();
+    final static MultipartFile DEFAULT_IMAGE_B = ImageFixture.KOTLIN.getImage();
+    final static MultipartFile NEW_IMAGE = ImageFixture.GOOD_SPACE.getImage();
 
     @Autowired
     ItemRepository itemRepository;
@@ -57,6 +60,7 @@ class ItemImageManageServiceTest {
 
     Client client;
     Item item;
+    ItemImage titleImage;
     ItemImage itemImageA;
     ItemImage itemImageB;
     List<ItemImage> existItemImages;
@@ -67,12 +71,15 @@ class ItemImageManageServiceTest {
         itemImageManageService = new ItemImageManageServiceImpl(imageManager, itemRepository, itemImageRepository);
 
         client = clientRepository.save(ClientFixture.CREATOR.getInstance());
-        item = itemRepository.save(ItemFixture.D.getInstance());
+        item = itemRepository.save(ItemFixture.PUBLIC_A.getInstanceWith(client));
+
+        titleImage = ItemImage.from(imageManager.createImageUrl(item.getId(), TITLE_IMAGE_FILE_NAME, DEFAULT_TITLE_IMAGE));
+        item.setTitleImage(titleImage);
+
         itemImageA = itemImageRepository.save(ItemImage.getEmptyInstance());
         itemImageB = itemImageRepository.save(ItemImage.getEmptyInstance());
-
-        itemImageA.setImageUrl(imageManager.createImageUrl(item.getId(), itemImageA.getId(), ImageFixture.GDG.encodedImage));
-        itemImageB.setImageUrl(imageManager.createImageUrl(item.getId(), itemImageB.getId(), ImageFixture.KOTLIN.encodedImage));
+        itemImageA.setImageUrl(imageManager.createImageUrl(item.getId(), itemImageA.getId(), DEFAULT_IMAGE_A));
+        itemImageB.setImageUrl(imageManager.createImageUrl(item.getId(), itemImageB.getId(), DEFAULT_IMAGE_B));
 
         client.addItem(item);
         item.addItemImages(List.of(itemImageA, itemImageB));
@@ -82,16 +89,27 @@ class ItemImageManageServiceTest {
     @Nested
     class findByItem {
         @Test
-        @DisplayName("특정 상품의 이미지를 모두 반환한다")
+        @DisplayName("특정 상품의 일반 이미지를 모두 반환한다")
         void returnEveryImageOfItem() {
-            List<ItemImageInfoResponseDto> imageDtos = itemImageManageService.findByItem(item.getId());
+            TotalItemImageResponseDto responseDto = itemImageManageService.findByItem(item.getId());
 
-            assertThat(imageDtos.size()).isEqualTo(existItemImages.size());
+            assertThat(responseDto.images().size()).isEqualTo(existItemImages.size());
 
             for (ItemImage existItemImage : existItemImages) {
-                ItemImageInfoResponseDto itemImageDto = findDtoById(existItemImage.getId(), imageDtos);
+                ItemImageInfoResponseDto itemImageDto = findDtoById(existItemImage.getId(), responseDto.images());
                 assertThat(isEqual(existItemImage, itemImageDto)).isTrue();
             }
+        }
+
+        @Test
+        @DisplayName("특정 상품의 타이틀 이미지를 반환한다")
+        void returnTitleImageOfItem() throws IOException {
+            TotalItemImageResponseDto responseDto = itemImageManageService.findByItem(item.getId());
+
+            String titleImageUrl = responseDto.titleImageUrl();
+
+            assertThat(item.getTitleImageUrl()).isEqualTo(titleImageUrl);
+            assertThat(imageUtil.isSameImage(titleImageUrl, DEFAULT_TITLE_IMAGE.getBytes())).isTrue();
         }
     }
 
@@ -104,7 +122,7 @@ class ItemImageManageServiceTest {
             ItemImageRegisterRequestDto requestDto = ItemImageRegisterRequestDto.builder()
                     .clientId(client.getId())
                     .itemId(item.getId())
-                    .encodedImage(DEFAULT_IMAGE)
+                    .image(NEW_IMAGE)
                     .build();
 
             // when
@@ -115,9 +133,52 @@ class ItemImageManageServiceTest {
                     .orElseThrow(ITEM_IMAGE_NOT_FOUND);
 
             assertThat(itemImage.getItem()).isEqualTo(item);
+            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE.getBytes())).isTrue();
+        }
+    }
 
-            boolean isSameImage = imageUtil.isSameImage(itemImage.getImageUrl(), DEFAULT_IMAGE);
-            assertThat(isSameImage).isTrue();
+    @Nested
+    class registerTitleImage {
+        @Test
+        @DisplayName("상품에 새로운 타이틀 이미지 URL을 등록한다")
+        void registerNewTitleImageUrl() throws IOException {
+            // given
+            ItemImageRegisterRequestDto requestDto = ItemImageRegisterRequestDto.builder()
+                    .clientId(client.getId())
+                    .itemId(item.getId())
+                    .image(NEW_IMAGE)
+                    .build();
+
+            // when
+            itemImageManageService.registerTitleImage(requestDto);
+
+            // then
+            ItemImage itemImage = item.getTitleImage();
+
+            assertThat(itemImage.getItem()).isEqualTo(item);
+            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE.getBytes())).isTrue();
+        }
+    }
+
+    @Nested
+    class updateTitleImage {
+        @Test
+        @DisplayName("상품의 타이틀 이미지를 수정한다")
+        void updateTitleImageOfItem() throws IOException {
+            // given
+            TitleImageUpdateRequestDto requestDto = TitleImageUpdateRequestDto.builder()
+                    .itemId(item.getId())
+                    .image(NEW_IMAGE)
+                    .build();
+
+            // when
+            itemImageManageService.updateTitleImage(requestDto);
+
+            // then
+            ItemImage itemImage = item.getTitleImage();
+
+            assertThat(itemImage.getItem()).isEqualTo(item);
+            assertThat(imageUtil.isSameImage(itemImage.getImageUrl(), NEW_IMAGE.getBytes())).isTrue();
         }
     }
 

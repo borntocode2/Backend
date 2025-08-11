@@ -1,5 +1,6 @@
 package goodspace.backend.order.service;
 
+import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderCartItem;
 import goodspace.backend.global.domain.Item;
@@ -13,6 +14,7 @@ import goodspace.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +25,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
 
-    public void saveOrder(OrderRequestDto orderRequest) {
-        User user = userRepository.findById(orderRequest.getUserId())
+    //TODO - error handling
+    public Long saveOrder(Principal principal, OrderRequestDto orderRequest) {
+        User user = userRepository.findById(TokenProvider.getUserIdFromPrincipal(principal))
                 .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 User를 매핑하는 Service과정에서 User를 찾는 것을 실패했습니다."));
 
         Order order = Order.builder()
                 .user(user)
-                .orderOutId(orderRequest.getOrderOutId())
+                .deliveryInfo(user.getDeliveryInfo())
                 .build();
 
         List<OrderCartItem> orderCartItems = orderRequest.getOrderCartItemDtos().stream()
@@ -45,10 +48,16 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         order.setOrderCartItems(orderCartItems);
-
         orderRepository.save(order);
+
+        return order.getId();
     }
-    public OrderResponseDto findOrderByOrderId(String orderId) {
+
+    public void deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
+    }
+
+    public OrderResponseDto findOrderByOrderId(Long orderId) {
         Order order = orderRepository.findByApproveResult_OrderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
 
@@ -56,8 +65,6 @@ public class OrderService {
                 .map(cartItem -> OrderCartItemDto.builder()
                         .itemId(cartItem.getItem().getId())
                         .quantity(cartItem.getQuantity())
-                        .amount(cartItem.getAmount())
-                        .orderId(cartItem.getOrder().getId())
                         .build()
                 )
                 .toList();
@@ -69,7 +76,6 @@ public class OrderService {
         return OrderResponseDto.builder()
                 .orderId(order.getApproveResult().getOrderId())
                 .amount((long)totalAmount)
-                .userId(order.getUser().getId())
                 .orderCartItemDtos(cartItemDtos)
                 .build();
     }

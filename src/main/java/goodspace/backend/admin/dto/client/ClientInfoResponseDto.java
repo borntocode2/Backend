@@ -2,6 +2,7 @@ package goodspace.backend.admin.dto.client;
 
 import goodspace.backend.client.domain.Client;
 import goodspace.backend.client.domain.ClientType;
+import goodspace.backend.client.domain.RegisterStatus;
 import lombok.Builder;
 
 @Builder
@@ -11,7 +12,8 @@ public record ClientInfoResponseDto(
         String profileImageUrl,
         String backgroundImageUrl,
         String introduction,
-        ClientType clientType
+        ClientType clientType,
+        RegisterStatus status
 ) {
     public static ClientInfoResponseDto from(Client client) {
         return ClientInfoResponseDto.builder()
@@ -21,6 +23,7 @@ public record ClientInfoResponseDto(
                 .backgroundImageUrl(client.getBackgroundImageUrl())
                 .introduction(client.getIntroduction())
                 .clientType(client.getClientType())
+                .status(client.getStatus())
                 .build();
     }
 }

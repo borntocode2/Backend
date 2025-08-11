@@ -5,12 +5,14 @@ import goodspace.backend.admin.dto.client.ClientRegisterRequestDto;
 import goodspace.backend.admin.dto.client.ClientUpdateRequestDto;
 import goodspace.backend.admin.image.ImageManager;
 import goodspace.backend.client.domain.Client;
+import goodspace.backend.client.domain.RegisterStatus;
 import goodspace.backend.global.domain.Item;
 import goodspace.backend.client.repository.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -52,10 +54,11 @@ public class ClientManageServiceImpl implements ClientManageService {
                 .name(clientDto.name())
                 .introduction(clientDto.introduction())
                 .clientType(clientDto.clientType())
+                .status(RegisterStatus.PRIVATE)
                 .build());
 
-        client.setProfileImageUrl(imageManager.createImageUrl(client.getId().toString(), PROFILE, clientDto.encodedProfileImage()));
-        client.setBackgroundImageUrl(imageManager.createImageUrl(client.getId().toString(), BACKGROUND, clientDto.encodedBackgroundImage()));
+        client.setProfileImageUrl(imageManager.createImageUrl(client.getId().toString(), PROFILE, clientDto.profileImage()));
+        client.setBackgroundImageUrl(imageManager.createImageUrl(client.getId().toString(), BACKGROUND, clientDto.backgroundImage()));
 
         return ClientInfoResponseDto.from(client);
     }
@@ -66,17 +69,18 @@ public class ClientManageServiceImpl implements ClientManageService {
         Client client = clientRepository.findById(requestDto.id())
                 .orElseThrow(CLIENT_NOT_FOUND);
 
-        if (requestDto.profileUpdated()) {
-            imageManager.updateImage(requestDto.encodedProfileImage(), client.getProfileImageUrl());
+        if (hasImage(requestDto.profileImage())) {
+            imageManager.updateImage(requestDto.profileImage(), client.getProfileImageUrl());
         }
-        if (requestDto.backgroundUpdated()) {
-            imageManager.updateImage(requestDto.encodedBackgroundImage(), client.getBackgroundImageUrl());
+        if (hasImage(requestDto.backgroundImage())) {
+            imageManager.updateImage(requestDto.backgroundImage(), client.getBackgroundImageUrl());
         }
 
         client.update(
                 requestDto.name(),
                 requestDto.introduction(),
-                requestDto.clientType()
+                requestDto.clientType(),
+                requestDto.status()
         );
 
         return ClientInfoResponseDto.from(client);
@@ -91,6 +95,10 @@ public class ClientManageServiceImpl implements ClientManageService {
         removeEveryImage(client);
 
         clientRepository.delete(client);
+    }
+
+    private boolean hasImage(MultipartFile image) {
+        return image != null && !image.isEmpty();
     }
 
     private void removeEveryImage(Client client) {
