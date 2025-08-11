@@ -112,7 +112,7 @@ public class NicePayController {
                                 .status(HttpStatus.MULTIPLE_CHOICES) // 300
                                 .body(new OrderResultMessageDto(
                                         "[결제성공]IllegalArgumentException에러가 발생하였습니다.PaymentApproveResult와 order매핑에 실패하였습니다." + e.getMessage(),
-                                        "FAIL"));
+                                        "MULTIPLE_CHOICES"));
                     } catch (Exception e) {
                         log.info("[info 에러 발생]", e.getMessage());
                         tryCount--;
@@ -124,33 +124,33 @@ public class NicePayController {
                             .status(HttpStatus.MULTIPLE_CHOICES) // 300
                             .body(new OrderResultMessageDto(
                                     "[결제성공]IllegalArgumentException를 제외한 에러가 발생하였습니다. 상위 에러메세지를 확인하세요.",
-                                    "FAIL"));
+                                    "MULTIPLE_CHOICES"));
                 }
 
                 return ResponseEntity
                         .status(HttpStatus.OK)
-                        .body(new OrderResultMessageDto("[결제성공] 결제에 성공했습니다.", "SUCCESS"));
+                        .body(new OrderResultMessageDto("[결제성공] 결제에 성공했습니다.", "OK"));
 
             } else {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(new OrderResultMessageDto(
                                 "[결제실패]Payment의 ResultCode가 0000이 아닙니다. 결제에 실패하였습니다.",
-                                "FAIL"));
+                                "BAD_REQUEST"));
             }
 
         } catch (HttpClientErrorException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new OrderResultMessageDto(
-                            "[결제실패]클라이언트 에러 발생." + e.getMessage(),
-                            "FAIL"));
+                            "[결제실패]클라이언트 에러 발생. " + e.getMessage(),
+                            "BAD_REQUEST"));
         } catch (HttpServerErrorException e) {
             return ResponseEntity
                     .status(HttpStatus.MULTIPLE_CHOICES)
                     .body(new OrderResultMessageDto(
                             "[결제실패]서버에 에러 발생." + e.getMessage(),
-                            "FAIL"));
+                            "MULTIPLE_CHOICES"));
         }
     }
 
@@ -160,8 +160,7 @@ public class NicePayController {
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new OrderResultMessageDto(
-                        "[결제성공] 사용자가 결제를 취소했습니다.",
-                        "CANCEL"
+                        "[결제실패] 사용자가 결제를 취소했습니다.",
+                        "UNPROCESSABLE_ENTITY"
                 ));
-    }
-}
+    }}
