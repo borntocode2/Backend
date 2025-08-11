@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.sql.SQLException;
 
@@ -21,9 +22,9 @@ import static org.springframework.http.HttpStatus.*;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<String> handleNotFound(NoHandlerFoundException exception) {
-        log.trace("[ERROR RESPONSE] handleNotFound", exception);
+    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    public ResponseEntity<String> handleNotFound(Exception exception) {
+        log.info("[ERROR RESPONSE] handleNotFound", exception);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 엔드포인트입니다");
     }
@@ -41,35 +42,35 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException exception) {
-        log.trace("[ERROR RESPONSE] entity not found", exception);
+        log.info("[ERROR RESPONSE] entity not found", exception);
 
         return ResponseEntity.status(UNPROCESSABLE_ENTITY).body(exception.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException exception) {
-        log.trace("[ERROR RESPONSE] illegal argument", exception);
+        log.info("[ERROR RESPONSE] illegal argument", exception);
 
         return ResponseEntity.status(BAD_REQUEST).body("Illegal argument: " + exception.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> handleIllegalState(IllegalStateException exception) {
-        log.trace("[ERROR RESPONSE] illegal state", exception);
+        log.info("[ERROR RESPONSE] illegal state", exception);
 
         return ResponseEntity.status(BAD_REQUEST).body("Illegal state: " + exception.getMessage());
     }
 
     @ExceptionHandler(MalformedJwtException.class)
     public ResponseEntity<String> handleIllegalJwt(MalformedJwtException exception) {
-        log.trace("[ERROR RESPONSE] malformed jwt", exception);
+        log.info("[ERROR RESPONSE] malformed jwt", exception);
 
         return ResponseEntity.status(UNAUTHORIZED).body("부적절한 JWT 토큰입니다: " + exception.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleIllegalJson(HttpMessageNotReadableException exception) {
-        log.trace("[ERROR RESPONSE] http message not readable", exception);
+        log.info("[ERROR RESPONSE] http message not readable", exception);
 
         return ResponseEntity.status(BAD_REQUEST).body("JSON 파싱에 실패했습니다: " + exception.getMessage());
     }
@@ -82,7 +83,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, ConstraintViolationException.class})
-    public ResponseEntity<String>  handleDataIntegrityViolation(DataIntegrityViolationException exception) {
+    public ResponseEntity<String>  handleDataIntegrityViolation(Exception exception) {
         log.warn("[ERROR RESPONSE] data integrity violation", exception);
 
         return ResponseEntity.status(CONFLICT).body("DB 무결성 제약조건에 위반됩니다: " + exception.getMessage());
