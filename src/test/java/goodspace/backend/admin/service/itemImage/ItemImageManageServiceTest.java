@@ -4,12 +4,12 @@ import goodspace.backend.admin.dto.itemImage.*;
 import goodspace.backend.admin.image.ImageManager;
 import goodspace.backend.admin.image.ImageManagerImpl;
 import goodspace.backend.client.domain.Client;
-import goodspace.backend.global.domain.Item;
-import goodspace.backend.global.domain.ItemImage;
+import goodspace.backend.client.repository.ClientRepository;
 import goodspace.backend.fixture.ClientFixture;
 import goodspace.backend.fixture.ImageFixture;
 import goodspace.backend.fixture.ItemFixture;
-import goodspace.backend.client.repository.ClientRepository;
+import goodspace.backend.global.domain.Item;
+import goodspace.backend.global.domain.ItemImage;
 import goodspace.backend.global.repository.ItemImageRepository;
 import goodspace.backend.global.repository.ItemRepository;
 import goodspace.backend.testUtil.ImageUtil;
@@ -25,12 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @SpringBootTest
 @Transactional
@@ -197,13 +197,11 @@ class ItemImageManageServiceTest {
             itemImageManageService.delete(requestDto);
 
             // then
-            boolean imageDeleted = item.getItemImages().stream()
-                    .noneMatch(itemImage -> itemImage.getId().equals(itemImageA.getId()));
-            assertThat(imageDeleted).isTrue();
+            assertThat(itemImageA.isDeleted()).isTrue();
         }
 
         @Test
-        @DisplayName("이미지 URL에 연결되어 있던 이미지 파일을 삭제한다")
+        @DisplayName("이미지 URL에 연결되어 있던 이미지 파일은 삭제하지 않는다")
         void removeImageFileConnectedUrl() {
             // given
             ItemImageDeleteRequestDto requestDto = ItemImageDeleteRequestDto.builder()
@@ -217,8 +215,8 @@ class ItemImageManageServiceTest {
             itemImageManageService.delete(requestDto);
 
             // then
-            assertThatThrownBy(() -> imageUtil.getImageFromUrl(itemImageA.getImageUrl()))
-                    .isInstanceOf(NoSuchFileException.class);
+            assertThatCode(() -> imageUtil.getImageFromUrl(itemImageA.getImageUrl()))
+                    .doesNotThrowAnyException();
         }
     }
 

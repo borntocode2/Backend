@@ -75,7 +75,7 @@ class AdminQuestionServiceTest {
         emptyFileQuestion = questionRepository.save(QuestionFixture.A.getInstanceWith(user));
         existQuestions = List.of(question, notAnsweredQuestion, answeredQuestion, emptyFileQuestion);
 
-        answer = answerRepository.save(AnswerFixture.A.getInstance());
+        answer = answerRepository.save(AnswerFixture.A.getInstanceWith(question));
         answeredQuestion.setAnswer(answer);
 
         questionFile1 = questionFileRepository.save(getQuestionFileFromImageFixture(ImageFixture.JAVA));

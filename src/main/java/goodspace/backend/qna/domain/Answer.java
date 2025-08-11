@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 
 
 @Entity
 @Getter
 @SuperBuilder
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE answer SET deleted = true, deleted_at = NOW() WHERE id = ?")
 public class Answer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

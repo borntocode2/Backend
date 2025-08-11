@@ -1,6 +1,7 @@
 package goodspace.backend.fixture;
 
 import goodspace.backend.qna.domain.Answer;
+import goodspace.backend.qna.domain.Question;
 
 public enum AnswerFixture {
     A(
@@ -15,9 +16,10 @@ public enum AnswerFixture {
         this.content = content;
     }
 
-    public Answer getInstance() {
+    public Answer getInstanceWith(Question question) {
         return Answer.builder()
                 .content(content)
+                .question(question)
                 .build();
     }
 }
