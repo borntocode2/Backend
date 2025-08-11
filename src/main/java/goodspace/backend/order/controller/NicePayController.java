@@ -109,6 +109,9 @@ public class NicePayController {
                     try {
                         PaymentApproveResult result = mapper.treeToValue(responseNode, PaymentApproveResult.class);
                         nicePayService.MappingOrderWithPaymentApproveResult(result);
+
+                        System.out.println(result);
+
                         break;
                     } catch (IllegalArgumentException e) {
                         return ResponseEntity
