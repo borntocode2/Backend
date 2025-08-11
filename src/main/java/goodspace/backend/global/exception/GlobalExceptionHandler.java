@@ -5,13 +5,14 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -26,7 +27,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleNotFound(Exception exception) {
         log.info("[ERROR RESPONSE] handleNotFound", exception);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 엔드포인트입니다");
+        return ResponseEntity.status(NOT_FOUND).body("존재하지 않는 엔드포인트입니다");
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<String> handleHttpClientError(HttpClientErrorException exception) {
+        log.info("[ERROR RESPONSE] HTTP Client exception", exception);
+
+        return ResponseEntity.status(BAD_REQUEST).body("잘못된 값으로 인해 외부 API와 통신에 실패했습니다.");
+    }
+
+    @ExceptionHandler(HttpServerErrorException.class)
+    public ResponseEntity<String> handleHttpServerError(HttpServerErrorException exception) {
+        log.info("[ERROR RESPONSE] HTTP Server exception", exception);
+
+        return ResponseEntity.status(BAD_GATEWAY).body("외부 API 불량으로 통신에 실패했습니다.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
