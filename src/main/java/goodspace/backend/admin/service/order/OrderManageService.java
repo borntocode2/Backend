@@ -16,4 +16,6 @@ public interface OrderManageService {
     void updateOrder(OrderUpdateRequestDto requestDto);
 
     void removeOrder(long orderId);
+
+    void createPaymentIssue(Long orderId, Long tid);
 }
