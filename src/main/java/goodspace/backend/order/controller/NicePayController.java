@@ -31,7 +31,8 @@ public class NicePayController {
     @GetMapping(value = "/html", produces = MediaType.TEXT_HTML_VALUE)
     public String showPaymentPage(@RequestParam int amount,
                                   @RequestParam String goodsName,
-                                  @RequestParam String orderId) {
+                                  @RequestParam String orderId
+    ) {
 
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +

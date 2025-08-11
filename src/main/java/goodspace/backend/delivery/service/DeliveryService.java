@@ -27,7 +27,7 @@ public class DeliveryService {
         this.orderRepository = orderRepository;
     }
 
-    public void callTrace(Long orderId, String rgist) throws JsonProcessingException {
+    public String RegistrationMappingWithOrderIdAfterCallTrace(Long orderId, String rgist) throws JsonProcessingException {
         String url = "http://openapi.epost.go.kr/trace/retrieveLongitudinalService/retrieveLongitudinalService/getLongitudinalList"
                 + "?rgist=" + rgist
                 + "&serviceKey=" + serviceKey;
@@ -48,6 +48,14 @@ public class DeliveryService {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalStateException("Order not found"));
 
         orderMappingWithDeliveryDtos(order, deliveryStatusDto, historyList);
+
+        if (order.getDeliveryHistorys() != null && !order.getDeliveryHistorys().isEmpty()) {
+            return "save completed";
+        }
+
+        else{
+            return "save failed";
+        }
     }
 
 
