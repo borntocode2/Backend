@@ -160,32 +160,28 @@ class CartItemServiceTest {
         @Test
         @DisplayName("회원의 장바구니 상품을 제거한다")
         void removeCartItemOfUser() {
-            List<CartItem> cartItems = user.getCartItems();
-            long existAmountOfCartItem = cartItems.size();
-
             cartItemService.removeCartItem(user.getId(), cartItemA.getId());
 
-            long currentAmountOfCartITem = cartItems.size();
-            assertThat(currentAmountOfCartITem).isEqualTo(existAmountOfCartItem - 1);
-            assertThat(cartItems.contains(cartItemA)).isFalse();
+            assertThat(cartItemA.isDeleted()).isTrue();
         }
     }
 
     private CartItemInfoResponseDto findDtoById(long id, List<CartItemInfoResponseDto> dtos) {
         return dtos.stream()
-                .filter(dto -> dto.id().equals(id))
+                .filter(dto -> dto.cartItemId().equals(id))
                 .findAny()
                 .orElseThrow(DTO_NOT_FOUND);
     }
 
     private boolean isEqual(CartItem cartItem, CartItemInfoResponseDto dto) {
-        return cartItem.getId().equals(dto.id()) &&
+        return cartItem.getId().equals(dto.cartItemId()) &&
                 cartItem.getQuantity().equals(dto.quantity()) &&
                 isEqual(cartItem.getItem(), dto.item());
     }
 
     private boolean isEqual(Item item, CartItemInfoResponseDto.ItemDto dto) {
-        return item.getName().equals(dto.name()) &&
+        return item.getId().equals(dto.itemId()) &&
+                item.getName().equals(dto.name()) &&
                 item.getPrice().equals(dto.price()) &&
                 Objects.equals(item.getTitleImageUrl(), dto.titleImageUrl());
     }
