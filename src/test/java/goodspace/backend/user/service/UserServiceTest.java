@@ -4,12 +4,16 @@ import goodspace.backend.email.entity.EmailVerification;
 import goodspace.backend.email.repository.EmailVerificationRepository;
 import goodspace.backend.fixture.EmailVerificationFixture;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
+import goodspace.backend.fixture.PaymentApproveResultFixture;
+import goodspace.backend.global.parser.DateTimeParsers;
+import goodspace.backend.order.domain.Order;
+import goodspace.backend.order.domain.OrderCartItem;
+import goodspace.backend.order.domain.PaymentApproveResult;
+import goodspace.backend.order.repository.OrderRepository;
 import goodspace.backend.user.domain.GoodSpaceUser;
-import goodspace.backend.user.dto.EmailUpdateRequestDto;
-import goodspace.backend.user.dto.PasswordUpdateByVerifiedEmailRequestDto;
-import goodspace.backend.user.dto.PasswordUpdateRequestDto;
-import goodspace.backend.user.dto.RefreshTokenResponseDto;
+import goodspace.backend.user.dto.*;
 import goodspace.backend.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,12 +23,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
 class UserServiceTest {
+    static final Supplier<EntityNotFoundException> DTO_NOT_FOUND = () -> new EntityNotFoundException("DTO를 조회할 수 없습니다.");
+
     static final String DEFAULT_PASSWORD = "HelloPassword1!";
     static final String DEFAULT_REFRESH_TOKEN = "defaultRefreshToken";
     static final String NEW_PASSWORD = "HelloNewPassword1!";
@@ -37,11 +47,14 @@ class UserServiceTest {
     PasswordEncoder passwordEncoder;
     @Autowired
     EmailVerificationRepository emailVerificationRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
     GoodSpaceUser user;
     EmailVerification verifiedEmailOfUser;
     EmailVerification verifiedEmail;
     EmailVerification notVerifiedEmail;
+    List<Order> existOrders;
 
     @BeforeEach
     void resetEntities() {
@@ -55,6 +68,24 @@ class UserServiceTest {
 
         verifiedEmail = emailVerificationRepository.save(EmailVerificationFixture.VERIFIED.getInstance());
         notVerifiedEmail = emailVerificationRepository.save(EmailVerificationFixture.NOT_VERIFIED.getInstance());
+
+        Order orderA = orderRepository.save(Order
+                .builder()
+                .user(user)
+                .build());
+        Order orderB = orderRepository.save(Order
+                .builder()
+                .user(user)
+                .build());
+        PaymentApproveResult approveResultA = PaymentApproveResultFixture.A.getInstanceWith(orderA.getId());
+        PaymentApproveResult approveResultB = PaymentApproveResultFixture.B.getInstanceWith(orderB.getId());
+        orderA.setPaymentApproveResult(approveResultA);
+        orderB.setPaymentApproveResult(approveResultB);
+
+        user.addOrder(orderA);
+        user.addOrder(orderB);
+
+        existOrders = List.of(orderA, orderB);
     }
 
     @Nested
@@ -171,7 +202,45 @@ class UserServiceTest {
         }
     }
 
+    @Nested
+    class getPurchaseHistory {
+        @Test
+        @DisplayName("모든 주문 내역을 조회한다")
+        void getEveryOrders() {
+            List<PurchaseHistoryResponseDto> responseDtos = userService.getPurchaseHistory(user.getId());
+
+            assertThat(responseDtos.size()).isEqualTo(existOrders.size());
+
+            for (Order existOrder : existOrders) {
+                PurchaseHistoryResponseDto responseDto = findDtoById(existOrder.getId(), responseDtos);
+                assertThat(isEqual(existOrder, responseDto)).isTrue();
+            }
+        }
+    }
+
     private boolean isSamePassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    private PurchaseHistoryResponseDto findDtoById(long id, List<PurchaseHistoryResponseDto> dtos) {
+        return dtos.stream()
+                .filter(dto -> dto.id().equals(id))
+                .findAny()
+                .orElseThrow(DTO_NOT_FOUND);
+    }
+
+    private boolean isEqual(Order order, PurchaseHistoryResponseDto dto) {
+        return Objects.equals(order.getId(), dto.id()) &&
+                Objects.equals(order.getApproveResult().getGoodsName(), dto.itemInfo()) &&
+                Objects.equals(getTotalQuantity(order.getOrderCartItems()), dto.totalQuantity()) &&
+                Objects.equals(order.getApproveResult().getAmount(), dto.amount()) &&
+                Objects.equals(order.getOrderStatus(), dto.status()) &&
+                Objects.equals(DateTimeParsers.parseOffsetDateTime(order.getApproveResult().getPaidAt()), dto.date());
+    }
+
+    private int getTotalQuantity(List<OrderCartItem> orderCartItems) {
+        return orderCartItems.stream()
+                .mapToInt(OrderCartItem::getQuantity)
+                .sum();
     }
 }

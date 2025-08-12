@@ -30,7 +30,6 @@ public class UserService {
     private static final Supplier<IllegalArgumentException> ILLEGAL_PASSWORD = () -> new IllegalArgumentException("부적절한 비밀번호입니다.");
     private static final Supplier<EntityNotFoundException> VERIFICATION_NOT_FOUND = () -> new EntityNotFoundException("이메일 인증 정보를 찾을 수 없습니다.");
     private static final Supplier<IllegalStateException> NOT_VERIFIED = () -> new IllegalStateException("인증되지 않은 이메일입니다.");
-    private static final Supplier<IllegalStateException> ILLEGAL_STATE_ORDER = () -> new IllegalStateException("처리되지 않은 주문이 있습니다.");
 
     private final UserRepository userRepository;
     private final EmailVerificationRepository emailVerificationRepository;
@@ -140,7 +139,6 @@ public class UserService {
         if (hasIllegalStateOrder(user.getOrders())) {
             // TODO: 부적절한 상태의 주문이 있을 경우 개발자에게 알려야 함
             log.error("ERROR: ApproveResult가 매핑되지 않은 Order 발생 (USER ID: {})", userId);
-            throw ILLEGAL_STATE_ORDER.get();
         }
 
         return user.getOrders().stream()
