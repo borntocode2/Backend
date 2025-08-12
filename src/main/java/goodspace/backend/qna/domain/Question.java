@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE question SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class Question extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

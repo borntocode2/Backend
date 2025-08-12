@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
@@ -16,6 +17,7 @@ import org.hibernate.annotations.SQLDelete;
 @AllArgsConstructor
 @SuperBuilder
 @SQLDelete(sql = "UPDATE order_cart_item SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class OrderCartItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
