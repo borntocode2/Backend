@@ -218,6 +218,17 @@ class UserServiceTest {
         }
     }
 
+    @Nested
+    class removeUser {
+        @Test
+        @DisplayName("회원을 삭제한다")
+        void removeUserById() {
+            userService.removeUser(user.getId());
+
+            assertThat(userRepository.findById(user.getId())).isEmpty();
+        }
+    }
+
     private boolean isSamePassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
