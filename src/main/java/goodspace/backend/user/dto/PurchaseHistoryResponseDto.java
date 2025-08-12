@@ -23,11 +23,11 @@ public record PurchaseHistoryResponseDto(
         PaymentApproveResult approveResult = order.getApproveResult();
 
         return PurchaseHistoryResponseDto.builder()
-                .date(DateTimeParsers.parseOffsetDateTime(approveResult.getPaidAt()))
+                .date(approveResult == null ? null : DateTimeParsers.parseOffsetDateTime(approveResult.getPaidAt()))
                 .id(order.getId())
-                .itemInfo(approveResult.getGoodsName())
+                .itemInfo(approveResult == null ? null: approveResult.getGoodsName())
                 .totalQuantity(getTotalQuantity(order.getOrderCartItems()))
-                .amount(approveResult.getAmount())
+                .amount(approveResult == null ? null : approveResult.getAmount())
                 .status(order.getOrderStatus())
                 .build();
     }
