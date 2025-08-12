@@ -23,7 +23,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Table(name = "`order`")
-@SQLDelete(sql = "UPDATE order SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLDelete(sql = "UPDATE `order` SET deleted = true, deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted = false")
 public class Order extends BaseEntity {
     @Id
