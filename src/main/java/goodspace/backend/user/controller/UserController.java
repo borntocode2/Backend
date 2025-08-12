@@ -33,6 +33,18 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUserInfo(id));
     }
 
+    @GetMapping("/name")
+    @Operation(
+            summary = "이름 불러오기",
+            description = "회원 이름을 조회합니다."
+    )
+    public ResponseEntity<UserNameResponseDto> getUserName(Principal principal) {
+        long id = principalUtil.findIdFromPrincipal(principal);
+        UserNameResponseDto responseDto = userService.getName(id);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
     @PatchMapping("/updateMyPage")
     @Operation(
             summary = "정보 수정",
