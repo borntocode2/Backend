@@ -89,6 +89,22 @@ class UserServiceTest {
     }
 
     @Nested
+    class getName {
+        @Test
+        @DisplayName("회원 이름을 조회한다")
+        void getNameOfUser() {
+            // given
+            String expectedResult = user.getName();
+
+            // when
+            UserNameResponseDto actualResult = userService.getName(user.getId());
+
+            // then
+            assertThat(actualResult.name()).isEqualTo(expectedResult);
+        }
+    }
+
+    @Nested
     class updatePassword {
         @Test
         @DisplayName("비밀번호를 변경한다")

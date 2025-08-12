@@ -71,6 +71,13 @@ public class UserService {
     }
 
     @Transactional
+    public UserNameResponseDto getName(long userId) {
+        return userRepository.findById(userId)
+                .map(UserNameResponseDto::from)
+                .orElseThrow(USER_NOT_FOUND);
+    }
+
+    @Transactional
     public String updateMyPage(long userId, UserMyPageDto userMyPageDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found while updating MyPage Information."));
