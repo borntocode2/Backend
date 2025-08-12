@@ -33,7 +33,6 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUserInfo(id));
     }
 
-
     @PatchMapping("/updateMyPage")
     @Operation(
             summary = "정보 수정",
@@ -100,5 +99,17 @@ public class UserController {
         List<PurchaseHistoryResponseDto> responseDtos = userService.getPurchaseHistory(id);
 
         return ResponseEntity.ok(responseDtos);
+    }
+
+    @DeleteMapping
+    @Operation(
+            summary = "회원 탈퇴",
+            description = "회원을 제거합니다."
+    )
+    public ResponseEntity<Void> withdraw(Principal principal) {
+        long userId = principalUtil.findIdFromPrincipal(principal);
+        userService.removeUser(userId);
+
+        return ResponseEntity.noContent().build();
     }
 }

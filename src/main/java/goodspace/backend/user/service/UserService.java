@@ -146,6 +146,11 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
+    public void removeUser(long userId) {
+        userRepository.deleteById(userId);
+    }
+
     private void validatePassword(String rawPassword) {
         if (passwordValidator.isIllegalPassword(rawPassword)) {
             throw ILLEGAL_PASSWORD.get();
