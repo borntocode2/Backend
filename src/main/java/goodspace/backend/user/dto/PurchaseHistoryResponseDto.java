@@ -1,5 +1,6 @@
 package goodspace.backend.user.dto;
 
+import goodspace.backend.global.parser.DateTimeParsers;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderCartItem;
 import goodspace.backend.order.domain.OrderStatus;
@@ -22,7 +23,7 @@ public record PurchaseHistoryResponseDto(
         PaymentApproveResult approveResult = order.getApproveResult();
 
         return PurchaseHistoryResponseDto.builder()
-                .date(approveResult.getPaidAt() == null ? null : OffsetDateTime.parse(approveResult.getPaidAt()))
+                .date(DateTimeParsers.parseOffsetDateTime(approveResult.getPaidAt()))
                 .id(order.getId())
                 .itemInfo(approveResult.getGoodsName())
                 .totalQuantity(getTotalQuantity(order.getOrderCartItems()))
