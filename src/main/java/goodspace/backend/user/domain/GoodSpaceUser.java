@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -16,6 +17,7 @@ import org.hibernate.annotations.SQLDelete;
 @SQLDelete(sql = "UPDATE good_space_user " +
         "SET password = CONCAT('DELETED_', password) " +
         "WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class GoodSpaceUser extends User {
     @Column(nullable = false)
     private String password;

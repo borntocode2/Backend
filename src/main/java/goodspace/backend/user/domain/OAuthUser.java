@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @SuperBuilder
@@ -14,6 +15,7 @@ import org.hibernate.annotations.SQLDelete;
 @SQLDelete(sql = "UPDATE oauth_user " +
         "SET identifier = CONCAT('DELETED_', identifier) " +
         "WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class OAuthUser extends User {
     @Column(nullable = false)
     private String identifier;
