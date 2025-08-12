@@ -2,6 +2,7 @@ package goodspace.backend.admin.service.order;
 
 import goodspace.backend.admin.dto.order.OrderInfoResponseDto;
 import goodspace.backend.admin.dto.order.OrderUpdateRequestDto;
+import goodspace.backend.admin.dto.order.PaymentApproveResultResponseDto;
 import goodspace.backend.admin.dto.order.TrackingNumberRegisterRequestDto;
 import goodspace.backend.fixture.DeliveryFixture;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
@@ -205,10 +206,18 @@ class OrderManageServiceTest {
 
     private boolean isEqualWithoutItem(Order order, OrderInfoResponseDto dto) {
         return Objects.equals(order.getId(), dto.id()) &&
-                Objects.equals(order.getApproveResult(), dto.approveResult()) &&
+                isEqual(order.getApproveResult(), dto.approveResult()) &&
                 Objects.equals(order.getDeliveryInfo(), dto.deliveryInfo()) &&
                 Objects.equals(order.getOrderStatus(), dto.status()) &&
                 Objects.equals(order.getCreatedAt(), dto.createAt()) &&
                 Objects.equals(order.getUpdatedAt(), dto.updatedAt());
+    }
+
+    private boolean isEqual(PaymentApproveResult approveResult, PaymentApproveResultResponseDto dto) {
+        if (approveResult == null && dto == null) return true;
+        if (approveResult == null || dto == null) return false;
+
+        PaymentApproveResultResponseDto converted = PaymentApproveResultResponseDto.from(approveResult);
+        return Objects.equals(converted, dto);
     }
 }
