@@ -5,6 +5,7 @@ import goodspace.backend.global.domain.BaseEntity;
 import goodspace.backend.global.security.RefreshToken;
 import goodspace.backend.global.security.Role;
 import goodspace.backend.order.domain.Order;
+import goodspace.backend.order.dto.OrderInfoDto;
 import goodspace.backend.qna.domain.Question;
 import goodspace.backend.user.dto.UserMyPageDto;
 import jakarta.persistence.*;
@@ -97,6 +98,12 @@ public abstract class User extends BaseEntity {
         this.name = userMyPageDto.getName();
         this.dateOfBirth = userMyPageDto.getDateOfBirth();
         this.deliveryInfo = DeliveryInfo.from(userMyPageDto);
+    }
+
+    public void update(OrderInfoDto orderInfoDto) {
+        this.name = orderInfoDto.getName();
+        this.phoneNumber = orderInfoDto.getPhoneNumber();
+        this.deliveryInfo = orderInfoDto.toDeliveryInfo();
     }
 
     /**
