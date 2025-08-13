@@ -17,7 +17,6 @@ import org.hibernate.annotations.SQLRestriction;
         "UPDATE oauth_user " +
         "SET require_unique = 0 " +
         "WHERE id = ?")
-@SQLRestriction("deleted = false")
 public class OAuthUser extends User {
     @Column(nullable = false)
     private String identifier;
