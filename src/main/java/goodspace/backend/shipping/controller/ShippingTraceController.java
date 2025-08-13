@@ -25,8 +25,9 @@ public class ShippingTraceController {
         String url = baseUrl + "?ServiceKey=" + serviceKey + "&rgist=" + rgist;
         ShippingResponseDto shippingResponseDto = shippingTraceService.requestShippingStatus(url);
 
+        System.out.println(shippingResponseDto);
         //TODO : url 뿌려주고 DTo받았으니 이 데이터를 활용해야함. 새로운 detail업데이트 and status 업데이트
 
-
+        return shippingResponseDto.toString();
     }
 }
