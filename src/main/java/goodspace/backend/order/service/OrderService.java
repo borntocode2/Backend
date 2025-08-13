@@ -1,22 +1,28 @@
 package goodspace.backend.order.service;
 
+import goodspace.backend.cart.domain.CartItem;
+import goodspace.backend.global.domain.Item;
+import goodspace.backend.global.repository.CartItemRepository;
+import goodspace.backend.global.repository.ItemRepository;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderCartItem;
-import goodspace.backend.global.domain.Item;
-import goodspace.backend.user.domain.User;
 import goodspace.backend.order.dto.OrderCartItemDto;
 import goodspace.backend.order.dto.OrderRequestDto;
 import goodspace.backend.order.dto.OrderResponseDto;
-import goodspace.backend.global.repository.ItemRepository;
 import goodspace.backend.order.repository.OrderRepository;
+import goodspace.backend.user.domain.User;
 import goodspace.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Objects;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +30,19 @@ public class OrderService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
+    private final CartItemRepository cartItemRepository;
 
     //TODO - error handling
     public Long saveOrder(Principal principal, OrderRequestDto orderRequest) {
         User user = userRepository.findById(TokenProvider.getUserIdFromPrincipal(principal))
                 .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 User를 매핑하는 Service과정에서 User를 찾는 것을 실패했습니다."));
 
-        if (orderRequest.getRequireUpdateUserInfo()) {
+        if (orderRequest.isRequireUpdateUserInfo()) {
             user.update(orderRequest.getOrderInfo());
+        }
+
+        if (orderRequest.isRequireCartItemRemove()) {
+            removeCartItem(user, orderRequest.getOrderCartItemDtos());
         }
 
         Order order = Order.builder()
@@ -49,7 +60,7 @@ public class OrderService {
                             .order(order)
                             .build();
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
 
         order.setOrderCartItems(orderCartItems);
         orderRepository.save(order);
@@ -82,5 +93,17 @@ public class OrderService {
                 .amount((long)totalAmount)
                 .orderCartItemDtos(cartItemDtos)
                 .build();
+    }
+
+    private void removeCartItem(User user, List<OrderCartItemDto> orderCartItemDtos) {
+        Map<Long, CartItem> cartItemMap = user.getCartItems().stream()
+                .collect(toMap(CartItem::getItemId, cartItem -> cartItem));
+
+        List<CartItem> itemsToDelete = orderCartItemDtos.stream()
+                .map(dto -> cartItemMap.get(dto.getItemId()))
+                .filter(Objects::nonNull)
+                .toList();
+
+        cartItemRepository.deleteAll(itemsToDelete);
     }
 }

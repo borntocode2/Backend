@@ -40,4 +40,8 @@ public class CartItem extends BaseEntity {
     public void updateQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
+    public Long getItemId() {
+        return item.getId();
+    }
 }
