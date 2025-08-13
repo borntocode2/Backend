@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor
@@ -15,6 +17,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
+@SQLDelete(sql = "UPDATE user_role SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class UserRole extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

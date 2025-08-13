@@ -9,15 +9,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Table(uniqueConstraints = {
-        @UniqueConstraint(name = "cart_item_uq_item_id_user_id", columnNames = {"item_id", "user_id"})
-})
+@SQLDelete(sql = "UPDATE cart_item SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class CartItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

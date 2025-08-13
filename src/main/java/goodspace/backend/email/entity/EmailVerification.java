@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 /**
  * 이메일 인증 코드 저장용 엔티티
@@ -20,6 +22,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@SQLDelete(sql = "UPDATE email_verification SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class EmailVerification extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

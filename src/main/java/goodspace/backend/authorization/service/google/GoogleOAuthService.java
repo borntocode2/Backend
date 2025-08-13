@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -108,8 +109,16 @@ public class GoogleOAuthService implements OAuthService {
     }
 
     private ResponseEntity<String> sendTokenRequest(Map<String, String> params) {
-        return new RestTemplate()
-                .postForEntity(TOKEN_BASE_URL, params, String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+        org.springframework.util.LinkedMultiValueMap<String, String> form = new org.springframework.util.LinkedMultiValueMap<>();
+        form.setAll(params);
+
+        HttpEntity<org.springframework.util.MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
+
+        return new RestTemplate().postForEntity(TOKEN_BASE_URL, entity, String.class);
     }
 
     private String getAccessTokenFromResponse(ResponseEntity<String> responseEntity) {
