@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class ImageManagerTest {
     static final String PREFIX_URL = "test";
@@ -20,8 +20,8 @@ class ImageManagerTest {
     static final String EXTENSION = ".png";
     static final String FULL_URL = PREFIX_URL + "/" + FILE_NAME + EXTENSION;
 
-    MultipartFile IMAGE_1;
-    MultipartFile IMAGE_2;
+    MultipartFile IMAGE_1 = ImageFixture.KOTLIN.getImage();
+    MultipartFile IMAGE_2 = ImageFixture.CHOLOG.getImage();
 
     final ImageUtil imageUtil = new ImageUtil();
 
@@ -32,8 +32,6 @@ class ImageManagerTest {
     @BeforeEach
     void resetImageManager() {
         imageManager = new ImageManagerImpl(basePath.toString());
-        IMAGE_1 = ImageFixture.KOTLIN.getImage();
-        IMAGE_2 = ImageFixture.CHOLOG.getImage();
     }
 
     @Nested
@@ -55,23 +53,6 @@ class ImageManagerTest {
             assertThatCode(() -> imageUtil.getImageFromUrl(imageUrl))
                     .doesNotThrowAnyException();
             assertThat(imageUrl).endsWith(FULL_URL);
-        }
-    }
-
-    @Nested
-    class deleteImage {
-        @Test
-        @DisplayName("파일을 삭제한다")
-        void removeFile() {
-            // given
-            String imageUrl = imageManager.createImageUrl(PREFIX_URL, FILE_NAME, IMAGE_1);
-
-            // when
-            imageManager.deleteImage(imageUrl);
-
-            // then
-            assertThatThrownBy(() -> imageUtil.getImageFromUrl(imageUrl))
-                    .isInstanceOf(NoSuchFileException.class);
         }
     }
 

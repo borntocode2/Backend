@@ -6,7 +6,6 @@ import goodspace.backend.admin.dto.client.ClientUpdateRequestDto;
 import goodspace.backend.admin.image.ImageManager;
 import goodspace.backend.client.domain.Client;
 import goodspace.backend.client.domain.RegisterStatus;
-import goodspace.backend.global.domain.Item;
 import goodspace.backend.client.repository.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -92,23 +91,10 @@ public class ClientManageServiceImpl implements ClientManageService {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(CLIENT_NOT_FOUND);
 
-        removeEveryImage(client);
-
         clientRepository.delete(client);
     }
 
     private boolean hasImage(MultipartFile image) {
         return image != null && !image.isEmpty();
-    }
-
-    private void removeEveryImage(Client client) {
-        imageManager.deleteImage(client.getProfileImageUrl());
-        imageManager.deleteImage(client.getBackgroundImageUrl());
-
-        for (Item item : client.getItems()) {
-            for (String imageUrl : item.getImageUrls()) {
-                imageManager.deleteImage(imageUrl);
-            }
-        }
     }
 }

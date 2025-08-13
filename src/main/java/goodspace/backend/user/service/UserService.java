@@ -5,6 +5,7 @@ import goodspace.backend.email.repository.EmailVerificationRepository;
 import goodspace.backend.global.password.PasswordValidator;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.global.security.TokenType;
+import goodspace.backend.order.domain.Order;
 import goodspace.backend.user.domain.DeliveryInfo;
 import goodspace.backend.user.domain.GoodSpaceUser;
 import goodspace.backend.user.domain.User;
@@ -12,6 +13,7 @@ import goodspace.backend.user.dto.*;
 import goodspace.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private static final Supplier<EntityNotFoundException> USER_NOT_FOUND = () -> new EntityNotFoundException("회원을 조회할 수 없습니다.");
     private static final Supplier<IllegalArgumentException> WRONG_PASSWORD = () -> new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
@@ -65,6 +68,13 @@ public class UserService {
         }
 
         return builder.build();
+    }
+
+    @Transactional
+    public UserNameResponseDto getName(long userId) {
+        return userRepository.findById(userId)
+                .map(UserNameResponseDto::from)
+                .orElseThrow(USER_NOT_FOUND);
     }
 
     @Transactional
@@ -133,9 +143,19 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(USER_NOT_FOUND);
 
+        if (hasIllegalStateOrder(user.getOrders())) {
+            // TODO: 부적절한 상태의 주문이 있을 경우 개발자에게 알려야 함
+            log.error("ERROR: ApproveResult가 매핑되지 않은 Order 발생 (USER ID: {})", userId);
+        }
+
         return user.getOrders().stream()
                 .map(PurchaseHistoryResponseDto::from)
                 .toList();
+    }
+
+    @Transactional
+    public void removeUser(long userId) {
+        userRepository.deleteById(userId);
     }
 
     private void validatePassword(String rawPassword) {
@@ -164,5 +184,10 @@ public class UserService {
         }
 
         emailVerificationRepository.delete(emailVerification);
+    }
+
+    private boolean hasIllegalStateOrder(List<Order> orders) {
+        return orders.stream()
+                .anyMatch(order -> order.getApproveResult() == null);
     }
 }

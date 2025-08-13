@@ -4,6 +4,7 @@ import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderCartItem;
 import goodspace.backend.global.domain.Item;
+import goodspace.backend.order.domain.OrdererInfo;
 import goodspace.backend.user.domain.User;
 import goodspace.backend.order.dto.OrderCartItemDto;
 import goodspace.backend.order.dto.OrderRequestDto;
@@ -30,9 +31,18 @@ public class OrderService {
         User user = userRepository.findById(TokenProvider.getUserIdFromPrincipal(principal))
                 .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 User를 매핑하는 Service과정에서 User를 찾는 것을 실패했습니다."));
 
+        if (orderRequest.getRequireUpdateUserInfo()) {
+            user.update(orderRequest.getOrderInfo());
+        }
+
         Order order = Order.builder()
                 .user(user)
-                .deliveryInfo(user.getDeliveryInfo())
+                .deliveryInfo(orderRequest.getOrderInfo().toDeliveryInfo())
+                .ordererInfo(OrdererInfo.builder()
+                        .email(orderRequest.getOrderInfo().getEmail())
+                        .phoneNumber(orderRequest.getOrderInfo().getPhoneNumber())
+                        .name(orderRequest.getOrderInfo().getName())
+                        .build())
                 .build();
 
         List<OrderCartItem> orderCartItems = orderRequest.getOrderCartItemDtos().stream()
@@ -41,7 +51,7 @@ public class OrderService {
                             .orElseThrow(() -> new IllegalArgumentException("Item not found: " + dto.getItemId()));
                     return OrderCartItem.builder()
                             .item(item)
-                            .quantity(dto.getQuantity().intValue())
+                            .quantity(dto.getQuantity())
                             .order(order)
                             .build();
                 })

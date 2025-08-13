@@ -7,7 +7,5 @@ public interface ImageManager {
 
     String createImageUrl(String prefixUrl, String fileName, MultipartFile image);
 
-    void deleteImage(String imageUrl);
-
     void updateImage(MultipartFile multipartFile, String imageUrl);
 }

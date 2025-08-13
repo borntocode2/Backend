@@ -92,9 +92,7 @@ class GoodSpaceAuthorizationServiceTest {
             authorizationService.signUp(new SignUpRequestDto(email, DEFAULT_PASSWORD));
 
             // then
-            boolean isEmpty = emailVerificationRepository.findByEmail(email)
-                    .isEmpty();
-            assertThat(isEmpty).isTrue();
+            assertThat(verifiedEmail.isDeleted()).isTrue();
         }
 
         @Test

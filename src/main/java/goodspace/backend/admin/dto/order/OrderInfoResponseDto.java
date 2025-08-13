@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public record OrderInfoResponseDto(
         Long id,
-        PaymentApproveResult approveResult,
+        PaymentApproveResultResponseDto approveResult,
         DeliveryInfo deliveryInfo,
         OrderStatus status,
         LocalDateTime createAt,
@@ -26,10 +26,11 @@ public record OrderInfoResponseDto(
                 .map(OrderCartItem::getItem)
                 .map(ItemInfoResponseDto::from)
                 .toList();
+        PaymentApproveResult approveResult = order.getApproveResult();
 
         return OrderInfoResponseDto.builder()
                 .id(order.getId())
-                .approveResult(order.getApproveResult())
+                .approveResult(approveResult == null ? null : PaymentApproveResultResponseDto.from(approveResult))
                 .deliveryInfo(order.getDeliveryInfo())
                 .status(order.getOrderStatus())
                 .createAt(order.getCreatedAt())

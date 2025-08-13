@@ -5,6 +5,8 @@ import goodspace.backend.client.domain.RegisterStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,8 @@ import java.util.List;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE item SET deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class Item extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -110,18 +114,5 @@ public class Item extends BaseEntity {
     public void setTitleImage(ItemImage itemImage) {
         this.titleImage = itemImage;
         addItemImage(titleImage);
-    }
-
-    public void removeTitleImage() {
-        removeItemImage(titleImage);
-    }
-
-    public void removeItemImage(ItemImage itemImage) {
-        itemImages.remove(itemImage);
-        itemImage.setItem(null);
-    }
-
-    public void removeEveryImages() {
-        itemImages.clear();
     }
 }
