@@ -14,8 +14,4 @@ public class OrderRequestDto {
     private List<OrderCartItemDto> orderCartItemDtos;
     private OrderInfoDto orderInfo;
     private Boolean requireUpdateUserInfo;
-
-    public DeliveryInfo getDeliveryInfo() {
-        return orderInfo.toDeliveryInfo();
-    }
 }
