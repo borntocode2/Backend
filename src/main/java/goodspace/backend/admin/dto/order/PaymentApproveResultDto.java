@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record PaymentApproveResultResponseDto(
+public record PaymentApproveResultDto(
         String resultCode,
         String resultMsg,
         String tid,
@@ -42,8 +42,12 @@ public record PaymentApproveResultResponseDto(
         CouponDto coupon,
         CardInfoDto card
 ) {
-    public static PaymentApproveResultResponseDto from(PaymentApproveResult approveResult) {
-        return PaymentApproveResultResponseDto.builder()
+    public static PaymentApproveResultDto from(PaymentApproveResult approveResult) {
+        if (approveResult == null) {
+            return null;
+        }
+
+        return PaymentApproveResultDto.builder()
                 .resultCode(approveResult.getResultCode())
                 .resultMsg(approveResult.getResultMsg())
                 .tid(approveResult.getTid())
@@ -85,6 +89,50 @@ public record PaymentApproveResultResponseDto(
                 .build();
     }
 
+    public PaymentApproveResult toEntity() {
+        return PaymentApproveResult.builder()
+                .resultCode(this.resultCode)
+                .resultMsg(this.resultMsg)
+                .tid(this.tid)
+                .cancelledTid(this.cancelledTid)
+                .orderId(this.orderId)
+                .ediDate(this.ediDate)
+                .signature(this.signature)
+                .status(this.status)
+                .paidAt(this.paidAt)
+                .failedAt(this.failedAt)
+                .cancelledAt(this.cancelledAt)
+                .payMethod(this.payMethod)
+                .amount(this.amount)
+                .balanceAmt(this.balanceAmt)
+                .goodsName(this.goodsName)
+                .mallReserved(this.mallReserved)
+                .useEscrow(this.useEscrow)
+                .currency(this.currency)
+                .channel(this.channel)
+                .approveNo(this.approveNo)
+                .buyerName(this.buyerName)
+                .buyerTel(this.buyerTel)
+                .buyerEmail(this.buyerEmail)
+                .receiptUrl(this.receiptUrl)
+                .mallUserId(this.mallUserId)
+                .issuedCashReceipt(this.issuedCashReceipt)
+                .cellphone(this.cellphone)
+                .messageSource(this.messageSource)
+                .bank(this.bank != null ? this.bank.toEntity() : null)
+                .cancels(this.cancels != null
+                        ? this.cancels.stream().map(CancelInfoDto::toEntity).toList()
+                        : null)
+                .cashReceipts(this.cashReceipts != null
+                        ? this.cashReceipts.stream().map(CashReceiptInfoDto::toEntity).toList()
+                        : null)
+                .vbank(this.vbank != null ? this.vbank.toEntity() : null)
+                .coupon(this.coupon != null ? this.coupon.toEntity() : null)
+                .card(this.card != null ? this.card.toEntity() : null)
+                .build();
+    }
+
+
     @Builder
     public record CancelInfoDto(
             String cancelDate,
@@ -98,6 +146,15 @@ public record PaymentApproveResultResponseDto(
                     .cancelAmount(cancelInfo.getCancelAmount())
                     .cancelReason(cancelInfo.getCancelReason())
                     .cancelType(cancelInfo.getCancelType())
+                    .build();
+        }
+
+        public PaymentApproveResult.CancelInfo toEntity() {
+            return PaymentApproveResult.CancelInfo.builder()
+                    .cancelDate(this.cancelDate)
+                    .cancelAmount(this.cancelAmount)
+                    .cancelReason(this.cancelReason)
+                    .cancelType(this.cancelType)
                     .build();
         }
     }
@@ -125,6 +182,19 @@ public record PaymentApproveResultResponseDto(
                     .receiptUrl(info.getReceiptUrl())
                     .build();
         }
+
+        public PaymentApproveResult.CashReceiptInfo toEntity() {
+            return PaymentApproveResult.CashReceiptInfo.builder()
+                    .receiptId(this.receiptId)
+                    .orgTid(this.orgTid)
+                    .status(this.status)
+                    .amount(this.amount)
+                    .taxFreeAmt(this.taxFreeAmt)
+                    .receiptType(this.receiptType)
+                    .issueNo(this.issueNo)
+                    .receiptUrl(this.receiptUrl)
+                    .build();
+        }
     }
 
     @Builder
@@ -134,6 +204,12 @@ public record PaymentApproveResultResponseDto(
         public static CouponDto from(PaymentApproveResult.Coupon coupon) {
             return CouponDto.builder()
                     .couponAmt(coupon.getCouponAmt())
+                    .build();
+        }
+
+        public PaymentApproveResult.Coupon toEntity() {
+            return PaymentApproveResult.Coupon.builder()
+                    .couponAmt(this.couponAmt)
                     .build();
         }
     }
@@ -163,6 +239,20 @@ public record PaymentApproveResultResponseDto(
                     .acquCardName(cardInfo.getAcquCardName())
                     .build();
         }
+
+        public PaymentApproveResult.CardInfo toEntity() {
+            return PaymentApproveResult.CardInfo.builder()
+                    .cardCode(this.cardCode)
+                    .cardName(this.cardName)
+                    .cardNum(this.cardNum)
+                    .cardQuota(this.cardQuota)
+                    .interestFree(this.interestFree)
+                    .cardType(this.cardType)
+                    .canPartCancel(this.canPartCancel)
+                    .acquCardCode(this.acquCardCode)
+                    .acquCardName(this.acquCardName)
+                    .build();
+        }
     }
 
     @Builder
@@ -182,6 +272,16 @@ public record PaymentApproveResultResponseDto(
                     .vbankHolder(vbank.getVbankHolder())
                     .build();
         }
+
+        public PaymentApproveResult.VbankInfo toEntity() {
+            return PaymentApproveResult.VbankInfo.builder()
+                    .vbankName(this.vbankName)
+                    .vbankNumber(this.vbankNumber)
+                    .vbankCode(this.vbankCode)
+                    .vbankExpDate(this.vbankExpDate)
+                    .vbankHolder(this.vbankHolder)
+                    .build();
+        }
     }
 
     @Builder
@@ -193,6 +293,13 @@ public record PaymentApproveResultResponseDto(
             return BankDto.builder()
                     .bankCode(bank.getBankCode())
                     .bankName(bank.getBankName())
+                    .build();
+        }
+
+        public PaymentApproveResult.Bank toEntity() {
+            return PaymentApproveResult.Bank.builder()
+                    .bankCode(this.bankCode)
+                    .bankName(this.bankName)
                     .build();
         }
     }

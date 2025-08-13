@@ -2,7 +2,7 @@ package goodspace.backend.admin.service.order;
 
 import goodspace.backend.admin.dto.order.OrderInfoResponseDto;
 import goodspace.backend.admin.dto.order.OrderUpdateRequestDto;
-import goodspace.backend.admin.dto.order.PaymentApproveResultResponseDto;
+import goodspace.backend.admin.dto.order.PaymentApproveResultDto;
 import goodspace.backend.admin.dto.order.TrackingNumberRegisterRequestDto;
 import goodspace.backend.fixture.DeliveryFixture;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
@@ -173,7 +173,7 @@ class OrderManageServiceTest {
 
             OrderUpdateRequestDto requestDto = OrderUpdateRequestDto.builder()
                     .orderId(order.getId())
-                    .approveResult(newApproveResult)
+                    .approveResult(PaymentApproveResultDto.from(newApproveResult))
                     .deliveryInfo(NEW_DELIVERY)
                     .build();
 
@@ -213,11 +213,11 @@ class OrderManageServiceTest {
                 Objects.equals(order.getUpdatedAt(), dto.updatedAt());
     }
 
-    private boolean isEqual(PaymentApproveResult approveResult, PaymentApproveResultResponseDto dto) {
+    private boolean isEqual(PaymentApproveResult approveResult, PaymentApproveResultDto dto) {
         if (approveResult == null && dto == null) return true;
         if (approveResult == null || dto == null) return false;
 
-        PaymentApproveResultResponseDto converted = PaymentApproveResultResponseDto.from(approveResult);
+        PaymentApproveResultDto converted = PaymentApproveResultDto.from(approveResult);
         return Objects.equals(converted, dto);
     }
 }
