@@ -1,6 +1,6 @@
 package goodspace.backend.global.exception;
 
-import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -8,6 +8,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -76,9 +78,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(BAD_REQUEST).body("Illegal state: " + exception.getMessage());
     }
 
-    @ExceptionHandler(MalformedJwtException.class)
-    public ResponseEntity<String> handleIllegalJwt(MalformedJwtException exception) {
-        log.info("[ERROR RESPONSE] malformed jwt", exception);
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<String> handleIllegalJwt(JwtException exception) {
+        log.info("[ERROR RESPONSE] illegal jwt", exception);
 
         return ResponseEntity.status(UNAUTHORIZED).body("부적절한 JWT 토큰입니다: " + exception.getMessage());
     }
@@ -88,6 +90,20 @@ public class GlobalExceptionHandler {
         log.info("[ERROR RESPONSE] http message not readable", exception);
 
         return ResponseEntity.status(BAD_REQUEST).body("JSON 파싱에 실패했습니다: " + exception.getMessage());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<String> handleIllegalHttpMethod(HttpRequestMethodNotSupportedException exception) {
+        log.info("[ERROR RESPONSE] http message not supported", exception);
+
+        return ResponseEntity.status(METHOD_NOT_ALLOWED).body("부적절한 HTTP 메서드입니다: " + exception.getMessage());
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<String> handleIllegalMediaType(HttpMediaTypeNotSupportedException exception) {
+        log.info("[ERROR RESPONSE] media type not supported", exception);
+
+        return ResponseEntity.status(METHOD_NOT_ALLOWED).body("부적절한 Content-Type 혹은 Accept입니다: " + exception.getMessage());
     }
 
     @ExceptionHandler(SQLException.class)
