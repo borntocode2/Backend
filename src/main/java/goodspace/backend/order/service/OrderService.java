@@ -15,6 +15,7 @@ import goodspace.backend.user.domain.User;
 import goodspace.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.List;
@@ -33,6 +34,7 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
 
     //TODO - error handling
+    @Transactional
     public Long saveOrder(Principal principal, OrderRequestDto orderRequest) {
         User user = userRepository.findById(TokenProvider.getUserIdFromPrincipal(principal))
                 .orElseThrow(() -> new IllegalArgumentException("Order엔티티에 User를 매핑하는 Service과정에서 User를 찾는 것을 실패했습니다."));
@@ -68,10 +70,12 @@ public class OrderService {
         return order.getId();
     }
 
+    @Transactional
     public void deleteOrder(Long orderId) {
         orderRepository.deleteById(orderId);
     }
 
+    @Transactional(readOnly = true)
     public OrderResponseDto findOrderByOrderId(Long orderId) {
         Order order = orderRepository.findByApproveResult_OrderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
