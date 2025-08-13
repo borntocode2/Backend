@@ -4,6 +4,7 @@ import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderCartItem;
 import goodspace.backend.global.domain.Item;
+import goodspace.backend.order.domain.OrdererInfo;
 import goodspace.backend.user.domain.User;
 import goodspace.backend.order.dto.OrderCartItemDto;
 import goodspace.backend.order.dto.OrderRequestDto;
@@ -37,6 +38,11 @@ public class OrderService {
         Order order = Order.builder()
                 .user(user)
                 .deliveryInfo(orderRequest.getOrderInfo().toDeliveryInfo())
+                .ordererInfo(OrdererInfo.builder()
+                        .email(orderRequest.getOrderInfo().getEmail())
+                        .phoneNumber(orderRequest.getOrderInfo().getPhoneNumber())
+                        .name(orderRequest.getOrderInfo().getName())
+                        .build())
                 .build();
 
         List<OrderCartItem> orderCartItems = orderRequest.getOrderCartItemDtos().stream()
