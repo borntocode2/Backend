@@ -42,7 +42,7 @@ public abstract class User extends BaseEntity {
     @Builder.Default
     private final List<UserRole> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private final List<Order> orders = new ArrayList<>();
 

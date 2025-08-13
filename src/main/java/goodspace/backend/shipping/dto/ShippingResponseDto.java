@@ -4,9 +4,11 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
+@Getter
 public class ShippingResponseDto {
     @JacksonXmlProperty(localName = "header")
     private Header header;

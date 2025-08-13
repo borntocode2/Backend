@@ -55,7 +55,8 @@ public class Order extends BaseEntity {
     private List<OrderCartItem> orderCartItems = new ArrayList<>();
 
     public void setOrderCartItems(List<OrderCartItem> cartItems) {
-        this.orderCartItems = cartItems;
+        this.orderCartItems.addAll(cartItems);
+
         for (OrderCartItem cartItem : cartItems) {
             cartItem.setOrder(this);
         }
