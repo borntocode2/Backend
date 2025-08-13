@@ -37,6 +37,9 @@ public class Order extends BaseEntity {
     @Embedded
     private DeliveryInfo deliveryInfo;
 
+    @Embedded
+    private OrdererInfo ordererInfo;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private OrderStatus orderStatus = OrderStatus.PAYMENT_CHECKING;
