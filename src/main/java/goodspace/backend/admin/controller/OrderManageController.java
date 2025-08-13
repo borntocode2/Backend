@@ -54,6 +54,17 @@ public class OrderManageController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/accept")
+    @Operation(
+            summary = "주문 수락",
+            description = "결제가 완료된 주문을 수락합니다. 주문의 상태를 '제작 준비중'에서 '제작중'으로 전이합니다."
+    )
+    public ResponseEntity<Void> acceptOrder(@RequestParam Long orderId) {
+        orderManageService.acceptOrder(orderId);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/payment/issue")
     @Operation(
             summary = "결제 에러 이슈",
