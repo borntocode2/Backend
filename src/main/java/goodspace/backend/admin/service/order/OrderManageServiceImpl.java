@@ -67,7 +67,7 @@ public class OrderManageServiceImpl implements OrderManageService {
         Order order = orderRepository.findById(requestDto.orderId())
                 .orElseThrow(ORDER_NOT_FOUND);
 
-        order.setPaymentApproveResult(requestDto.approveResult());
+        order.setPaymentApproveResult(requestDto.approveResult().toEntity());
         order.setDeliveryInfo(requestDto.deliveryInfo());
     }
 
