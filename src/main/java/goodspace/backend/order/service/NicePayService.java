@@ -20,6 +20,7 @@ public class NicePayService {
             Order order = orderRepository.findById(approveResult.getOrderId())
                     .orElseThrow(() -> new IllegalArgumentException("결제 성공 후, 결제API에서 응답받은 orderId로 orderRepository에 해당 order를 찾을 수 없습니다."));
             order.setPaymentApproveResult(approveResult);
+            order.updateOrderStatus("제작 준비중");
 
         } catch (IllegalArgumentException e) {
             log.error("[error 단계 에러]에러 발생", e);
