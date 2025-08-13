@@ -1,7 +1,5 @@
 package goodspace.backend.order.domain;
 
-import goodspace.backend.delivery.domain.DeliveryHistory;
-import goodspace.backend.delivery.domain.DeliveryStatus;
 import goodspace.backend.global.domain.BaseEntity;
 import goodspace.backend.user.domain.DeliveryInfo;
 import goodspace.backend.user.domain.User;
@@ -48,24 +46,6 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderCartItem> orderCartItems = new ArrayList<>();
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DeliveryHistory> deliveryHistorys = new ArrayList<>();
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DeliveryStatus deliveryStatus;
-
-    public void addDeliveryHistory(DeliveryHistory deliveryHistory) {
-        if (deliveryHistory != null) {
-            deliveryHistorys.add(deliveryHistory);
-        }
-    }
-
-    public void setDeliveryStatus(DeliveryStatus deliveryStatus) {
-        if (deliveryStatus != null) {
-            this.deliveryStatus = deliveryStatus;
-        }
-    }
 
     public void setOrderCartItems(List<OrderCartItem> cartItems) {
         this.orderCartItems = cartItems;
