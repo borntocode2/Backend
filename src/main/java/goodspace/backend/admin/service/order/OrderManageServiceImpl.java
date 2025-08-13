@@ -4,10 +4,7 @@ import goodspace.backend.admin.dto.order.OrderInfoResponseDto;
 import goodspace.backend.admin.dto.order.OrderUpdateRequestDto;
 import goodspace.backend.admin.dto.order.TrackingNumberRegisterRequestDto;
 import goodspace.backend.order.domain.Order;
-import goodspace.backend.order.domain.OrderPaymentIssue;
 import goodspace.backend.order.domain.OrderStatus;
-import goodspace.backend.order.dto.OrderPaymentIssueDto;
-import goodspace.backend.order.repository.OrderPaymentIssueRepository;
 import goodspace.backend.order.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +21,6 @@ public class OrderManageServiceImpl implements OrderManageService {
     private static final Supplier<IllegalStateException> ILLEGAL_ORDER_STATE = () -> new IllegalStateException("요청을 처리하기에 주문의 상태가 부적절합니다.");
 
     private final OrderRepository orderRepository;
-    private final OrderPaymentIssueRepository orderPaymentIssueRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -75,35 +71,5 @@ public class OrderManageServiceImpl implements OrderManageService {
     @Transactional
     public void removeOrder(long orderId) {
         orderRepository.deleteById(orderId);
-    }
-
-    @Override
-    @Transactional
-    public void createPaymentIssue(Long orderId, Long tid){
-        OrderPaymentIssue orderPaymentIssue = OrderPaymentIssue.builder()
-                .orderId(orderId)
-                .tid(tid)
-                .build();
-
-        orderPaymentIssueRepository.save(orderPaymentIssue);
-    }
-
-    @Override
-    @Transactional
-    public void deletePaymentIssue(Long issueId){
-        orderPaymentIssueRepository.deleteById(issueId);
-    }
-
-    @Override
-    @Transactional
-    public List<OrderPaymentIssueDto> getOrderPaymentIssues(){
-        List<OrderPaymentIssue> entities = orderPaymentIssueRepository.findAll();
-
-        return entities.stream()
-                .map(entity -> OrderPaymentIssueDto.builder()
-                        .orderId(entity.getOrderId())
-                        .tid(entity.getTid())
-                        .build())
-                .toList();
     }
 }
