@@ -34,9 +34,11 @@ public class PaymentApproveResult {
     private String currency;
     private String channel;
     private String approveNo;
+
     private String buyerName;
     private String buyerTel;
     private String buyerEmail;
+
     private String receiptUrl;
     private String mallUserId;
     private Boolean issuedCashReceipt;

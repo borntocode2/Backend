@@ -12,6 +12,7 @@ public class OrderInfoDto {
     private String email;
     private String name;
     private String phoneNumber;
+
     private String recipient;
     private String contactNumber1;
     private String contactNumber2;
