@@ -156,7 +156,6 @@ public class NicePayController {
 
     @GetMapping(value = "/cancel")
     public ResponseEntity<OrderResultMessageDto> cancelDemo() {
-        // 프론트엔드 측, 결제 도중 취소 버튼을 눌렀을 시, 보여줄 화면
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new OrderResultMessageDto(

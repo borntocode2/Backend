@@ -6,6 +6,7 @@ import goodspace.backend.admin.dto.order.TrackingNumberRegisterRequestDto;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderPaymentIssue;
 import goodspace.backend.order.domain.OrderStatus;
+import goodspace.backend.order.dto.OrderPaymentIssueDto;
 import goodspace.backend.order.repository.OrderPaymentIssueRepository;
 import goodspace.backend.order.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -85,5 +86,24 @@ public class OrderManageServiceImpl implements OrderManageService {
                 .build();
 
         orderPaymentIssueRepository.save(orderPaymentIssue);
+    }
+
+    @Override
+    @Transactional
+    public void deletePaymentIssue(Long issueId){
+        orderPaymentIssueRepository.deleteById(issueId);
+    }
+
+    @Override
+    @Transactional
+    public List<OrderPaymentIssueDto> getOrderPaymentIssues(){
+        List<OrderPaymentIssue> entities = orderPaymentIssueRepository.findAll();
+
+        return entities.stream()
+                .map(entity -> OrderPaymentIssueDto.builder()
+                        .orderId(entity.getOrderId())
+                        .tid(entity.getTid())
+                        .build())
+                .toList();
     }
 }

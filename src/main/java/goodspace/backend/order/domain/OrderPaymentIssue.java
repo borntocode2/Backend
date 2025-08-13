@@ -12,8 +12,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
-@SuperBuilder
 @Entity
+@SuperBuilder
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE order_payment_issue SET deleted = true, deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted = false")

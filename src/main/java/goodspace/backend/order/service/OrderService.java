@@ -7,6 +7,9 @@ import goodspace.backend.global.repository.ItemRepository;
 import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderCartItem;
+import goodspace.backend.global.domain.Item;
+import goodspace.backend.order.domain.OrdererInfo;
+import goodspace.backend.user.domain.User;
 import goodspace.backend.order.dto.OrderCartItemDto;
 import goodspace.backend.order.dto.OrderRequestDto;
 import goodspace.backend.order.dto.OrderResponseDto;
@@ -41,13 +44,14 @@ public class OrderService {
             user.update(orderRequest.getOrderInfo());
         }
 
-        if (orderRequest.isRequireCartItemRemove()) {
-            removeCartItem(user, orderRequest.getOrderCartItemDtos());
-        }
-
         Order order = Order.builder()
                 .user(user)
                 .deliveryInfo(orderRequest.getOrderInfo().toDeliveryInfo())
+                .ordererInfo(OrdererInfo.builder()
+                        .email(orderRequest.getOrderInfo().getEmail())
+                        .phoneNumber(orderRequest.getOrderInfo().getPhoneNumber())
+                        .name(orderRequest.getOrderInfo().getName())
+                        .build())
                 .build();
 
         List<OrderCartItem> orderCartItems = orderRequest.getOrderCartItemDtos().stream()
