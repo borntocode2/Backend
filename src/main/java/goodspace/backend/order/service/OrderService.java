@@ -36,7 +36,7 @@ public class OrderService {
 
         Order order = Order.builder()
                 .user(user)
-                .deliveryInfo(orderRequest.getDeliveryInfo())
+                .deliveryInfo(orderRequest.getOrderInfo().toDeliveryInfo())
                 .build();
 
         List<OrderCartItem> orderCartItems = orderRequest.getOrderCartItemDtos().stream()
