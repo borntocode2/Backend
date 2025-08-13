@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/user/forget-password").permitAll() // 이메일 인증을 통한 비밀번호 재설정
                         .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 API
                         .requestMatchers("/payment/**").permitAll()
-                        .requestMatchers("/delivery/**").permitAll()
+                        .requestMatchers("/shipping/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(configurationSource()))
