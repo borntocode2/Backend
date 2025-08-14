@@ -1,13 +1,11 @@
 package goodspace.backend.admin.service.order;
 
-import goodspace.backend.admin.dto.order.OrderInfoResponseDto;
-import goodspace.backend.admin.dto.order.OrderUpdateRequestDto;
-import goodspace.backend.admin.dto.order.PaymentApproveResultDto;
-import goodspace.backend.admin.dto.order.TrackingNumberRegisterRequestDto;
+import goodspace.backend.admin.dto.order.*;
 import goodspace.backend.fixture.DeliveryFixture;
 import goodspace.backend.fixture.GoodSpaceUserFixture;
 import goodspace.backend.fixture.PaymentApproveResultFixture;
 import goodspace.backend.order.domain.Order;
+import goodspace.backend.order.domain.OrderStatus;
 import goodspace.backend.order.domain.PaymentApproveResult;
 import goodspace.backend.order.repository.OrderRepository;
 import goodspace.backend.user.domain.DeliveryInfo;
@@ -18,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +38,8 @@ class OrderManageServiceTest {
     static final DeliveryInfo NEW_DELIVERY = DeliveryFixture.B.getInstance();
     static final PaymentApproveResultFixture DEFAULT_PAYMENT_APPROVE_RESULT_FIXTURE = PaymentApproveResultFixture.A;
     static final PaymentApproveResultFixture NEW_PAYMENT_APPROVE_RESULT_FIXTURE = PaymentApproveResultFixture.B;
-    static final String TRACKING_NUMBER = "12345";
+    static final String DEFAULT_TRACKING_NUMBER = "99999";
+    static final String NEW_TRACKING_NUMBER = "12345";
 
     @Autowired
     OrderManageService orderManageService;
@@ -47,15 +48,17 @@ class OrderManageServiceTest {
     @Autowired
     UserRepository userRepository;
 
+    User user;
     Order order;
     Order preparingProductOrder;
     Order makingProductOrder;
+    Order preparingDeliveryOrder;
 
     List<Order> existOrders;
 
     @BeforeEach
     void resetEntities() {
-        User user = userRepository.save(GoodSpaceUserFixture.DEFAULT.getInstance());
+        user = userRepository.save(GoodSpaceUserFixture.DEFAULT.getInstance());
 
         order = orderRepository.save(Order.builder()
                 .deliveryInfo(DEFAULT_DELIVERY)
@@ -77,8 +80,15 @@ class OrderManageServiceTest {
                 .build());
         makingProductOrder.setPaymentApproveResult(DEFAULT_PAYMENT_APPROVE_RESULT_FIXTURE.getInstanceWith(makingProductOrder.getId()));
 
-        user.addOrders(order, preparingProductOrder, makingProductOrder);
-        existOrders = List.of(order, preparingProductOrder, makingProductOrder);
+        preparingDeliveryOrder = orderRepository.save(Order.builder()
+                .deliveryInfo(DEFAULT_DELIVERY)
+                .orderStatus(PREPARING_DELIVERY)
+                .trackingNumber(DEFAULT_TRACKING_NUMBER)
+                .user(user)
+                .build());
+
+        user.addOrders(order, preparingProductOrder, makingProductOrder, preparingDeliveryOrder);
+        existOrders = List.of(order, preparingProductOrder, makingProductOrder, preparingDeliveryOrder);
     }
 
     @Nested
@@ -124,14 +134,14 @@ class OrderManageServiceTest {
             // given
             TrackingNumberRegisterRequestDto requestDto = TrackingNumberRegisterRequestDto.builder()
                     .orderId(makingProductOrder.getId())
-                    .trackingNumber(TRACKING_NUMBER)
+                    .trackingNumber(NEW_TRACKING_NUMBER)
                     .build();
 
             // when
             orderManageService.registerTrackingNumber(requestDto);
 
             // then
-            assertThat(makingProductOrder.getTrackingNumber()).isEqualTo(TRACKING_NUMBER);
+            assertThat(makingProductOrder.getTrackingNumber()).isEqualTo(NEW_TRACKING_NUMBER);
         }
 
         @Test
@@ -140,7 +150,7 @@ class OrderManageServiceTest {
             // given
             TrackingNumberRegisterRequestDto requestDto = TrackingNumberRegisterRequestDto.builder()
                     .orderId(makingProductOrder.getId())
-                    .trackingNumber(TRACKING_NUMBER)
+                    .trackingNumber(NEW_TRACKING_NUMBER)
                     .build();
 
             // when
@@ -150,15 +160,73 @@ class OrderManageServiceTest {
             assertThat(makingProductOrder.getOrderStatus()).isEqualTo(PREPARING_DELIVERY);
         }
 
-        @Test
+        @ParameterizedTest
         @DisplayName("주문의 상태가 '제작중'이 아니라면 예외가 발생한다")
-        void ifOrderStatusIsNotMakingProductThenThrowException() {
+        @EnumSource(
+                value = OrderStatus.class,
+                names = {"MAKING_PRODUCT"},
+                mode = EnumSource.Mode.EXCLUDE
+        )
+        void ifOrderStatusIsNotMakingProductThenThrowException(OrderStatus orderStatus) {
+            Order order = orderRepository.save(Order.builder()
+                    .user(user)
+                    .orderStatus(orderStatus)
+                    .deliveryInfo(DEFAULT_DELIVERY)
+                    .build());
+
             TrackingNumberRegisterRequestDto requestDto = TrackingNumberRegisterRequestDto.builder()
-                    .orderId(preparingProductOrder.getId())
-                    .trackingNumber(TRACKING_NUMBER)
+                    .orderId(order.getId())
+                    .trackingNumber(NEW_TRACKING_NUMBER)
                     .build();
 
             assertThatThrownBy(() -> orderManageService.registerTrackingNumber(requestDto))
+                    .isInstanceOf(IllegalStateException.class);
+        }
+    }
+
+    @Nested
+    class updateTrackingNumber {
+        @Test
+        @DisplayName("주문의 Tracking Number를 수정한다")
+        void updateTrackingNumberOfOrder() {
+            // given
+            String existTrackingNumber = preparingDeliveryOrder.getTrackingNumber();
+
+            TrackingNumberUpdateRequestDto requestDto = TrackingNumberUpdateRequestDto.builder()
+                    .orderId(preparingDeliveryOrder.getId())
+                    .trackingNumber(NEW_TRACKING_NUMBER)
+                    .build();
+
+            // when
+            orderManageService.updateTrackingNumber(requestDto);
+
+            // then
+            String updatedTrackingNumber = preparingDeliveryOrder.getTrackingNumber();
+
+            assertThat(updatedTrackingNumber).isNotEqualTo(existTrackingNumber);
+            assertThat(updatedTrackingNumber).isEqualTo(NEW_TRACKING_NUMBER);
+        }
+
+        @ParameterizedTest
+        @DisplayName("주문의 상태가 '배송 준비중'이 아니라면 예외가 발생한다")
+        @EnumSource(
+                value = OrderStatus.class,
+                names = {"PREPARING_DELIVERY"},
+                mode = EnumSource.Mode.EXCLUDE
+        )
+        void ifOrderStatusIsNotPreparingDeliveryThenThrowException(OrderStatus orderStatus) {
+            Order order = orderRepository.save(Order.builder()
+                    .user(user)
+                    .orderStatus(orderStatus)
+                    .deliveryInfo(DEFAULT_DELIVERY)
+                    .build());
+
+            TrackingNumberUpdateRequestDto requestDto = TrackingNumberUpdateRequestDto.builder()
+                    .orderId(order.getId())
+                    .trackingNumber(NEW_TRACKING_NUMBER)
+                    .build();
+
+            assertThatThrownBy(() -> orderManageService.updateTrackingNumber(requestDto))
                     .isInstanceOf(IllegalStateException.class);
         }
     }

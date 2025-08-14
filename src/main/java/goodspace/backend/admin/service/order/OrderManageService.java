@@ -3,6 +3,7 @@ package goodspace.backend.admin.service.order;
 import goodspace.backend.admin.dto.order.OrderInfoResponseDto;
 import goodspace.backend.admin.dto.order.OrderUpdateRequestDto;
 import goodspace.backend.admin.dto.order.TrackingNumberRegisterRequestDto;
+import goodspace.backend.admin.dto.order.TrackingNumberUpdateRequestDto;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface OrderManageService {
     void acceptOrder(long orderId);
 
     void registerTrackingNumber(TrackingNumberRegisterRequestDto requestDto);
+
+    void updateTrackingNumber(TrackingNumberUpdateRequestDto requestDto);
 
     void updateOrder(OrderUpdateRequestDto requestDto);
 
