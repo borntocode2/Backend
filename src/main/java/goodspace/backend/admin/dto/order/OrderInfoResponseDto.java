@@ -17,6 +17,7 @@ public record OrderInfoResponseDto(
         PaymentApproveResultDto approveResult,
         DeliveryInfo deliveryInfo,
         OrderStatus status,
+        String trackingNumber,
         LocalDateTime createAt,
         LocalDateTime updatedAt,
         List<ItemInfoResponseDto> items
@@ -33,6 +34,7 @@ public record OrderInfoResponseDto(
                 .approveResult(approveResult == null ? null : PaymentApproveResultDto.from(approveResult))
                 .deliveryInfo(order.getDeliveryInfo())
                 .status(order.getOrderStatus())
+                .trackingNumber(order.getTrackingNumber())
                 .createAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .items(items)
