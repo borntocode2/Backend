@@ -277,6 +277,7 @@ class OrderManageServiceTest {
                 isEqual(order.getApproveResult(), dto.approveResult()) &&
                 Objects.equals(order.getDeliveryInfo(), dto.deliveryInfo()) &&
                 Objects.equals(order.getOrderStatus(), dto.status()) &&
+                Objects.equals(order.getTrackingNumber(), dto.trackingNumber()) &&
                 Objects.equals(order.getCreatedAt(), dto.createAt()) &&
                 Objects.equals(order.getUpdatedAt(), dto.updatedAt());
     }
