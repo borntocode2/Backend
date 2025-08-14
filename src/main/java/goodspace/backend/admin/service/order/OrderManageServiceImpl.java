@@ -3,6 +3,7 @@ package goodspace.backend.admin.service.order;
 import goodspace.backend.admin.dto.order.OrderInfoResponseDto;
 import goodspace.backend.admin.dto.order.OrderUpdateRequestDto;
 import goodspace.backend.admin.dto.order.TrackingNumberRegisterRequestDto;
+import goodspace.backend.admin.dto.order.TrackingNumberUpdateRequestDto;
 import goodspace.backend.order.domain.Order;
 import goodspace.backend.order.domain.OrderStatus;
 import goodspace.backend.order.repository.OrderRepository;
@@ -55,6 +56,19 @@ public class OrderManageServiceImpl implements OrderManageService {
 
         order.setTrackingNumber(requestDto.trackingNumber());
         order.updateOrderStatus(OrderStatus.PREPARING_DELIVERY);
+    }
+
+    @Override
+    @Transactional
+    public void updateTrackingNumber(TrackingNumberUpdateRequestDto requestDto) {
+        Order order = orderRepository.findById(requestDto.orderId())
+                .orElseThrow(ORDER_NOT_FOUND);
+
+        if (order.getOrderStatus() != OrderStatus.PREPARING_DELIVERY) {
+            throw ILLEGAL_ORDER_STATE.get();
+        }
+
+        order.setTrackingNumber(requestDto.trackingNumber());
     }
 
     @Override

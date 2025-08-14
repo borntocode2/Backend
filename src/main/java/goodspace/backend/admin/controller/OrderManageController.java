@@ -2,6 +2,8 @@ package goodspace.backend.admin.controller;
 
 import goodspace.backend.admin.dto.order.OrderInfoResponseDto;
 import goodspace.backend.admin.dto.order.OrderUpdateRequestDto;
+import goodspace.backend.admin.dto.order.TrackingNumberRegisterRequestDto;
+import goodspace.backend.admin.dto.order.TrackingNumberUpdateRequestDto;
 import goodspace.backend.admin.service.order.OrderManageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,6 +63,28 @@ public class OrderManageController {
     )
     public ResponseEntity<Void> acceptOrder(@RequestParam Long orderId) {
         orderManageService.acceptOrder(orderId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/tracking-number")
+    @Operation(
+            summary = "등기번호 입력",
+            description = "주문에 등기번호를 입력합니다. 주문의 상태를 '제작중'에서 '배송 준비중'으로 전이합니다."
+    )
+    public ResponseEntity<Void> registerTrackingNumber(@RequestBody TrackingNumberRegisterRequestDto requestDto) {
+        orderManageService.registerTrackingNumber(requestDto);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/tracking-number")
+    @Operation(
+            summary = "등기번호 수정",
+            description = "주문의 등기번호를 수정합니다."
+    )
+    public ResponseEntity<Void> updateTrackingNumber(@RequestBody TrackingNumberUpdateRequestDto requestDto) {
+        orderManageService.updateTrackingNumber(requestDto);
 
         return ResponseEntity.noContent().build();
     }
