@@ -46,6 +46,10 @@ public class OrderService {
             user.update(orderRequest.getOrderInfo());
         }
 
+        if (orderRequest.isRequireCartItemRemove()) {
+            removeCartItem(user, orderRequest.getOrderCartItemDtos());
+        }
+
         Order order = Order.builder()
                 .user(user)
                 .deliveryInfo(orderRequest.getOrderInfo().toDeliveryInfo())
