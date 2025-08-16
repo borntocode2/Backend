@@ -1,15 +1,12 @@
 package goodspace.backend.qna.service;
 
-import goodspace.backend.qna.domain.Answer;
-import goodspace.backend.qna.dto.*;
-import goodspace.backend.qna.repository.QuestionFileRepository;
-import goodspace.backend.qna.repository.QuestionRepository;
+import goodspace.backend.global.security.TokenProvider;
 import goodspace.backend.qna.domain.Question;
 import goodspace.backend.qna.domain.QuestionFile;
 import goodspace.backend.qna.domain.QuestionStatus;
+import goodspace.backend.qna.dto.*;
+import goodspace.backend.qna.repository.QuestionRepository;
 import goodspace.backend.user.repository.UserRepository;
-import goodspace.backend.global.security.TokenProvider;
-import goodspace.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -31,11 +28,9 @@ import java.util.zip.ZipOutputStream;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
-    private final QuestionFileRepository questionFileRepository;
-    private final UserService userService;
 
     @Transactional
-    public String createQuestion(Principal principal, QuestionRequestDto dto, List<MultipartFile> files) throws IOException {
+    public String createQuestion(Principal principal, QuestionRequestDto dto, List<MultipartFile> files) {
         Question question = Question.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
@@ -70,9 +65,13 @@ public class QuestionService {
     }
 
     @Transactional
-    public String modifyQuestion(Long id, QuestionRequestDto dto, List<MultipartFile> files) throws IOException {
+    public String modifyQuestion(Long id, QuestionRequestDto dto, List<MultipartFile> files) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("수정하려는 질문을 데이터베이스에서 찾지 못하였습니다."));
+
+        if (question.getQuestionStatus() != QuestionStatus.WAITING) {
+            throw new IllegalStateException("답변 완료된 질문은 수정할 수 없습니다.");
+        }
 
         question.modifyQuestion(dto.getTitle(), dto.getContent(), dto.getType());
 
