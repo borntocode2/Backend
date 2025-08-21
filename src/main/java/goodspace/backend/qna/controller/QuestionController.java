@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/qna")
+@RequestMapping("/question")
 @Tag(
         name = "QnA 질문 API",
         description = "QnA 질문 CRUD"
@@ -51,7 +51,7 @@ public class QuestionController {
             summary = "질문 단건 조회",
             description = "질문 ID를 통해 질문을 조회합니다."
     )
-    @GetMapping("/question/getQuestion/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<QuestionResponseDto> getQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.getQuestion(id));
     }
@@ -60,7 +60,7 @@ public class QuestionController {
             summary = "질문 삭제",
             description = "질문ID를 통해 질문을 삭제합니다."
     )
-    @DeleteMapping("/question/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.deleteQuestion(id));
     }
@@ -69,7 +69,7 @@ public class QuestionController {
             summary = "유저의 질문 조회",
             description = "JWT토큰을 통해 모든 유저의 질문을 조회합니다."
     )
-    @GetMapping("/question/getUserQuestions")
+    @GetMapping
     public ResponseEntity<List<AllQuestionResponseDto>> getUserQuestions(Principal principal) {
         return ResponseEntity.ok(questionService.getAllQuestions(principal));
     }
@@ -78,7 +78,7 @@ public class QuestionController {
             summary = "질문 수정",
             description = "질문ID를 통해 질문을 수정합니다."
     )
-    @PatchMapping("/question/modifyQuestions/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> modifyQuestion(@PathVariable Long id,
                                                  @RequestPart("question") QuestionRequestDto questionDto,
                                                  @RequestPart(value = "file", required = false) List<MultipartFile> files
