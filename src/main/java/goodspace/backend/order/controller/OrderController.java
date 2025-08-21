@@ -33,7 +33,7 @@ public class OrderController {
             summary = "주문 삭제",
             description = "생성된 order를 삭제합니다."
     )
-    @DeleteMapping("/cancel/{orderId}")
+    @DeleteMapping("/{orderId}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);
         return ResponseEntity.noContent().build();
