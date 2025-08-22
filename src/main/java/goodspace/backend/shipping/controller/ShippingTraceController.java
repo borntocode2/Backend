@@ -18,9 +18,6 @@ public class ShippingTraceController {
     @Value("${api.epost.shipping-service-key}")
     private String serviceKey;
 
-    private String baseUrl =
-            "http://openapi.epost.go.kr/trace/retrieveLongitudinalCombinedService/retrieveLongitudinalCombinedService/getLongitudinalCombinedList";
-
     @GetMapping
     public ShippingResponseDto getShippingDetail(@RequestParam String rgist) throws Exception {
         return shippingTraceService.requestShippingStatus(serviceKey, rgist);
