@@ -20,7 +20,7 @@ public class ShippingDetailDto {
     @JacksonXmlProperty(localName = "statue")
     private String status;
 
-    @JacksonXmlProperty(localName = "locaiont")
+    @JacksonXmlProperty(localName = "location")
     private String location;
 
     @JacksonXmlProperty(localName = "remark")
